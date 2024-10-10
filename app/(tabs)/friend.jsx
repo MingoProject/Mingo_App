@@ -4,7 +4,7 @@ import React from "react";
 const Friend = () => {
   return (
     <View>
-      <Text>Friend</Text>
+      <Text>Friendds</Text>
     </View>
   );
 };

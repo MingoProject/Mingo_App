@@ -5,7 +5,7 @@ const posts = [
     id: 1,
     userName: "Huỳnh",
     userAvatar: "/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg",
-    title: "Hôm nay ăn bún đậu",
+    title: "Hôm nay ăn bún đậuu",
     images: {
       id: 1,
       img1: "/assets/images/cdb56840615cff74167efa4c463f3b05.jpg",
