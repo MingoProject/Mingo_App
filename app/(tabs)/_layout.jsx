@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text } from "react-native";
 import { Tabs } from "expo-router";
 import Svg, { Path } from "react-native-svg";
+import { ThemeProvider, useTheme } from "../../context/ThemeContext";
+// import { useTheme } from "../../context/ThemeContext";
 
 const TabIcon = ({ SvgIcon, color, name, focused }) => {
   return (
@@ -77,12 +79,18 @@ const ProfileIcon = ({ color = "currentColor", width = 24, height = 24 }) => (
 );
 
 const TabsLayout = () => {
+  const { colorScheme } = useTheme();
   return (
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#FFAABB",
         tabBarInactiveTintColor: "#92898A",
+        tabBarStyle: {
+          backgroundColor: colorScheme === "dark" ? "#252525" : "#FFFFFF", // Chỉnh màu nền ở đây
+          borderTopWidth: 1, // Độ dày viền
+          borderTopColor: "transparent", // Màu viền tùy theo chế độ
+        },
       }}
     >
       <Tabs.Screen
