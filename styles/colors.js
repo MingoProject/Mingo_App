@@ -16,4 +16,6 @@ export const colors = {
     800: "#F4F3F3",
   },
   "accent-blue": "#1DA1F2",
+  "title-pink": "#AF9FA5",
+  "background-button": "#D9D9D9",
 };
