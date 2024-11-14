@@ -28,7 +28,6 @@ const MyButton = ({
   isActive,
 }) => {
   const { colorScheme } = useTheme();
-  const colorBackground = isActive ? "#FFAABB" : backgroundColor;
   const textColor = isActive ? "#fff" : color;
 
   const [fontsLoaded] = useFonts({
@@ -52,8 +51,7 @@ const MyButton = ({
     <TouchableOpacity
       onPress={onPress}
       style={{
-        backgroundColor:
-          colorScheme === "dark" ? colors.dark[200] : colorBackground,
+        backgroundColor: backgroundColor,
         padding: padding,
         paddingTop: paddingTop, // Padding top
         paddingBottom: paddingBottom, // Padding bottom

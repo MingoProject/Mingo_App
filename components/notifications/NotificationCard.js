@@ -8,22 +8,7 @@ import {
   differenceInHours,
   differenceInDays,
 } from "date-fns";
-
-const ThreeDot = ({ size = 24, colorScheme }) => {
-  const iconColor = colorScheme === "dark" ? "#D9D9D9" : "black";
-
-  return (
-    <Svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      style={{ fill: iconColor }}
-    >
-      <Path d="M7 12a2 2 0 1 1-4 0a2 2 0 0 1 4 0m7 0a2 2 0 1 1-4 0a2 2 0 0 1 4 0m7 0a2 2 0 1 1-4 0a2 2 0 0 1 4 0" />
-    </Svg>
-  );
-};
+import { ThreeDot } from "../icons/Icons.js";
 
 const calculateTimeDifference = (date) => {
   const now = new Date();
@@ -42,6 +27,7 @@ const calculateTimeDifference = (date) => {
 
 const NotificationCard = ({ item }) => {
   const { colorScheme } = useTheme();
+  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
 
   return (
     <View className="flex flex-row w-full ">
@@ -94,17 +80,13 @@ const NotificationCard = ({ item }) => {
                     </Text>
                   </View>
                   <View className="self-start w-fit pl-1">
-                    <ThreeDot
-                      size={20}
-                      color={colorScheme === "dark" ? "#ffffff" : "#92898A"}
-                    />
+                    <ThreeDot size={20} color={iconColor} />
                   </View>
                 </View>
                 <View>
                   <Text
                     style={{
-                      color:
-                        colorScheme === "dark" ? colors.dark[100] : "#D9D9D9",
+                      color: colorScheme === "dark" ? "#D9D9D9" : "#D9D9D9",
                     }}
                     className="text-xs pt-1"
                   >

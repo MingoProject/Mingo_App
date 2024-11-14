@@ -50,16 +50,31 @@ const CheckBoxIcon = ({ checked, color = "#FFAABB", size = 24 }) => (
 );
 
 const SignIn = () => {
+  const { colorScheme } = useTheme();
+  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
   const [isRemember, setIsRemember] = useState(false); // Trạng thái cho hộp kiểm
 
   return (
-    <View className="w-full h-full p-4 bg-white flex flex-col justify-between">
+    <View
+      className="w-full h-full p-4 bg-white flex flex-col justify-between"
+      style={{
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
+      }}
+    >
       {/* Các thành phần khác */}
       <View className="w-full flex-grow flex flex-col">
         <View className="w-full items-center justify-end pb-10 mt-28">
-          <Text className="font-msemibold text-[36px] text-light-500">
+          <Text
+            className="font-msemibold text-[36px] text-light-500"
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            }}
+          >
             Đăng Nhập
           </Text>
         </View>
@@ -67,8 +82,27 @@ const SignIn = () => {
         <View className="w-full">
           <View className="flex flex-col gap-6">
             <View className="relative">
-              <View className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10">
-                <Text className="font-mregular text-[12px]">Username</Text>
+              <View
+                className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark"
+                      ? colors.dark[300]
+                      : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                  flex: 1,
+                }}
+              >
+                <Text
+                  className="font-mregular text-[12px]"
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
+                  }}
+                >
+                  Username
+                </Text>
                 <View className="ml-1 pb-1">
                   <PlusIcon />
                 </View>
@@ -83,8 +117,27 @@ const SignIn = () => {
             </View>
 
             <View className="relative">
-              <View className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10">
-                <Text className="font-mregular text-[12px]">Password</Text>
+              <View
+                className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark"
+                      ? colors.dark[300]
+                      : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                  flex: 1,
+                }}
+              >
+                <Text
+                  className="font-mregular text-[12px]"
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
+                  }}
+                >
+                  Password
+                </Text>
                 <View className="ml-1 pb-1">
                   <PlusIcon />
                 </View>
@@ -116,7 +169,17 @@ const SignIn = () => {
                 style={{ flexDirection: "row", alignItems: "center" }}
               >
                 <CheckBoxIcon checked={isRemember} />
-                <Text className="ml-2 text-light-500">Ghi nhớ mật khẩu</Text>
+                <Text
+                  className="ml-2 text-light-500"
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
+                  }}
+                >
+                  Ghi nhớ mật khẩu
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -128,8 +191,10 @@ const SignIn = () => {
               >
                 <Text
                   style={{
-                    textDecorationLine: isPressed ? "underline" : "none",
-                    color: isPressed ? "#007AFF" : "#92898A",
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
                   }}
                 >
                   Quên mật khẩu?
@@ -143,14 +208,32 @@ const SignIn = () => {
       {/* Phần này sẽ luôn nằm cách đáy 16px */}
       <View className="w-full mb-10">
         <View className="flex flex-row items-center justify-center">
-          <Text className="font-mbold text-light-500 text-[16px]">Hoặc</Text>
+          <Text
+            className="font-mbold text-light-500 text-[16px]"
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            }}
+          >
+            Hoặc
+          </Text>
         </View>
         <View className="mt-4 w-full flex flex-row items-center justify-center">
-          <Text className="font-mregular text-[16px] text-light-500">
+          <Text
+            className="font-mregular text-[16px] text-light-500"
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            }}
+          >
             Bạn chưa có tài khoản?{" "}
             <Text
               onPress={() => router.push("signup")}
               className="font-mbold text-light-500 text-[16px]"
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
             >
               Đăng Ký
             </Text>

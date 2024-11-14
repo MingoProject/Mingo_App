@@ -9,22 +9,7 @@ import {
   differenceInDays,
 } from "date-fns";
 import MyButton from "../share/MyButton";
-
-const ThreeDot = ({ size = 24, colorScheme }) => {
-  const iconColor = colorScheme === "dark" ? "#D9D9D9" : "black"; // Use colorScheme here
-
-  return (
-    <Svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size} // Use the size prop here
-      height={size} // Use the size prop here
-      viewBox="0 0 24 24"
-      style={{ fill: iconColor }} // Use theme-based colors
-    >
-      <Path d="M7 12a2 2 0 1 1-4 0a2 2 0 0 1 4 0m7 0a2 2 0 1 1-4 0a2 2 0 0 1 4 0m7 0a2 2 0 1 1-4 0a2 2 0 0 1 4 0" />
-    </Svg>
-  );
-};
+import { ThreeDot } from "../icons/Icons.js";
 
 const calculateTimeDifference = (date) => {
   const now = new Date();
@@ -44,7 +29,7 @@ const calculateTimeDifference = (date) => {
 const Card = ({ item, actionButton, isLoiMoi }) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
-  const backgroundButton = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const backgroundButton = colorScheme === "dark" ? "#ffffff" : "#000000";
   backgroundButton;
   return (
     <View className={`flex flex-row gap-2 w-full  `}>
@@ -80,7 +65,7 @@ const Card = ({ item, actionButton, isLoiMoi }) => {
                   {calculateTimeDifference(item.sendAt)}
                 </Text>
               ) : (
-                <ThreeDot size={28} color={iconColor} />
+                <ThreeDot size={20} color={iconColor} />
               )}
             </View>
           </View>
@@ -95,6 +80,7 @@ const Card = ({ item, actionButton, isLoiMoi }) => {
               isActive={"banbe"}
               paddingLeft={10}
               paddingRight={10}
+              backgroundColor={colors.primary[100]}
             />
           </View>
           <View>
@@ -104,8 +90,15 @@ const Card = ({ item, actionButton, isLoiMoi }) => {
               height={35}
               paddingLeft={10}
               paddingRight={10}
-              backgroundColor="#D9D9D9"
-              color="#92898A"
+              backgroundColor={
+                colorScheme === "dark" ? colors.dark[200] : colors.light[600]
+              }
+              titleStyle={{
+                color:
+                  colorScheme === "dark"
+                    ? colors.light[300] // Màu chữ khi dark mode và không active
+                    : colors.dark[700], // Màu chữ khi light mode và không active
+              }}
             />
           </View>
         </View>

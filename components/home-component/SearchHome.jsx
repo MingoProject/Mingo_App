@@ -258,8 +258,22 @@ const SearchHome = ({ onClose }) => {
     }
   };
   const renderHeader = () => (
-    <View className="w-full ">
-      <View className="flex flex-row gap-4 pb-2 ">
+    <View
+      className="w-full "
+      style={{
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
+      }}
+    >
+      <View
+        className="flex flex-row gap-4 pb-2 "
+        style={{
+          backgroundColor:
+            colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+          flex: 1,
+        }}
+      >
         <View>
           <MyButton
             title="Tất cả"
@@ -307,7 +321,14 @@ const SearchHome = ({ onClose }) => {
   );
 
   return (
-    <View className="w-full h-full flex flex-col p-4 bg-white">
+    <View
+      className="w-full h-full flex flex-col p-4 bg-white"
+      style={{
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
+      }}
+    >
       <View className="w-full  ">
         <View className="w-full flex flex-row items-center gap-4 ">
           <View>
@@ -325,7 +346,14 @@ const SearchHome = ({ onClose }) => {
       </View>
 
       {suggestions.length > 0 && (
-        <View className="mt-4 bg-gray-200 rounded-lg p-2">
+        <View
+          className="mt-4 bg-gray-200 rounded-lg p-2"
+          style={{
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[200] : colors.light[600], // Sử dụng giá trị màu từ file colors.js
+            flex: 1,
+          }}
+        >
           <FlatList
             showsVerticalScrollIndicator={false} // Ẩn scrollbar dọc
             showsHorizontalScrollIndicator={false} // Ẩn scrollbar ngang

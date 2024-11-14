@@ -1,13 +1,13 @@
 // Friend.js
 import React, { useState } from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, Button } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
 import MyButton from "../../components/share/MyButton"; // Import component MyButton
 import LoiMoi from "../../components/friend/LoiMoi";
 import BanBe from "../../components/friend/BanBe";
-import { set } from "date-fns";
+// import { set } from "date-fns";
 import SearchFriend from "../../components/friend/SearchFriend";
 
 const SearchIcon = ({ size = 24, color = "black", onPress }) => {
@@ -72,7 +72,14 @@ const Friend = () => {
         <SearchFriend onClose={handleOnClose} />
       ) : (
         <>
-          <View className={`w-full p-4 h-full `}>
+          <View
+            className={`w-full p-4 h-full `}
+            style={{
+              backgroundColor:
+                colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+              flex: 1,
+            }}
+          >
             <View className={`h-full w-full pb-2`}>
               <View
                 className={` flex flex-row justify-between items-center pb-4`}
@@ -106,14 +113,29 @@ const Friend = () => {
                     <MyButton
                       title="Lời mời"
                       onPress={() => setIsActiveTab("loimoi")}
-                      paddingLeft={20} // Padding
-                      paddingRight={20} // Padding
+                      paddingLeft={20}
+                      paddingRight={20}
                       width={100}
                       height={40}
-                      borderRadius={30} // Bo góc
-                      fontSize={16} // Kích thước font chữ
+                      borderRadius={30}
+                      fontSize={16}
                       isShadow={true}
                       isActive={isActiveTab === "loimoi"}
+                      backgroundColor={
+                        isActiveTab === "loimoi"
+                          ? colors.primary[100]
+                          : colorScheme === "dark"
+                          ? colors.dark[200]
+                          : colors.light[600]
+                      }
+                      titleStyle={{
+                        color:
+                          isActiveTab === "loimoi"
+                            ? colors.light[100] // Màu chữ khi active
+                            : colorScheme === "dark"
+                            ? colors.light[300] // Màu chữ khi dark mode và không active
+                            : colors.dark[700], // Màu chữ khi light mode và không active
+                      }}
                     />
                   </View>
                   <View>
@@ -128,6 +150,21 @@ const Friend = () => {
                       fontSize={16} // Kích thước font chữ
                       isShadow={true}
                       isActive={isActiveTab === "banbe"}
+                      backgroundColor={
+                        isActiveTab === "banbe"
+                          ? colors.primary[100]
+                          : colorScheme === "dark"
+                          ? colors.dark[200]
+                          : colors.light[600]
+                      }
+                      titleStyle={{
+                        color:
+                          isActiveTab === "banbe"
+                            ? colors.light[100] // Màu chữ khi active
+                            : colorScheme === "dark"
+                            ? colors.light[300] // Màu chữ khi dark mode và không active
+                            : colors.dark[700], // Màu chữ khi light mode và không active
+                      }}
                     />
                   </View>
                 </View>
