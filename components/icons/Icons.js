@@ -449,6 +449,20 @@ const MediaIcon = ({ size = 24, color = "currentColor" }) => (
   </Svg>
 );
 
+const ThreeDot = ({ size = 24, color = "currentColor" }) => {
+  return (
+    <Svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      style={{ fill: color }}
+    >
+      <Path d="M7 12a2 2 0 1 1-4 0a2 2 0 0 1 4 0m7 0a2 2 0 1 1-4 0a2 2 0 0 1 4 0m7 0a2 2 0 1 1-4 0a2 2 0 0 1 4 0" />
+    </Svg>
+  );
+};
+
 const ProfileIcon = ({ size = 24, color = "currentColor" }) => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
@@ -521,4 +535,5 @@ export {
   MediaIcon,
   ProfileIcon,
   KeyIcon,
+  ThreeDot,
 };

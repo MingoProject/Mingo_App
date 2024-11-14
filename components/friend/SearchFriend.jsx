@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import MyButton from "../share/MyButton";
 import Svg, { Path } from "react-native-svg";
-import { View, Text, FlatList, Image } from "react-native";
+import { View, Text, FlatList, Image, TextInput } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors";
 import MyInput from "../share/MyInput";
@@ -83,7 +83,14 @@ const SearchFriend = ({ onClose }) => {
   };
 
   return (
-    <View className={`w-full h-full flex flex-col p-4 bg-white`}>
+    <View
+      className={`w-full h-full flex flex-col p-4 bg-white`}
+      style={{
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
+      }}
+    >
       <View className={`w-full`}>
         <View className={`w-full flex flex-row items-center gap-4`}>
           <View>
@@ -107,8 +114,11 @@ const SearchFriend = ({ onClose }) => {
       <View className={`w-full pt-5`}>
         <View className={`w-full flex flex-row items-center justify-between`}>
           <View className={`flex-1 pr-4`}>
-            <MyInput
+            <TextInput
               placeholder={"Nhập số điện thoại"}
+              className={`ml-3 flex-1 h-[40px] text-[#D9D9D9] font-mregular px-4 rounded-full text-sm ${
+                colorScheme === "dark" ? "bg-dark-200" : "bg-light-600"
+              }`}
               value={phoneNumber}
               onChangeText={handleInputChange} // Cập nhật giá trị khi người dùng nhập
             />
@@ -154,21 +164,25 @@ const SearchFriend = ({ onClose }) => {
       )}
       {isClickSearch && noResults ? ( // Chỉ hiển thị nếu đã tìm kiếm và không có kết quả
         <View className={`mt-4 w-full `}>
-          <View>
+          <View className="flex items-center justify-center pt-10">
             <Image
-              source={require("../../assets/images/CannotFound.png")}
-              style={{
-                width: 350,
-                height: 342,
-                backgroundColor: "transparent",
-              }} // Đặt backgroundColor thành transparent
-              resizeMode="contain" // Hoặc "cover", tùy thuộc vào cách bạn muốn hình ảnh hiển thị
+              source={
+                colorScheme === "dark"
+                  ? require("../../assets/images/Screenshot 2024-09-25 225618.png")
+                  : require("../../assets/images/CannotFound.png")
+              }
+              style={{ width: 233, height: 235 }} // Tránh lỗi style
             />
           </View>
+
           <View
             className={`mt-4 w-full flex flex-row items-center justify-center `}
           >
-            <Text>
+            <Text
+              style={{
+                color: colorScheme === "dark" ? colors.dark[100] : "#92898A",
+              }}
+            >
               Không tìm thấy người dùng có số điện thoại{" "}
               <Text className={`font-msemibold `}>{phoneNumber}</Text>
             </Text>

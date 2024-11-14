@@ -1,6 +1,7 @@
 import React from "react";
 import { TextInput, View, StyleSheet } from "react-native";
-import { useTheme } from "../../context/ThemeContext"; // Sử dụng hook để lấy colorScheme
+import { useTheme } from "../../context/ThemeContext"; // Using hook to get colorScheme
+import { colors } from "../../styles/colors";
 
 const MyInput = ({
   value,
@@ -12,7 +13,7 @@ const MyInput = ({
   borderRadius = 20,
   borderWidth = 1,
   borderColor,
-  backgroundColor = "white",
+  backgroundColor,
   color = "black",
   padding = 10,
   fontSize = 14,
@@ -20,24 +21,26 @@ const MyInput = ({
   onSubmit,
   fontFamily,
 }) => {
-  const { colorScheme } = useTheme(); // Lấy colorScheme từ context
+  const { colorScheme } = useTheme(); // Get colorScheme from context
 
   const styles = StyleSheet.create({
     inputContainer: {
       width: width,
       height: height,
-      backgroundColor: backgroundColor,
+      backgroundColor:
+        backgroundColor ||
+        (colorScheme === "dark" ? colors.dark[300] : colors.light[700]), // Conditionally set background color
       borderRadius: borderRadius,
       borderWidth: borderWidth,
-      borderColor: borderColor || (colorScheme === "dark" ? "#444" : "#ccc"), // Màu viền mặc định
+      borderColor: borderColor || (colorScheme === "dark" ? "#444" : "#ccc"), // Default border color
       padding: padding,
     },
     input: {
-      color: color,
+      color: colorScheme === "dark" ? colors.dark[100] : colors.light[500],
       fontSize: fontSize,
       fontWeight: fontWeight,
       fontFamily: fontFamily,
-      flex: 1, // Để TextInput mở rộng hết chiều cao của container
+      flex: 1, // To make TextInput expand to the container height
     },
   });
 
@@ -47,7 +50,7 @@ const MyInput = ({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"} // Màu placeholder
+        placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"} // Placeholder color
         secureTextEntry={secureTextEntry}
         style={styles.input}
         onSubmitEditing={onSubmit}

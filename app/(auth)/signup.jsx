@@ -22,11 +22,26 @@ const PlusIcon = ({ color = "#dc0404", width = 8, height = 8 }) => (
 );
 
 const SignUp = () => {
+  const { colorScheme } = useTheme();
+  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const router = useRouter();
   return (
-    <View className="w-full h-full p-4 bg-white flex flex-col">
+    <View
+      className="w-full h-full p-4 bg-white flex flex-col"
+      style={{
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
+      }}
+    >
       <View className="w-full items-center justify-end pb-10 mt-8">
-        <Text className="font-msemibold text-[36px] text-light-500">
+        <Text
+          className="font-msemibold text-[36px] text-light-500"
+          style={{
+            color:
+              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+          }}
+        >
           Đăng Ký
         </Text>
       </View>
@@ -35,8 +50,25 @@ const SignUp = () => {
         <View className="flex flex-col gap-6">
           <View className="relative">
             {/* Nhãn (Label) */}
-            <View className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10">
-              <Text className="font-mregular text-[12px]">Họ và tên</Text>
+            <View
+              className="absolute left-3 -top-2  flex flex-row items-center px-1 z-10"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                flex: 1,
+              }}
+            >
+              <Text
+                className="font-mregular text-[12px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                Họ và tên
+              </Text>
               <View className="ml-1 pb-1">
                 <PlusIcon />
               </View>
@@ -53,8 +85,25 @@ const SignUp = () => {
           </View>
           <View className="relative">
             {/* Nhãn (Label) */}
-            <View className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10">
-              <Text className="font-mregular text-[12px]">Giới tính</Text>
+            <View
+              className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                flex: 1,
+              }}
+            >
+              <Text
+                className="font-mregular text-[12px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                Giới tính
+              </Text>
               <View className="ml-1 pb-1">
                 <PlusIcon />
               </View>
@@ -66,13 +115,35 @@ const SignUp = () => {
               borderRadius={8}
               height={56}
               fontSize={14}
-              style={{ zIndex: 1 }} // Đảm bảo input có z-index thấp hơn nhãn
+              style={{
+                zIndex: 1,
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                flex: 1,
+              }} // Đảm bảo input có z-index thấp hơn nhãn
             />
           </View>
           <View className="relative">
             {/* Nhãn (Label) */}
-            <View className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10">
-              <Text className="font-mregular text-[12px]">Số điện thoại</Text>
+            <View
+              className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                flex: 1,
+              }}
+            >
+              <Text
+                className="font-mregular text-[12px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                Số điện thoại
+              </Text>
               <View className="ml-1 pb-1">
                 <PlusIcon />
               </View>
@@ -89,8 +160,25 @@ const SignUp = () => {
           </View>
           <View className="relative">
             {/* Nhãn (Label) */}
-            <View className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10">
-              <Text className="font-mregular text-[12px]">Địa chỉ</Text>
+            <View
+              className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                flex: 1,
+              }}
+            >
+              <Text
+                className="font-mregular text-[12px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                Địa chỉ
+              </Text>
               <View className="ml-1 pb-1">
                 <PlusIcon />
               </View>
@@ -102,13 +190,35 @@ const SignUp = () => {
               borderRadius={8}
               height={56}
               fontSize={14}
-              style={{ zIndex: 1 }} // Đảm bảo input có z-index thấp hơn nhãn
+              backgroundColor={`backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                `}
+              style={{
+                zIndex: 1,
+              }} // Đảm bảo input có z-index thấp hơn nhãn
             />
           </View>
           <View className="relative">
             {/* Nhãn (Label) */}
-            <View className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10">
-              <Text className="font-mregular text-[12px]">Email</Text>
+            <View
+              className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                flex: 1,
+              }}
+            >
+              <Text
+                className="font-mregular text-[12px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                Email
+              </Text>
               <View className="ml-1 pb-1">
                 <PlusIcon />
               </View>
@@ -138,13 +248,31 @@ const SignUp = () => {
 
       <View className="w-full mt-8">
         <View className="flex flex-row items-center justify-center">
-          <Text className="font-mbold text-light-500 text-[16px]">Hoặc</Text>
+          <Text
+            className="font-mbold text-light-500 text-[16px]"
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            }}
+          >
+            Hoặc
+          </Text>
         </View>
         <View className="mt-4 w-full flex flex-row items-center justify-center">
-          <Text className="font-mregular text-[16px] text-light-500 ">
+          <Text
+            className="font-mregular text-[16px] text-light-500 "
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            }}
+          >
             Bạn đã có tài khoản?{" "}
             <Text
               onPress={() => router.push("signin")}
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
               className="font-mbold text-light-500 text-[16px] "
             >
               Đăng Nhập

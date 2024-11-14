@@ -39,7 +39,14 @@ const Notification = () => {
   };
 
   const renderHeader = () => (
-    <View className={`flex flex-row justify-between items-center pb-2`}>
+    <View
+      className={`flex flex-row justify-between items-center pb-2`}
+      style={{
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
+      }}
+    >
       <View>
         <Text
           style={{
@@ -59,7 +66,14 @@ const Notification = () => {
   );
 
   return (
-    <View className={`w-full p-4 pb-0 h-full `}>
+    <View
+      className={`w-full p-4 pb-0 h-full `}
+      style={{
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
+      }}
+    >
       <View className={` h-full w-full`}>
         {/* <View className={`flex flex-row justify-between items-center`}>
           <View>
