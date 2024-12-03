@@ -280,13 +280,40 @@ const SearchHome = ({ onClose }) => {
             onPress={() => setIsActiveTab("")}
             paddingLeft={20}
             paddingRight={20}
+            width={100}
+            height={40}
+            borderRadius={30}
+            fontSize={16}
+            isShadow={true}
+            isActive={isActiveTab === ""}
+            backgroundColor={
+              isActiveTab === ""
+                ? colors.primary[100]
+                : colorScheme === "dark"
+                ? colors.dark[200]
+                : colors.light[600]
+            }
+            titleStyle={{
+              color:
+                isActiveTab === ""
+                  ? colors.light[100] // Màu chữ khi active
+                  : colorScheme === "dark"
+                  ? colors.light[300] // Màu chữ khi dark mode và không active
+                  : colors.dark[700], // Màu chữ khi light mode và không active
+            }}
+          />
+          {/* <MyButton
+            title="Tất cả"
+            onPress={() => setIsActiveTab("")}
+            paddingLeft={20}
+            paddingRight={20}
             width={90}
             height={40}
             borderRadius={30}
             fontSize={16}
             isShadow
             isActive={isActiveTab === ""}
-          />
+          /> */}
         </View>
         <View>
           <MyButton
@@ -298,8 +325,23 @@ const SearchHome = ({ onClose }) => {
             height={40}
             borderRadius={30}
             fontSize={16}
-            isShadow
+            isShadow={true}
             isActive={isActiveTab === "user"}
+            backgroundColor={
+              isActiveTab === "user"
+                ? colors.primary[100]
+                : colorScheme === "dark"
+                ? colors.dark[200]
+                : colors.light[600]
+            }
+            titleStyle={{
+              color:
+                isActiveTab === "user"
+                  ? colors.light[100] // Màu chữ khi active
+                  : colorScheme === "dark"
+                  ? colors.light[300] // Màu chữ khi dark mode và không active
+                  : colors.dark[700], // Màu chữ khi light mode và không active
+            }}
           />
         </View>
         <View className="flex-1">
@@ -312,8 +354,23 @@ const SearchHome = ({ onClose }) => {
             height={40}
             borderRadius={30}
             fontSize={16}
-            isShadow
+            isShadow={true}
             isActive={isActiveTab === "post"}
+            backgroundColor={
+              isActiveTab === "post"
+                ? colors.primary[100]
+                : colorScheme === "dark"
+                ? colors.dark[200]
+                : colors.light[600]
+            }
+            titleStyle={{
+              color:
+                isActiveTab === "post"
+                  ? colors.light[100] // Màu chữ khi active
+                  : colorScheme === "dark"
+                  ? colors.light[300] // Màu chữ khi dark mode và không active
+                  : colors.dark[700], // Màu chữ khi light mode và không active
+            }}
           />
         </View>
       </View>
