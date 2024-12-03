@@ -111,7 +111,14 @@ const AddPost = ({ onClose }) => {
   const [value, onChangeText] = React.useState("Useless Multiline Placeholder");
 
   return (
-    <View className="w-full h-full p-4 bg-white">
+    <View
+      className="w-full h-full p-4 bg-white"
+      style={{
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
+      }}
+    >
       <View className={`flex flex-row justify-between items-center pb-4 `}>
         <View className="">
           <Text

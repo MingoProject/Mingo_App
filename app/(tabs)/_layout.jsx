@@ -7,12 +7,20 @@ import { ThemeProvider, useTheme } from "../../context/ThemeContext";
 
 const TabIcon = ({ SvgIcon, color, name, focused }) => {
   return (
-    <View style={{ alignItems: "center", justifyContent: "center", gap: 2 }}>
+    <View
+      className="justify-center items-center"
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        width: 80,
+      }}
+    >
       <SvgIcon color={color} focused={focused} />
       <Text
         style={{
           fontWeight: focused ? "600" : "400",
-          fontSize: 12,
+          fontSize: 12, // Đảm bảo kích thước chữ phù hợp
+          marginTop: 2, // Khoảng cách giữa icon và text
           color: color,
         }}
       >
@@ -86,10 +94,14 @@ const TabsLayout = () => {
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#FFAABB",
         tabBarInactiveTintColor: "#92898A",
+
         tabBarStyle: {
           backgroundColor: colorScheme === "dark" ? "#252525" : "#FFFFFF", // Chỉnh màu nền ở đây
-          borderTopWidth: 1, // Độ dày viền
+          borderTopWidth: 5, // Độ dày viền
           borderTopColor: "transparent", // Màu viền tùy theo chế độ
+        },
+        tabBarItemStyle: {
+          flex: 1, // Chia đều kích thước cho các tab
         },
       }}
     >

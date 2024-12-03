@@ -16,6 +16,7 @@ import { useTheme } from "../context/ThemeContext";
 import { colors } from "../styles/colors";
 // import * as ImagePicker from "expo-image-picker";
 import { Link, useRouter } from "expo-router";
+
 // import { format, isToday } from "date-fns";
 import {
   ArrowIcon,
@@ -42,6 +43,7 @@ const Chat = () => {
   //       console.log("Router or query is not defined yet.");
   //     }
   //   }, [router]);
+
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isModalVisible, setModalVisible] = useState(false);
@@ -192,7 +194,7 @@ const Chat = () => {
         flex: 1,
       }}
     >
-      <View className=" flex flex-row items-center justify-between px-3 pt-3 pb-1 shadow-md">
+      <View className=" flex flex-row items-center px-3 pt-3 pb-1 shadow-md">
         <View className="flex flex-row">
           <Link href="/message" className="pt-2 flex flex-row">
             <View className="pt-3">
@@ -218,21 +220,20 @@ const Chat = () => {
             </Text>
           </View>
         </View>
-
-        <View className="flex flex-row ml-auto">
-          <TouchableOpacity>
-            <CallIcon size={28} color={iconColor} />
-          </TouchableOpacity>
-          <TouchableOpacity className="ml-2">
-            <VideoCallIcon size={30} color={iconColor} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="ml-2"
-            onPress={() => setModalVisible(true)}
-          >
-            <InfoIcon size={30} color={iconColor} />
-          </TouchableOpacity>
-        </View>
+      </View>
+      <View className="absolute flex flex-row right-2 top-5">
+        <TouchableOpacity>
+          <CallIcon size={28} color={iconColor} />
+        </TouchableOpacity>
+        <TouchableOpacity className="ml-2">
+          <VideoCallIcon size={30} color={iconColor} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="ml-2"
+          onPress={() => setModalVisible(true)}
+        >
+          <InfoIcon size={30} color={iconColor} />
+        </TouchableOpacity>
       </View>
       <View
         style={{

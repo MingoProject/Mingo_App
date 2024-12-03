@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -5,10 +6,9 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
-import Svg, { Path, Rect } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
 import SearchHome from "../../components/home-component/SearchHome";
@@ -24,6 +24,7 @@ import {
   CommentIcon,
   ShareIcon,
 } from "../../components/icons/Icons";
+import { fetchPosts, getAllPost } from "@/lib/service/post.service";
 
 const fakeMediaData = [
   {
@@ -130,9 +131,9 @@ const fakePostData = [
     },
   },
   {
-    _id: "652c02b2fc13ae1c410000122", // Bài viết của user2
+    _id: "652c02b2fc13ae1c410000122",
     content: "Thử làm bún đậu tại nhà",
-    media: ["652c02b2fc13ae1c41000010"], // Sử dụng media 3
+    media: ["652c02b2fc13ae1c41000010"],
     url: "https://example.com/bun-dau-nha",
     createdAt: new Date("2024-08-02T09:00:00Z"),
     author: "1", // user2
@@ -151,6 +152,11 @@ const fakePostData = [
 ];
 
 const Home = () => {
+  const { colorScheme } = useTheme();
+  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const [isSelect, setIsSelect] = useState("home");
 
   const handleSearch = () => {
@@ -165,6 +171,40 @@ const Home = () => {
     setIsSelect("home");
   };
 
+  const fetchData = async () => {
+    try {
+      const data = await fetchPosts();
+      console.log("Fetched posts:", data);
+      setPosts(data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      setIsError(true);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Error fetching posts. Please try again later.</Text>
+      </View>
+    );
+  }
+
   const switchSreen = () => {
     switch (isSelect) {
       case "searchHome":
@@ -174,7 +214,7 @@ const Home = () => {
       default:
         return (
           <FlatList
-            data={fakePostData} // Dữ liệu chính sẽ được cung cấp ở đây
+            data={fakePostData}
             keyExtractor={(item) => item._id}
             style={{
               backgroundColor:
@@ -194,7 +234,7 @@ const Home = () => {
                       color:
                         colorScheme === "dark"
                           ? colors.dark[100]
-                          : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                          : colors.light[500],
                       flex: 1,
                     }}
                     className={`text-[24px] font-jsemibold `}
@@ -405,9 +445,6 @@ const Home = () => {
         );
     }
   };
-
-  const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
 
   return (
     // <FlatList
