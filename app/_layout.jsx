@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { hideAsync } from "expo-splash-screen";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
@@ -29,11 +30,13 @@ const RootLayout = () => {
 
   if (!fontsLoaded && !error) return null;
   return (
-    <ThemeProvider>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+        </Stack>
+      </ThemeProvider>
+    </AuthProvider>
   );
 };
 

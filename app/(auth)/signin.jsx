@@ -6,6 +6,9 @@ import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors";
 import MyButton from "../../components/share/MyButton";
 import { useRouter } from "expo-router";
+import { login, getMyProfile } from "@/lib/service/user.service";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "@/context/AuthContext";
 
 const PlusIcon = ({ color = "#dc0404", width = 8, height = 8 }) => (
   <Svg
@@ -50,11 +53,41 @@ const CheckBoxIcon = ({ checked, color = "#FFAABB", size = 24 }) => (
 );
 
 const SignIn = () => {
+  const { setProfile } = useAuth();
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
-  const [isRemember, setIsRemember] = useState(false); // Trạng thái cho hộp kiểm
+  const [isRemember, setIsRemember] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const userData = { phoneNumber, password };
+
+    try {
+      const user = await login(userData);
+
+      if (user) {
+        await AsyncStorage.setItem("token", user.token);
+        console.log(user.token);
+        const decodedToken = JSON.parse(atob(user.token.split(".")[1]));
+        const userId = decodedToken?.id;
+        console.log(userId);
+        await AsyncStorage.setItem("userId", userId);
+        const profileData = await getMyProfile(userId);
+        setProfile(profileData.userProfile);
+        router.push("home");
+      } else {
+        setErrorMessage("Đăng nhập không thành công!");
+      }
+    } catch (error) {
+      console.error("Lỗi đăng nhập:", error);
+      setErrorMessage(error.message || "Có lỗi xảy ra.");
+    }
+  };
 
   return (
     <View
@@ -101,14 +134,16 @@ const SignIn = () => {
                         : colors.light[500],
                   }}
                 >
-                  Username
+                  Phone Number
                 </Text>
                 <View className="ml-1 pb-1">
                   <PlusIcon />
                 </View>
               </View>
               <MyInput
-                placeholder="Username"
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                placeholder="Phone Number"
                 borderRadius={8}
                 height={56}
                 fontSize={14}
@@ -143,6 +178,8 @@ const SignIn = () => {
                 </View>
               </View>
               <MyInput
+                value={password}
+                onChangeText={setPassword}
                 placeholder="Password"
                 borderRadius={8}
                 height={56}
@@ -159,7 +196,7 @@ const SignIn = () => {
                 fontSize={16}
                 color="white"
                 fontFamily="Montserrat-Bold"
-                onPress={() => router.push("home")}
+                onPress={handleSubmit}
               />
             </View>
 

@@ -5,6 +5,7 @@ import React from "react";
 import Svg, { Path } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors";
+import { getTimestamp } from "@/lib/utils";
 
 const fakeUsers = [
   {
@@ -114,9 +115,7 @@ const PostCard = ({ item, isFirstPost }) => {
       <View className="bg-transparent mb-4">
         <View className="flex-row items-center mb-2">
           <Image
-            source={
-              fakeUsers.find((user) => user._id === item.author)?.userAvatar
-            }
+            source={{ uri: item.avatar }}
             className="w-10 h-10 rounded-full"
           />
           <View className="ml-4">
@@ -127,10 +126,10 @@ const PostCard = ({ item, isFirstPost }) => {
               }}
               className="font-msemibold text-[17px] "
             >
-              {fakeUsers.find((user) => user._id === item.author)?.userName}
+              {item.firstName} {item.lastName}
             </Text>
             <Text className="text-[#D9D9D9] font-mregular mt-1 text-sm">
-              {item.createdAt.toDateString()}
+              {getTimestamp(item.createAt)}
             </Text>
           </View>
         </View>
@@ -150,25 +149,23 @@ const PostCard = ({ item, isFirstPost }) => {
           <FlatList
             data={item.media}
             horizontal
-            keyExtractor={(media) => media}
-            renderItem={({ item: mediaId }) => {
-              const media = fakeMediaData.find((m) => m._id === mediaId);
-              if (!media) return null;
-              return (
-                <View className="mr-2">
-                  {media.type === "image" ? (
-                    <Image
-                      source={media.url}
-                      className="w-96 h-96 rounded-lg"
-                    />
-                  ) : (
-                    <View className="w-40 h-40 bg-gray-200 rounded-lg justify-center items-center">
-                      <Text>Video</Text>
-                    </View>
-                  )}
-                </View>
-              );
-            }}
+            keyExtractor={(media) => media._id} // Giả sử media có _id
+            renderItem={({ item: media }) => (
+              <View className="mr-2">
+                {media.type === "image" ? (
+                  <Image
+                    source={{ uri: media.url }}
+                    className="w-96 h-96 rounded-lg"
+                  />
+                ) : media.type === "video" ? (
+                  <View className="w-40 h-40 bg-gray-200 rounded-lg justify-center items-center">
+                    <Text>Video</Text>
+                  </View>
+                ) : (
+                  <Text>Unsupported Media</Text>
+                )}
+              </View>
+            )}
           />
         )}
 
