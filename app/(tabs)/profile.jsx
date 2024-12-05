@@ -14,10 +14,12 @@ import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
 import Setting from "../../components/forms/profile/Setting";
 import OpenAddPost from "@/components/forms/post/OpenAddPost";
+import ImageProfile from "@/components/forms/profile/ImageProfile";
 import AddPost from "@/components/home-component/AddPost";
 import { useAuth } from "@/context/AuthContext";
 import { getMyPosts } from "@/lib/service/user.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
+import VideoProfile from "@/components/forms/profile/VideoProfile";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
@@ -34,6 +36,7 @@ const Profile = () => {
       const userId = await AsyncStorage.getItem("userId");
       if (userId) {
         const data = await getMyPosts(userId);
+        console.log(data);
         setPosts(data.userPosts);
       }
     } catch (error) {
@@ -62,19 +65,6 @@ const Profile = () => {
     setIsSelect("profile");
   };
 
-  const picturesData = [
-    "https://i.pinimg.com/originals/d5/d7/a1/d5d7a147b4693d7c1d8951dee97d2b0e.jpg", // Mickey Mouse image
-    "https://i.pinimg.com/originals/ff/ec/81/ffec81a1a3ee6a557433bcc626e1dfc6.jpg", // Minnie Mouse image
-    "https://i.pinimg.com/originals/ce/16/72/ce16725b94d75e6434bbe3ac0f005814.jpg", // Donald Duck image
-    "https://i.pinimg.com/originals/70/3f/f8/703ff89cf6cad803da55cf5cc9ff42fd.jpg", // Goofy image
-    "https://i.pinimg.com/originals/8d/87/4b/8d874bdf21d904fece1f06a83bfb8160.jpg", // Pluto image
-    "https://i.pinimg.com/originals/22/ac/ca/22accaa81d76b8e6aace6c5562e00f8e.jpg", // Daisy Duck image
-    "https://i.pinimg.com/originals/9c/8d/c8/9c8dc806006f2da4154d68e85a9dd7cc.jpg", // Simba image
-    "https://i.pinimg.com/originals/1c/6d/80/1c6d806c88fe716566fb83713396b195.jpg", // Ariel image
-    "https://i.pinimg.com/originals/95/0d/0d/950d0d7b19b956a5052b7d2c362c9871.jpg", // Elsa image
-    "https://i.pinimg.com/originals/4c/94/8f/4c948f59bd94a59dd88cc4636a7016ad.jpg", // Woody image
-  ];
-
   const renderContent = () => {
     switch (activeTab) {
       case "posts":
@@ -95,45 +85,9 @@ const Profile = () => {
         );
 
       case "photos":
-        return (
-          <View className="flex flex-wrap mt-2">
-            <View className="flex flex-row flex-wrap">
-              {picturesData.map((item, index) => (
-                <View
-                  key={index}
-                  className="flex flex-col items-center mb-4"
-                  style={{ width: "33%" }}
-                >
-                  <Image
-                    source={{ uri: item }}
-                    className="h-[100px] w-[100px] rounded-md" // Đặt width bằng 100%
-                    resizeMode="cover"
-                  />
-                </View>
-              ))}
-            </View>
-          </View>
-        );
+        return <ImageProfile />;
       case "videos":
-        return (
-          <View className="flex flex-wrap mt-2">
-            <View className="flex flex-row flex-wrap">
-              {picturesData.map((item, index) => (
-                <View
-                  key={index}
-                  className="flex flex-col items-center mb-4"
-                  style={{ width: "33%" }}
-                >
-                  <Image
-                    source={{ uri: item }}
-                    className="h-[100px] w-[100px] rounded-md" // Đặt width bằng 100%
-                    resizeMode="cover"
-                  />
-                </View>
-              ))}
-            </View>
-          </View>
-        );
+        return <VideoProfile />;
       default:
         return null;
     }
