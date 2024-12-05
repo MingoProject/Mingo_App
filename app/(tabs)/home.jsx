@@ -15,7 +15,7 @@ import AddPost from "@/components/home-component/AddPost";
 import fetchDetailedPosts from "@/hooks/usePosts";
 import { fetchPosts } from "@/lib/service/post.service";
 import OpenAddPost from "@/components/forms/post/OpenAddPost";
-import PostCard from "@/components/home-component/PostCard";
+import PostCard from "@/components/card/post/PostCard";
 import { SearchIcon, MessageIcon } from "@/components/icons/Icons";
 
 const Home = () => {
@@ -42,6 +42,7 @@ const Home = () => {
   const fetchData = async () => {
     try {
       const data = await fetchPosts();
+      console.log(data);
       setPosts(data);
       setIsLoading(false);
     } catch (error) {
