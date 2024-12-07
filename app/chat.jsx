@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import { useTheme } from "../context/ThemeContext";
 import { colors } from "../styles/colors";
 // import * as ImagePicker from "expo-image-picker";
 import { Link, useRouter } from "expo-router";
+import { useChatContext } from "../context/ChatContext";
+import { getAllChat } from "../lib/service/message.service";
 
 // import { format, isToday } from "date-fns";
 import {
@@ -30,24 +32,21 @@ import {
   SendIcon,
 } from "../components/icons/Icons";
 import InfoChat from "../components/forms/chat/InfoChat";
+import { useAuth } from "../context/AuthContext";
 
-const Chat = () => {
-  //   const router = useRouter();
-
-  //   // Kiểm tra router và router.query
-  //   useEffect(() => {
-  //     if (router && router.query) {
-  //       const { userId } = router.query;
-  //       console.log("User ID:", userId);
-  //     } else {
-  //       console.log("Router or query is not defined yet.");
-  //     }
-  //   }, [router]);
-
+const Chat = (item) => {
+  // Destructure item from the props correctly
+  const { messages, setMessages } = useChatContext();
+  const { profile } = useAuth();
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isModalVisible, setModalVisible] = useState(false);
   const currentDate = new Date();
+
+  const id = item?.id; // Assuming `item` is an object that contains `id`
+  const avatarUrl = item?.avatarUrl
+    ? item.avatarUrl
+    : require("../assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg");
   const formatMessageTime = (messageDate) => {
     const isSameDay = currentDate.toDateString() === messageDate.toDateString();
     return messageDate.toLocaleTimeString([], {
@@ -55,135 +54,31 @@ const Chat = () => {
       minute: "2-digit",
     });
   };
+  console.log(id, "this is id");
 
-  const currentUser = {
-    userId: "652c02b2fc13ae1c41000002",
-    username: "john_doe",
-    fullname: "John Doe",
-    numberphone: "0123456789",
-    email: "john.doe@example.com",
-    birthday: new Date("1990-01-01"),
-    gender: "male",
-    password: "securepassword",
-    avatar: require("../assets/images/950d0d7b19b956a5052b7d2c362c9871.jpg"),
-    background: require("../assets/images/950d0d7b19b956a5052b7d2c362c9871.jpg"),
-    address: "123 Main Street, New York, NY",
-    job: "Software Engineer",
-    hobbies: ["coding", "reading", "travelling"],
-    bio: "ರ ‿ ರ.  A passionate developer who loves to build things.",
-    nickName: "Johnny",
-    friends: [
-      {
-        name: "Jane Smith",
-        avatar: require("../assets/images/950d0d7b19b956a5052b7d2c362c9871.jpg"),
-      },
-      {
-        name: "Alice Johnson",
-        avatar: require("../assets/images/950d0d7b19b956a5052b7d2c362c9871.jpg"),
-      },
-      {
-        name: "Bob Brown",
-        avatar: require("../assets/images/950d0d7b19b956a5052b7d2c362c9871.jpg"),
-      },
-    ],
-    bestFriends: [
-      { name: "Jane Smith", avatar: "https://example.com/avatar/jane.jpg" },
-      { name: "Bob Brown", avatar: "https://example.com/avatar/bob.jpg" },
-    ],
-    following: [
-      { name: "Chris Evans", avatar: "https://example.com/avatar/chris.jpg" },
-      { name: "Emily Davis", avatar: "https://example.com/avatar/emily.jpg" },
-    ],
-    block: [
-      { name: "Tom Hanks", avatar: "https://example.com/avatar/tom.jpg" },
-    ],
-    isAdmin: false,
-  };
-  const fakeData = {
-    id: 1,
-    userId: "other_user_id_1",
-    name: "Nguyễn Văn A",
-    avatar:
-      "https://i.pinimg.com/originals/4c/94/8f/4c948f59bd94a59dd88cc4636a7016ad.jpg",
-    messages: [
-      {
-        id: 1,
-        senderId: "other_user_id_1",
-        receiverId: currentUser.userId,
-        time: "2024-10-13T10:00:00Z",
-        content: "Chào bạn! Bạn có rảnh không?",
-      },
-      {
-        id: 2,
-        senderId: currentUser.userId,
-        receiverId: "other_user_id_1",
-        time: "2024-10-13T10:05:00Z",
-        content: "Có, mình có thể nói chuyện!",
-      },
-      {
-        id: 3,
-        senderId: "other_user_id_1",
-        receiverId: currentUser.userId,
-        time: "2024-10-13T10:10:00Z",
-        content: "Tốt quá! Mình muốn hỏi bạn một số câu hỏi về dự án.",
-      },
-      {
-        id: 4,
-        senderId: currentUser.userId,
-        receiverId: "other_user_id_1",
-        time: "2024-10-13T10:12:00Z",
-        content: "Chắc chắn rồi! Bạn có thể hỏi ngay.",
-      },
-      {
-        id: 5,
-        senderId: "other_user_id_1",
-        receiverId: currentUser.userId,
-        time: "2024-10-13T10:15:00Z",
-        content: "Mình muốn biết về công nghệ mà bạn đang sử dụng.",
-      },
-      {
-        id: 6,
-        senderId: currentUser.userId,
-        receiverId: "other_user_id_1",
-        time: "2024-10-13T10:20:00Z",
-        content: "Mình đang sử dụng React Native để phát triển ứng dụng.",
-      },
-      {
-        id: 7,
-        senderId: "other_user_id_1",
-        receiverId: currentUser.userId,
-        time: "2024-10-13T10:25:00Z",
-        content: "Nghe có vẻ thú vị! Bạn có gặp khó khăn gì không?",
-      },
-      {
-        id: 8,
-        senderId: currentUser.userId,
-        receiverId: "other_user_id_1",
-        time: "2024-10-14T10:30:00Z",
-        content: "Có vài vấn đề nhỏ, nhưng mình đã tìm ra cách giải quyết.",
-      },
-    ],
-  };
+  useEffect(() => {
+    let isMounted = true;
 
-  // const pickImage = async () => {
-  //   const permissionResult =
-  //     await ImagePicker.requestMediaLibraryPermissionsAsync();
-  //   if (permissionResult.granted === false) {
-  //     alert("Permission to access camera roll is required!");
-  //     return;
-  //   }
-  //   const result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //   });
+    const myChat = async () => {
+      try {
+        const data = await getAllChat(id); // API call with the correct `id`
+        if (isMounted && data.success) {
+          setMessages(data.messages); // Update the state with the messages
+        }
+      } catch (error) {
+        console.error("Error loading chat:", error);
+      }
+    };
 
-  //   // Kiểm tra xem người dùng đã chọn hình ảnh chưa
-  //   if (!result.canceled) {
-  //     setSelectedImage(result.assets[0].uri); // Lưu đường dẫn hình ảnh đã chọn
-  //   }
-  // };
+    if (id) {
+      // Make sure id is available before making the API call
+      myChat();
+    }
+
+    return () => {
+      isMounted = false; // Cleanup when component unmounts
+    };
+  }, [id, setMessages]); // Add id and setMessages as dependencies
 
   return (
     <View
@@ -205,8 +100,8 @@ const Chat = () => {
           </Link>
           <View className="flex-row items-center pb-2">
             <Image
-              source={{ uri: fakeData.avatar }}
-              className="w-12 h-12 rounded-full mr-2"
+              source={avatarUrl}
+              style={{ width: 70, height: 70, borderRadius: 50 }}
             />
             <Text
               style={{
@@ -216,7 +111,7 @@ const Chat = () => {
               }}
               className={`text-[16px] font-mmedium `}
             >
-              {fakeData.name}
+              {item?.userName}
             </Text>
           </View>
         </View>
@@ -251,15 +146,15 @@ const Chat = () => {
             colorScheme === "dark" ? colors.dark[300] : colors.light[700],
         }}
       >
-        {fakeData.messages.map((message, index) => {
-          const isCurrentUser = message.senderId === currentUser.userId;
+        {messages.map((message, index) => {
+          const isCurrentUser = message.createBy === profile._id;
           const isNextMessageFromSameUser =
-            index < fakeData.messages.length - 1 &&
-            fakeData.messages[index + 1].senderId === message.senderId;
+            index < messages.length - 1 &&
+            messages[index + 1].createBy === message.createBy;
 
-          const currentMessageDate = new Date(message.time);
+          const currentMessageDate = new Date(message.createAt);
           const previousMessageDate =
-            index > 0 ? new Date(fakeData.messages[index - 1].time) : null;
+            index > 0 ? new Date(messages[index - 1].createAt) : null;
 
           // Kiểm tra xem tin nhắn hiện tại có phải là tin nhắn đầu tiên của ngày hay không
           const isFirstMessageOfDay =
@@ -288,14 +183,18 @@ const Chat = () => {
               <View className="flex flex-row">
                 {!isCurrentUser && (
                   <Image
-                    source={{ uri: fakeData.avatar }}
-                    className="w-8 h-8 rounded-full mr-2"
+                    source={
+                      item.avatarUrl
+                        ? { uri: item.avatarUrl }
+                        : require("../assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg")
+                    }
+                    style={{ width: 70, height: 70, borderRadius: 50 }}
                   />
                 )}
                 {isCurrentUser && (
                   <View className="justify-end items-end">
                     <Text className="text-xs text-light-600 mb-1 mr-1">
-                      {formatMessageTime(new Date(message.time))}
+                      {formatMessageTime(new Date(message.createAt))}
                     </Text>
                   </View>
                 )}
@@ -331,13 +230,17 @@ const Chat = () => {
                         : "text-light-500"
                     }`}
                   >
-                    {message.content}
+                    {message.text?.map((text, index) => (
+                      <Text key={index} className="text-sm">
+                        {text}
+                      </Text>
+                    ))}
                   </Text>
                 </View>
                 {!isCurrentUser && (
                   <View className=" justify-end items-end mb-1 ml-1">
                     <Text className="text-xs text-light-600">
-                      {formatMessageTime(new Date(message.time))}
+                      {formatMessageTime(new Date(message.createAt))}
                     </Text>
                   </View>
                 )}
@@ -353,7 +256,7 @@ const Chat = () => {
         visible={isModalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <InfoChat fakeData={fakeData} setModalVisible={setModalVisible} />
+        <InfoChat item={item} setModalVisible={setModalVisible} />
       </Modal>
 
       <KeyboardAvoidingView

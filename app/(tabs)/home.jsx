@@ -42,7 +42,6 @@ const Home = () => {
   const fetchData = async () => {
     try {
       const data = await fetchPosts();
-      console.log(data);
       setPosts(data);
       setIsLoading(false);
     } catch (error) {
@@ -55,7 +54,6 @@ const Home = () => {
   const fetchPostsData = async () => {
     try {
       const data = await fetchDetailedPosts(posts);
-      console.log("Fetched posts:", data);
       setPostsData(data);
       setIsLoading(false);
     } catch (error) {
