@@ -2,13 +2,12 @@ import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import { PostCreateDTO, PostResponseDTO } from "@/dtos/PostDTO";
 import { UserResponseDTO } from "@/dtos/UserDTO";
-import axios from "axios";
 
 const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
 export async function fetchPosts() {
   try {
-    const response = await fetch(`http://192.168.2.4:3000/api/post/all`);
+    const response = await fetch(`${BASE_URL}/post/all`);
     if (!response.ok) {
       throw new Error("Error fetching posts");
     }

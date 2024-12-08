@@ -36,7 +36,6 @@ const Profile = () => {
       const userId = await AsyncStorage.getItem("userId");
       if (userId) {
         const data = await getMyPosts(userId);
-        console.log(data);
         setPosts(data.userPosts);
       }
     } catch (error) {

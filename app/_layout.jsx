@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { hideAsync } from "expo-splash-screen";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { ChatProvider } from "@/context/ChatContext";
 
 SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
@@ -32,9 +33,11 @@ const RootLayout = () => {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-        </Stack>
+        <ChatProvider>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+          </Stack>
+        </ChatProvider>
       </ThemeProvider>
     </AuthProvider>
   );
