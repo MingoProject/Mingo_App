@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -21,37 +21,94 @@ import {
 } from "../../icons/Icons"; // Đảm bảo đường dẫn đúng
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
-import { ChatProvider } from "../../../context/ChatContext";
+import { useLocalSearchParams } from "expo-router";
+import { FileContent, ItemChat } from "@/dtos/MessageDTO";
+import {
+  getImageList,
+  getOrtherList,
+  getVideoList,
+} from "@/lib/service/message.service";
 
-const picturesData = [
-  "https://i.pinimg.com/originals/d5/d7/a1/d5d7a147b4693d7c1d8951dee97d2b0e.jpg",
-  "https://i.pinimg.com/originals/ff/ec/81/ffec81a1a3ee6a557433bcc626e1dfc6.jpg",
-  "https://i.pinimg.com/originals/ce/16/72/ce16725b94d75e6434bbe3ac0f005814.jpg",
-  "https://i.pinimg.com/originals/70/3f/f8/703ff89cf6cad803da55cf5cc9ff42fd.jpg",
-  "https://i.pinimg.com/originals/8d/87/4b/8d874bdf21d904fece1f06a83bfb8160.jpg",
-  "https://i.pinimg.com/originals/22/ac/ca/22accaa81d76b8e6aace6c5562e00f8e.jpg",
-  "https://i.pinimg.com/originals/9c/8d/c8/9c8dc806006f2da4154d68e85a9dd7cc.jpg",
-  "https://i.pinimg.com/originals/1c/6d/80/1c6d806c88fe716566fb83713396b195.jpg",
-  "https://i.pinimg.com/originals/95/0d/0d/950d0d7b19b956a5052b7d2c362c9871.jpg",
-  "https://i.pinimg.com/originals/4c/94/8f/4c948f59bd94a59dd88cc4636a7016ad.jpg",
-];
+const getAllImagesFromChat = (chatMessages: FileContent[]) => {
+  return chatMessages.filter((message) => message.type === "Image");
+};
 
-const filesData = [
-  { id: "1", name: "Tệp 1.pdf", uri: "https://example.com/file1.pdf" },
-  { id: "2", name: "Tệp 2.docx", uri: "https://example.com/file2.docx" },
-  { id: "3", name: "Tệp 3.xlsx", uri: "https://example.com/file3.xlsx" },
-];
+const getAllVideosFromChat = (chatMessages: FileContent[]) => {
+  return chatMessages.filter((message) => message.type === "Video");
+};
 
-const InfoChat = ({ item, setModalVisible }) => {
+const InfoChat = ({
+  item,
+  setModalVisible,
+}: {
+  item: ItemChat;
+  setModalVisible: (visible: boolean) => void;
+}) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [notification, setNotification] = useState(true);
   const [showAllImages, setShowAllImages] = useState(false);
   const [showAllFiles, setShowAllFiles] = useState(false);
-
   const toggleNotification = () => {
     setNotification((prev) => !prev);
   };
+
+  const [messages, setMessages] = useState<FileContent[]>([]);
+  const [videoList, setVideoList] = useState<FileContent[]>([]);
+  const [files, setFiles] = useState<FileContent[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchFiles = async () => {
+      try {
+        const data = await getOrtherList(item.id.toString()); // Gọi API
+        if (isMounted && data) {
+          setFiles(data); // Lưu dữ liệu file từ API
+        }
+      } catch (error) {
+        console.error("Error loading files:", error);
+      }
+    };
+
+    fetchFiles();
+
+    return () => {
+      isMounted = false; // Cleanup khi component unmount
+    };
+  }, [item.id.toString()]);
+  useEffect(() => {
+    let isMounted = true;
+
+    const myChat = async () => {
+      try {
+        const data = await getImageList(item.id.toString()); // Gọi API
+        if (isMounted && data) {
+          setMessages(data); // Lưu trực tiếp `messages` từ API
+        }
+      } catch (error) {
+        console.error("Error loading chat:", error);
+      }
+
+      try {
+        const data = await getVideoList(item.id.toString()); // Gọi API
+        if (isMounted && data) {
+          setVideoList(data); // Lưu trực tiếp `messages` từ API
+        }
+      } catch (error) {
+        console.error("Error loading chat:", error);
+      }
+    };
+
+    myChat();
+
+    return () => {
+      isMounted = false; // Cleanup khi component unmount
+    };
+  }, [item.id.toString()]);
+
+  const imagesInChat = getAllImagesFromChat(messages);
+  const videosInChat = getAllVideosFromChat(videoList);
 
   return (
     <>
@@ -196,10 +253,10 @@ const InfoChat = ({ item, setModalVisible }) => {
         </View>
 
         <View className="flex flex-row mt-3 mx-10">
-          {picturesData.slice(0, 4).map((url, index) => (
+          {imagesInChat.slice(0, 4).map((url, index) => (
             <Image
               key={index}
-              source={{ uri: url }}
+              source={{ uri: url.url }}
               className="w-20 h-20 rounded-md mr-2"
             />
           ))}
@@ -227,7 +284,7 @@ const InfoChat = ({ item, setModalVisible }) => {
           </View>
         </View>
         <View className="flex flex-1 mt-3 max-h-24">
-          {filesData.slice(0, 2).map((file, index) => (
+          {files.slice(0, 2).map((file, index) => (
             <View
               className={`flex-1 flex-row h-[32px] mb-2 items-center font-mregular px-4 mx-8 rounded-lg text-sm border border-[#D9D9D9] ${
                 colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
@@ -250,7 +307,7 @@ const InfoChat = ({ item, setModalVisible }) => {
                 }}
                 className={`text-[14px] ml-1 font-mmedium `}
               >
-                {file.name}
+                {file.fileName}
               </Text>
             </View>
           ))}
@@ -347,12 +404,12 @@ const InfoChat = ({ item, setModalVisible }) => {
               </View>
             </View>
             <FlatList
-              data={picturesData}
+              data={imagesInChat}
               className="mt-5"
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
                 <Image
-                  source={{ uri: item }}
+                  source={{ uri: item.url }}
                   className="w-28 h-28 rounded-md mb-2" // Kích thước hình ảnh
                 />
               )}
@@ -420,7 +477,7 @@ const InfoChat = ({ item, setModalVisible }) => {
             }}
           >
             <FlatList
-              data={filesData}
+              data={files}
               className="h-[700px]"
               renderItem={({ item }) => (
                 <View
@@ -446,11 +503,11 @@ const InfoChat = ({ item, setModalVisible }) => {
                     }}
                     className={`text-[14px] ml-1 font-mmedium `}
                   >
-                    {item.name}
+                    {item.fileName}
                   </Text>
                 </View>
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.publicId}
             />
             <View className="justify-end mt-auto ">
               <TouchableOpacity
