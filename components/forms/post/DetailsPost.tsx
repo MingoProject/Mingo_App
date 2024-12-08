@@ -20,21 +20,23 @@ import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createComment } from "@/lib/service/comment.service";
 import { useAuth } from "@/context/AuthContext";
+import PostAction from "./PostAction";
+import CommentCard from "@/components/card/comment/CommentCard";
 
-const DetailsPost = ({ setModalVisible, post }: any) => {
+const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [comment, setComment] = useState("");
-  const [getComments, setGetComments] = useState<any[]>([]);
   const [commentsData, setCommentsData] = useState<any[]>([]);
   const { profile } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
     const getComments = async () => {
-      const detailedComments = await getCommentsByPostId(post._id);
+      const comments = await getCommentsByPostId(post._id);
+      const detailedComments = await fetchDetailedComments(comments);
       if (isMounted) {
-        setGetComments(detailedComments);
+        setCommentsData(detailedComments);
       }
     };
 
@@ -43,24 +45,7 @@ const DetailsPost = ({ setModalVisible, post }: any) => {
     return () => {
       isMounted = false;
     };
-  }, [post._id]);
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchCommentsData = async () => {
-      const detailedComments = await fetchDetailedComments(getComments);
-      if (isMounted) {
-        setCommentsData(detailedComments);
-      }
-    };
-
-    if (getComments.length > 0) {
-      fetchCommentsData();
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [getComments]);
+  }, []);
 
   const handleSendComment = async () => {
     const token: string | null = await AsyncStorage.getItem("token");
@@ -202,80 +187,17 @@ const DetailsPost = ({ setModalVisible, post }: any) => {
           />
         )}
 
-        {/* Actions */}
-        <View className="flex-row mt-2 justify-around">
-          <TouchableOpacity className="flex-row items-center mr-4">
-            <LikeIcon size={25} color={iconColor} />
-            <Text
-              className="ml-1 text-gray-700"
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-              }}
-            >
-              {post.likes.length} Likes
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="flex-row items-center mr-4">
-            <CommentIcon size={25} color={iconColor} />
-            <Text
-              className="ml-1 text-gray-700"
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-              }}
-            >
-              {post.comments.length} Comments
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="flex-row items-center">
-            <ShareIcon size={25} color={iconColor} />
-            <Text
-              className="ml-1 text-gray-700"
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-              }}
-            >
-              {post.shares.length} Shares
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <PostAction
+          post={post}
+          isModalVisible={isModalVisible}
+          setModalVisible={setModalVisible}
+        />
 
         {commentsData.length > 0 && (
           <View className="mt-2">
             {commentsData.map((comment) => (
-              <View key={comment._id} className="flex-row items-center my-2">
-                <Image
-                  source={{ uri: comment.userId.avatar }}
-                  className="w-8 h-8 rounded-full"
-                />
-                <View className="ml-3">
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === "dark"
-                          ? colors.dark[100]
-                          : colors.light[500],
-                    }}
-                    className="font-msemibold text-sm"
-                  >
-                    {comment.userId.firstName} {comment.userId.lastName}
-                  </Text>
-                  <Text
-                    className="text-sm mt-1"
-                    style={{
-                      color:
-                        colorScheme === "dark"
-                          ? colors.dark[100]
-                          : colors.light[500],
-                    }}
-                  >
-                    {comment.content}
-                  </Text>
-                </View>
+              <View key={comment._id}>
+                <CommentCard comment={comment} postId={post._id} />
               </View>
             ))}
           </View>

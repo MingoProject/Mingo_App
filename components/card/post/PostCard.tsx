@@ -1,17 +1,9 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  Modal,
-} from "react-native";
+import { View, Text, FlatList, Image, Modal } from "react-native";
 import Video from "react-native-video";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { getTimestamp } from "@/lib/utils";
-import { LikeIcon, CommentIcon, ShareIcon } from "@/components/icons/Icons";
 import DetailsPost from "@/components/forms/post/DetailsPost";
 import PostAction from "@/components/forms/post/PostAction";
 
@@ -81,50 +73,6 @@ const PostCard = ({ item }: any) => {
           )}
         />
       )}
-
-      {/* <View className="flex-row mt-2 justify-around">
-        <TouchableOpacity className="flex-row items-center mr-4">
-          <LikeIcon size={25} color={iconColor} />
-          <Text
-            className="ml-1 text-gray-700"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            {item.likes.length} Likes
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          className="flex-row items-center mr-4"
-        >
-          <CommentIcon size={25} color={iconColor} />
-          <Text
-            className="ml-1 text-gray-700"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            {item.comments.length} Comments
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity className="flex-row items-center">
-          <ShareIcon size={25} color={iconColor} />
-          <Text
-            className="ml-1 text-gray-700"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            {item.shares.length} Shares
-          </Text>
-        </TouchableOpacity>
-      </View> */}
       <PostAction
         post={item}
         isModalVisible={isModalVisible}

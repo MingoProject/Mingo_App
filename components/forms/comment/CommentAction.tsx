@@ -11,12 +11,17 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  dislikeComment,
+  getLikesByCommentId,
+  likeComment,
+} from "@/lib/service/comment.service";
 
-const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
+const CommentAction = ({ comment, postId, mediaId }: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isLiked, setIsLiked] = useState(false);
-  const [numberOfLikes, setNumberOfLikes] = useState(post.likes.length);
+  const [numberOfLikes, setNumberOfLikes] = useState(comment.likes.length);
   const [likes, setLikes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -25,7 +30,7 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
   useEffect(() => {
     const fetchLikes = async () => {
       try {
-        const data = await getLikesByPostId(post._id);
+        const data = await getLikesByCommentId(comment._id);
         setLikes(data);
         setIsLoading(false);
       } catch (error) {
@@ -35,7 +40,7 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
       }
     };
     fetchLikes();
-  }, []);
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -43,7 +48,9 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
       const userId: string | null = await AsyncStorage.getItem("userId");
       if (userId) {
         try {
-          const isUserLiked = post.likes.some((like: any) => like === userId);
+          const isUserLiked = comment.likes.some(
+            (like: any) => like._id === userId
+          );
           if (isMounted) {
             setIsLiked(isUserLiked);
           }
@@ -58,21 +65,23 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
     };
   }, []);
 
-  const handleLikePost = async () => {
+  const handleLikeComment = async () => {
     try {
       const token: string | null = await AsyncStorage.getItem("token");
       if (token) {
-        await likePost(post._id, token);
-        if (profile._id !== post.author._id) {
+        await likeComment(comment._id, token);
+        setIsLiked(!isLiked);
+        if (profile._id !== comment.userId._id) {
           const params = {
             senderId: profile._id,
-            receiverId: post.author._id,
-            type: "like",
-            postId: post._id,
+            receiverId: comment.userId._id,
+            type: "like_comment",
+            commentId: comment._id,
+            ...(postId && { postId }),
+            ...(mediaId && { mediaId }),
           };
           await createNotification(params, token);
         }
-        console.log("da like");
       } else {
         console.warn("User is not authenticated");
       }
@@ -81,17 +90,18 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
     }
   };
 
-  const handleDislikePost = async () => {
+  const handleDislikeComment = async () => {
     try {
       const token: string | null = await AsyncStorage.getItem("token");
       if (token) {
-        await dislikePost(post._id, token);
-        console.log("da dislike");
+        await dislikeComment(comment._id, token);
+
+        setIsLiked(!isLiked);
       } else {
         console.warn("User is not authenticated");
       }
     } catch (error) {
-      console.error("Error in handleDislikePost:", error);
+      console.error("Error in handleLikePost:", error);
     }
   };
 
@@ -99,11 +109,11 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
     if (isLiked) {
       setIsLiked(false);
       setNumberOfLikes((prev: any) => prev - 1);
-      await handleDislikePost();
+      await handleDislikeComment();
     } else {
       setIsLiked(true);
       setNumberOfLikes((prev: any) => prev + 1);
-      await handleLikePost();
+      await handleLikeComment();
     }
   };
 
@@ -125,14 +135,10 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
   }
 
   return (
-    <View className="flex-row mt-2 justify-around">
-      <TouchableOpacity
-        className="flex-row items-center mr-4"
-        onPress={toggleLike}
-      >
-        <LikeIcon size={25} color={isLiked ? colors.primary[100] : iconColor} />
+    <View className="flex-row">
+      <TouchableOpacity onPress={toggleLike}>
         <Text
-          className="ml-1"
+          className="ml-2 text-xs"
           style={{
             color: isLiked
               ? colors.primary[100]
@@ -141,40 +147,36 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
               : colors.light[500],
           }}
         >
-          {isLiked ? "Liked" : "Like"} {numberOfLikes}
+          Like
         </Text>
       </TouchableOpacity>
-
-      <TouchableOpacity
-        className="flex-row items-center mr-4"
-        onPress={!isModalVisible ? () => setModalVisible(true) : undefined}
-      >
-        <CommentIcon size={25} color={iconColor} />
+      <TouchableOpacity>
         <Text
-          className="ml-1 text-gray-700"
+          className="ml-1 text-xs"
+          style={{
+            color: isLiked
+              ? colors.primary[100]
+              : colorScheme === "dark"
+              ? colors.dark[100]
+              : colors.light[500],
+          }}
+        >
+          {numberOfLikes}
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity>
+        <Text
+          className="ml-2 text-xs"
           style={{
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
         >
-          {post.comments.length} Comments
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity className="flex-row items-center">
-        <ShareIcon size={25} color={iconColor} />
-        <Text
-          className="ml-1 text-gray-700"
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-        >
-          {post.shares.length} Shares
+          Reply
         </Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default PostAction;
+export default CommentAction;
