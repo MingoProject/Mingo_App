@@ -1,14 +1,25 @@
-import React from "react";
-import { View, Text, FlatList, Image, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import Video from "react-native-video";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { getTimestamp } from "@/lib/utils";
 import { LikeIcon, CommentIcon, ShareIcon } from "@/components/icons/Icons";
+import DetailsPost from "@/components/forms/post/DetailsPost";
+import PostAction from "@/components/forms/post/PostAction";
 
 const PostCard = ({ item }: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const [isModalVisible, setModalVisible] = useState(false);
+
   return (
     <View className="p-4 bg-transparent mb-4">
       <View className="flex-row items-center mb-2">
@@ -71,7 +82,7 @@ const PostCard = ({ item }: any) => {
         />
       )}
 
-      <View className="flex-row mt-2 justify-around">
+      {/* <View className="flex-row mt-2 justify-around">
         <TouchableOpacity className="flex-row items-center mr-4">
           <LikeIcon size={25} color={iconColor} />
           <Text
@@ -85,7 +96,10 @@ const PostCard = ({ item }: any) => {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center mr-4">
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          className="flex-row items-center mr-4"
+        >
           <CommentIcon size={25} color={iconColor} />
           <Text
             className="ml-1 text-gray-700"
@@ -110,7 +124,20 @@ const PostCard = ({ item }: any) => {
             {item.shares.length} Shares
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
+      <PostAction
+        post={item}
+        isModalVisible={isModalVisible}
+        setModalVisible={setModalVisible}
+      />
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={isModalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <DetailsPost setModalVisible={setModalVisible} post={item} />
+      </Modal>
       <View
         style={{
           height: 1,

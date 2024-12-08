@@ -21,7 +21,6 @@ import { SearchIcon, MessageIcon } from "@/components/icons/Icons";
 const Home = () => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
-  const [posts, setPosts] = useState([]);
   const [postsData, setPostsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -42,19 +41,8 @@ const Home = () => {
   const fetchData = async () => {
     try {
       const data = await fetchPosts();
-      setPosts(data);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-      setIsError(true);
-      setIsLoading(false);
-    }
-  };
-
-  const fetchPostsData = async () => {
-    try {
-      const data = await fetchDetailedPosts(posts);
-      setPostsData(data);
+      const postsData = await fetchDetailedPosts(data);
+      setPostsData(postsData);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -65,7 +53,6 @@ const Home = () => {
 
   useEffect(() => {
     fetchData();
-    fetchPostsData();
   }, []);
 
   if (isLoading) {
