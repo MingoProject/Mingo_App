@@ -15,7 +15,6 @@ import { getListChat } from "../lib/service/message.service";
 import { getListGroupChat } from "../lib/service/message.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ChatProvider } from "../context/ChatContext";
-import Chat from "./chat";
 
 const Message = () => {
   const { colorScheme } = useTheme();
@@ -52,7 +51,8 @@ const Message = () => {
     setSelectedItem(item);
 
     // Điều hướng đến trang chat với thông tin người dùng được chọn
-    router.push(`/chat?boxId=${item.id}`); // Đường dẫn tới chat.jsx
+    // router.push(`/chat?boxId=${item.id}`); // Đường dẫn tới chat.jsx
+    router.push(`/chats/${item.id}`);
   };
 
   const renderMessageItem = (item) => {
@@ -169,9 +169,6 @@ const Message = () => {
       <View className="mt-4">
         {filteredChat.map((item) => renderMessageItem(item))}
       </View>
-      {/* {selectedItem && (
-        <Chat item={selectedItem} /> // Truyền userId vào component Chat
-      )} */}
     </ScrollView>
   );
 };
