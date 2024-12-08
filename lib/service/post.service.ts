@@ -15,8 +15,6 @@ export const getAllPost = async (goOn: () => void) => {
       process.env.EXPO_PUBLIC_BASE_URL + "/post/all"
     );
 
-    console.log("Posts data: ", response.data); // Debug log danh sách bài viết.
-
     if (!response.data || response.data.length === 0) {
       goOn(); // Thực hiện hành động khi không có dữ liệu.
     }
@@ -31,7 +29,7 @@ export const getAllPost = async (goOn: () => void) => {
 
 export async function fetchPosts() {
   try {
-    const response = await fetch(`http://192.168.2.4:3000/api/post/all`);
+    const response = await fetch(`http://192.168.31.244:3000/api/post/all`);
     if (!response.ok) {
       throw new Error("Error fetching posts");
     }
