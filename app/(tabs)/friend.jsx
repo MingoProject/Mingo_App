@@ -1,12 +1,13 @@
-// Friend.js
 import React, { useState } from "react";
-import { View, Text, Alert, Button } from "react-native";
+import { View, Text, Alert, Button, ScrollView } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
 import MyButton from "../../components/share/MyButton"; // Import component MyButton
-import LoiMoi from "../../components/friend/LoiMoi";
-import BanBe from "../../components/friend/BanBe";
+import Following from "../../components/friend/Following";
+import Block from "../../components/friend/Block";
+import BestFriend from "../../components/friend/BestFriend";
+import MyFriend from "../../components/friend/MyFriend";
 // import { set } from "date-fns";
 import SearchFriend from "../../components/friend/SearchFriend";
 
@@ -50,11 +51,15 @@ const Friend = () => {
   const renderContent = () => {
     switch (isActiveTab) {
       case "loimoi":
-        return <LoiMoi />;
+        return <Following />;
       case "banbe":
-        return <BanBe />;
+        return <MyFriend />;
+      case "banthan":
+        return <BestFriend />;
+      case "block":
+        return <Block />;
       default:
-        <LoiMoi />;
+        return <Following />; // Default case for rendering content
     }
   };
 
@@ -71,111 +76,162 @@ const Friend = () => {
       {isSearch ? (
         <SearchFriend onClose={handleOnClose} />
       ) : (
-        <>
-          <View
-            className={`w-full p-4 h-full `}
-            style={{
-              backgroundColor:
-                colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-              flex: 1,
-            }}
-          >
-            <View className={`h-full w-full pb-2`}>
-              <View
-                className={` flex flex-row justify-between items-center pb-4`}
-              >
-                <View>
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === "dark"
-                          ? colors.dark[100]
-                          : colors["title-pink"], // Sử dụng giá trị màu từ file colors.js
-                    }}
-                    className={`text-[26px] font-msemibold `}
-                  >
-                    Bạn bè
-                  </Text>
-                </View>
-
-                <View>
-                  <SearchIcon
-                    size={28}
-                    color={iconColor}
-                    onPress={handleIsSearch}
-                  />
-                </View>
+        <View
+          className="w-full p-4 h-full "
+          style={{
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Use color from colors.js
+            flex: 1,
+          }}
+        >
+          <View className="h-full w-full pb-2">
+            <View className="flex flex-row justify-between items-center pb-4">
+              <View>
+                <Text
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors["title-pink"], // Use color from colors.js
+                  }}
+                  className="text-[26px] font-msemibold"
+                >
+                  Bạn bè
+                </Text>
               </View>
 
-              <View className={`flex flex-row justify-between pb-2 `}>
-                <View className={`flex flex-row flex-1 gap-4 `}>
-                  <View>
-                    <MyButton
-                      title="Lời mời"
-                      onPress={() => setIsActiveTab("loimoi")}
-                      paddingLeft={20}
-                      paddingRight={20}
-                      width={100}
-                      height={40}
-                      borderRadius={30}
-                      fontSize={16}
-                      isShadow={true}
-                      isActive={isActiveTab === "loimoi"}
-                      backgroundColor={
-                        isActiveTab === "loimoi"
-                          ? colors.primary[100]
-                          : colorScheme === "dark"
-                          ? colors.dark[200]
-                          : colors.light[600]
-                      }
-                      titleStyle={{
-                        color:
-                          isActiveTab === "loimoi"
-                            ? colors.light[100] // Màu chữ khi active
-                            : colorScheme === "dark"
-                            ? colors.light[300] // Màu chữ khi dark mode và không active
-                            : colors.dark[700], // Màu chữ khi light mode và không active
-                      }}
-                    />
-                  </View>
-                  <View>
-                    <MyButton
-                      title="Bạn bè"
-                      onPress={() => setIsActiveTab("banbe")}
-                      paddingLeft={20} // Padding
-                      paddingRight={20} // Padding
-                      width={100}
-                      height={40}
-                      borderRadius={30} // Bo góc
-                      fontSize={16} // Kích thước font chữ
-                      isShadow={true}
-                      isActive={isActiveTab === "banbe"}
-                      backgroundColor={
-                        isActiveTab === "banbe"
-                          ? colors.primary[100]
-                          : colorScheme === "dark"
-                          ? colors.dark[200]
-                          : colors.light[600]
-                      }
-                      titleStyle={{
-                        color:
-                          isActiveTab === "banbe"
-                            ? colors.light[100] // Màu chữ khi active
-                            : colorScheme === "dark"
-                            ? colors.light[300] // Màu chữ khi dark mode và không active
-                            : colors.dark[700], // Màu chữ khi light mode và không active
-                      }}
-                    />
-                  </View>
-                </View>
-                <View>
-                  <AddIcon size={28} color={iconColor} />
-                </View>
+              <View>
+                <SearchIcon
+                  size={28}
+                  color={iconColor}
+                  onPress={handleIsSearch}
+                />
               </View>
-              <View>{renderContent()}</View>
             </View>
+
+            <ScrollView
+              horizontal
+              contentContainerStyle={{
+                flexDirection: "row", // Align buttons horizontally
+                gap: 8, // Add space between buttons
+              }}
+              showsHorizontalScrollIndicator={false}
+              className="pb-2"
+            >
+              <MyButton
+                title="Followings"
+                onPress={() => setIsActiveTab("loimoi")}
+                paddingLeft={20}
+                paddingRight={20}
+                width={130}
+                height={40}
+                borderRadius={30}
+                fontSize={16}
+                isShadow={true}
+                isActive={isActiveTab === "loimoi"}
+                backgroundColor={
+                  isActiveTab === "loimoi"
+                    ? colors.primary[100]
+                    : colorScheme === "dark"
+                    ? colors.dark[200]
+                    : colors.light[600]
+                }
+                titleStyle={{
+                  color:
+                    isActiveTab === "loimoi"
+                      ? colors.light[100]
+                      : colorScheme === "dark"
+                      ? colors.light[300]
+                      : colors.dark[700],
+                }}
+              />
+              <MyButton
+                title="Friends"
+                onPress={() => setIsActiveTab("banbe")}
+                paddingLeft={20}
+                paddingRight={20}
+                width={100}
+                height={40}
+                borderRadius={30}
+                fontSize={16}
+                isShadow={true}
+                isActive={isActiveTab === "banbe"}
+                backgroundColor={
+                  isActiveTab === "banbe"
+                    ? colors.primary[100]
+                    : colorScheme === "dark"
+                    ? colors.dark[200]
+                    : colors.light[600]
+                }
+                titleStyle={{
+                  color:
+                    isActiveTab === "banbe"
+                      ? colors.light[100]
+                      : colorScheme === "dark"
+                      ? colors.light[300]
+                      : colors.dark[700],
+                }}
+              />
+              <MyButton
+                title="Best Friends"
+                onPress={() => setIsActiveTab("banthan")}
+                paddingLeft={20}
+                paddingRight={20}
+                width={135}
+                height={40}
+                borderRadius={30}
+                fontSize={16}
+                isShadow={true}
+                isActive={isActiveTab === "banthan"}
+                backgroundColor={
+                  isActiveTab === "banthan"
+                    ? colors.primary[100]
+                    : colorScheme === "dark"
+                    ? colors.dark[200]
+                    : colors.light[600]
+                }
+                titleStyle={{
+                  color:
+                    isActiveTab === "banthan"
+                      ? colors.light[100]
+                      : colorScheme === "dark"
+                      ? colors.light[300]
+                      : colors.dark[700],
+                }}
+              />
+
+              <MyButton
+                title="Block"
+                onPress={() => setIsActiveTab("block")}
+                paddingLeft={20}
+                paddingRight={20}
+                width={100}
+                height={40}
+                borderRadius={30}
+                fontSize={16}
+                isShadow={true}
+                isActive={isActiveTab === "block"}
+                backgroundColor={
+                  isActiveTab === "block"
+                    ? colors.primary[100]
+                    : colorScheme === "dark"
+                    ? colors.dark[200]
+                    : colors.light[600]
+                }
+                titleStyle={{
+                  color:
+                    isActiveTab === "block"
+                      ? colors.light[100]
+                      : colorScheme === "dark"
+                      ? colors.light[300]
+                      : colors.dark[700],
+                }}
+              />
+            </ScrollView>
+
+            <View>{renderContent()}</View>
           </View>
-        </>
+        </View>
       )}
     </>
   );

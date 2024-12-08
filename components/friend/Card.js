@@ -35,7 +35,11 @@ const Card = ({ item, actionButton, isLoiMoi }) => {
     <View className={`flex flex-row gap-2 w-full  `}>
       <View className={`w-fit self-center`}>
         <Image
-          source={require("../../assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg")}
+          source={
+            item.avatar
+              ? { uri: item.avatar }
+              : require("../../assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg")
+          }
           style={{ width: 70, height: 70, borderRadius: 50 }}
         />
       </View>
@@ -49,7 +53,7 @@ const Card = ({ item, actionButton, isLoiMoi }) => {
                 }}
                 className={`text-lg`}
               >
-                {item.userName}
+                {`${item.firstName} ${item.lastName}`}
               </Text>
             </View>
 
@@ -62,7 +66,7 @@ const Card = ({ item, actionButton, isLoiMoi }) => {
                   }}
                   className={`text-xs`}
                 >
-                  {calculateTimeDifference(item.sendAt)}
+                  {calculateTimeDifference(item.sendAt || new Date())}
                 </Text>
               ) : (
                 <ThreeDot size={20} color={iconColor} />

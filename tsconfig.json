@@ -13,6 +13,9 @@
     "expo-env.d.ts",
     "app/_layout.jsx",
     "app/(tabs)/home.jsx",
-    "app/(tabs)/profile.jsx"
+    "app/(tabs)/profile.jsx",
+    "app/(tabs)/friend.jsx",
+    "app/message.tsx",
+    "app/chat.jsx"
   ]
 }

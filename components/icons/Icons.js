@@ -261,8 +261,14 @@ const MicroIcon = ({ size = 24, color = "currentColor" }) => (
   </Svg>
 );
 
-const SendIcon = ({ size = 24, color = "currentColor" }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+const SendIcon = ({ size = 24, color = "currentColor", onClick }) => (
+  <Svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    onPress={onClick}
+  >
     <Path
       fill="none"
       stroke={color}

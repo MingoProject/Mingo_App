@@ -21,6 +21,7 @@ import {
 } from "../../icons/Icons"; // Đảm bảo đường dẫn đúng
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
+import { ChatProvider } from "../../../context/ChatContext";
 
 const picturesData = [
   "https://i.pinimg.com/originals/d5/d7/a1/d5d7a147b4693d7c1d8951dee97d2b0e.jpg",
@@ -41,7 +42,7 @@ const filesData = [
   { id: "3", name: "Tệp 3.xlsx", uri: "https://example.com/file3.xlsx" },
 ];
 
-const InfoChat = ({ fakeData, setModalVisible }) => {
+const InfoChat = ({ item, setModalVisible }) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [notification, setNotification] = useState(true);
@@ -80,8 +81,12 @@ const InfoChat = ({ fakeData, setModalVisible }) => {
 
         <View className="justify-center mx-auto">
           <Image
-            source={{ uri: fakeData.avatar }}
-            className="w-32 mt-5 h-32 rounded-full mr-2"
+            source={
+              item.avatarUrl
+                ? { uri: item.avatarUrl }
+                : require("../../../assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg")
+            }
+            style={{ width: 70, height: 70, borderRadius: 50 }}
           />
         </View>
 
@@ -93,7 +98,7 @@ const InfoChat = ({ fakeData, setModalVisible }) => {
             }}
             className={`text-[18px] text-center font-mmedium mt-2`}
           >
-            {fakeData.name}
+            {item.userName}
           </Text>
         </View>
 
