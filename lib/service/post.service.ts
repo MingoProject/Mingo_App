@@ -2,34 +2,12 @@ import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import { PostCreateDTO, PostResponseDTO } from "@/dtos/PostDTO";
 import { UserResponseDTO } from "@/dtos/UserDTO";
-import axios from "axios";
 
 const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
-export const getAllPost = async (goOn: () => void) => {
-  try {
-    // const { token } = await getLocalAuth(); // Lấy token từ localStorage hoặc secure storage.
-
-    // Gửi request tới API để lấy tất cả bài viết.
-    const response = await axios.get(
-      process.env.EXPO_PUBLIC_BASE_URL + "/post/all"
-    );
-
-    if (!response.data || response.data.length === 0) {
-      goOn(); // Thực hiện hành động khi không có dữ liệu.
-    }
-
-    return response.data; // Trả về danh sách bài viết.
-  } catch (error) {
-    console.log("Error fetching posts: ", error);
-    goOn(); // Thực hiện hành động khi xảy ra lỗi.
-    throw error; // Ném lỗi để xử lý bên ngoài.
-  }
-};
-
 export async function fetchPosts() {
   try {
-    const response = await fetch(`http://192.168.31.244:3000/api/post/all`);
+    const response = await fetch(`${BASE_URL}/post/all`);
     if (!response.ok) {
       throw new Error("Error fetching posts");
     }
@@ -208,9 +186,7 @@ export async function dislikePost(postId: string, token: string) {
   }
 }
 
-export async function getLikesByPostId(
-  postId: String
-): Promise<CommentResponseDTO[]> {
+export async function getLikesByPostId(postId: String) {
   try {
     const response = await fetch(`${BASE_URL}/post/get-likes?postId=${postId}`);
     if (!response.ok) {
