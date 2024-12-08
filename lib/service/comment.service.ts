@@ -5,7 +5,7 @@ import {
 } from "@/dtos/CommentDTO";
 import { UserResponseDTO } from "@/dtos/UserDTO";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
 export async function fetchComments(): Promise<CommentResponseDTO[]> {
   try {
@@ -24,9 +24,9 @@ export async function fetchComments(): Promise<CommentResponseDTO[]> {
 
 export async function createComment(
   params: CreateCommentDTO,
-  token: string,
+  token: string | null,
   postId: string
-): Promise<CommentResponseDTO> {
+) {
   try {
     const response = await fetch(
       `${BASE_URL}/comment/create-comment?postId=${postId}`,
@@ -45,7 +45,7 @@ export async function createComment(
       throw new Error(errorData.message || "Error creating comment");
     }
 
-    const data: CommentResponseDTO = await response.json();
+    const data = await response.json();
     return data;
   } catch (error) {
     console.error("Failed to create comment:", error);

@@ -31,7 +31,7 @@ export const getAllPost = async (goOn: () => void) => {
 
 export async function fetchPosts() {
   try {
-    const response = await fetch(`http://192.168.1.10:3000/api/post/all`);
+    const response = await fetch(`http://192.168.2.4:3000/api/post/all`);
     if (!response.ok) {
       throw new Error("Error fetching posts");
     }
