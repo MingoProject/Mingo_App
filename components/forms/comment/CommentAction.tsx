@@ -17,7 +17,7 @@ import {
   likeComment,
 } from "@/lib/service/comment.service";
 
-const CommentAction = ({ comment, postId, mediaId }: any) => {
+const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isLiked, setIsLiked] = useState(false);
@@ -40,7 +40,7 @@ const CommentAction = ({ comment, postId, mediaId }: any) => {
       }
     };
     fetchLikes();
-  });
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -164,7 +164,7 @@ const CommentAction = ({ comment, postId, mediaId }: any) => {
           {numberOfLikes}
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => setReplyingTo(comment._id)}>
         <Text
           className="ml-2 text-xs"
           style={{

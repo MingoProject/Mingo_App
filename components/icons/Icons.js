@@ -507,6 +507,16 @@ const KeyIcon = ({ size = 24, color = "currentColor" }) => (
     <Circle cx="16.5" cy="7.5" r="0.5" fill={color} />
   </Svg>
 );
+
+const ArrowRightIcon = ({ size = 50, color = "currentColor" }) => (
+  <Svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+    <Path
+      fill={color}
+      d="M11.166 23.963L22.36 17.5c1.43-.824 1.43-2.175 0-3L11.165 8.037c-1.43-.826-2.598-.15-2.598 1.5v12.926c0 1.65 1.17 2.326 2.598 1.5z"
+    />
+  </Svg>
+);
+
 export {
   SearchIcon,
   MessageIcon,
@@ -542,4 +552,5 @@ export {
   ProfileIcon,
   KeyIcon,
   ThreeDot,
+  ArrowRightIcon,
 };

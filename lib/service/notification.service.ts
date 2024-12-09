@@ -1,6 +1,6 @@
 import { CreateNotificationDTO } from "@/dtos/NotificationDTO";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
 export async function createNotification(
   params: CreateNotificationDTO,
