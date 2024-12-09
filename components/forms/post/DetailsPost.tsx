@@ -49,7 +49,6 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
 
   const handleSendComment = async () => {
     const token: string | null = await AsyncStorage.getItem("token");
-    console.log(token);
 
     if (!token) {
       console.error("User is not authenticated");
@@ -197,7 +196,12 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
           <View className="mt-2">
             {commentsData.map((comment) => (
               <View key={comment._id}>
-                <CommentCard comment={comment} postId={post._id} />
+                <CommentCard
+                  comment={comment}
+                  setCommentsData={setCommentsData}
+                  author={post.author}
+                  postId={post._id}
+                />
               </View>
             ))}
           </View>

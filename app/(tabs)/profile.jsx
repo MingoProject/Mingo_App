@@ -28,7 +28,6 @@ const Profile = () => {
   const [isSelect, setIsSelect] = useState("profile");
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const { profile } = useAuth();
-  const [posts, setPosts] = useState([]);
   const [postsData, setPostsData] = useState([]);
 
   const fetchData = async () => {
@@ -36,17 +35,9 @@ const Profile = () => {
       const userId = await AsyncStorage.getItem("userId");
       if (userId) {
         const data = await getMyPosts(userId);
-        setPosts(data.userPosts);
+        const postsData = await fetchDetailedPosts(data);
+        setPostsData(postsData);
       }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
-  };
-
-  const fetchPostsData = async () => {
-    try {
-      const data = await fetchDetailedPosts(posts);
-      setPostsData(data);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -54,7 +45,6 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData();
-    fetchPostsData();
   }, []);
 
   const handleAddPost = () => {
@@ -112,7 +102,7 @@ const Profile = () => {
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500], // Sử dụng màu text phù hợp
+                      : colors.light[500],
                 }}
                 className="text-[20px] font-msemibold"
               >

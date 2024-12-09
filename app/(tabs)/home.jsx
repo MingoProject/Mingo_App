@@ -42,7 +42,7 @@ const Home = () => {
     try {
       const data = await fetchPosts();
       const postsData = await fetchDetailedPosts(data);
-      console.log("posts", data);
+      // console.log("posts", data);
       setPostsData(postsData);
       setIsLoading(false);
     } catch (error) {

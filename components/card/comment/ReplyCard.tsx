@@ -7,6 +7,7 @@ import {
   FlatList,
   TextInput,
 } from "react-native";
+import { ArrowRightIcon } from "@/components/icons/Icons";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { getTimestamp } from "@/lib/utils";
@@ -16,61 +17,64 @@ import {
   createReplyComment,
   getCommentByCommentId,
 } from "@/lib/service/comment.service";
-import { useAuth } from "@/context/AuthContext";
 import { createNotification } from "@/lib/service/notification.service";
+import { useAuth } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ReplyCard from "./ReplyCard";
 
-const CommentCard = ({
-  comment,
-  setCommentsData,
+const ReplyCard = ({
+  reply,
+  setRepliesData,
+  commentId,
   author,
   postId,
   mediaId,
 }: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [showReplies, setShowReplies] = useState(false);
-  const [repliesData, setRepliesData] = useState<any[]>([]);
-  const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [newComment, setNewComment] = useState("");
   const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
     null
   );
+
+  const [detailsComment, setDetailsComment] = useState<any>(null);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [newComment, setNewComment] = useState("");
+  const [parentComment, setParentComment] = useState<any>(null);
   const { profile } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
-
-    const fetchReplies = async () => {
+    const fetchDetailsComment = async () => {
       try {
-        const replies = comment.replies || [];
-
-        const detailedReplies = await Promise.all(
-          replies.map(async (reply: any) => {
-            const detailedReply = await getCommentByCommentId(reply._id);
-            return detailedReply;
-          })
-        );
-
+        const details = await getCommentByCommentId(reply._id);
         if (isMounted) {
-          setRepliesData(detailedReplies);
+          setDetailsComment(details);
         }
       } catch (error) {
-        console.error("Failed to fetch replies:", error);
-        if (isMounted) {
-          setRepliesData([]);
-        }
+        console.error("Error fetching profile:", error);
       }
     };
-
-    fetchReplies();
-
+    fetchDetailsComment();
     return () => {
       isMounted = false;
     };
-  }, [comment]);
+  }, []);
+
+  useEffect(() => {
+    const fetchDetailsComment = async () => {
+      try {
+        if (detailsComment?.parentId?._id) {
+          const parent = await getCommentByCommentId(
+            detailsComment?.parentId?._id
+          );
+          console.log(parent);
+          setParentComment(parent);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+    fetchDetailsComment();
+  }, [detailsComment]);
 
   const handleReplyComment = async () => {
     const token: string | null = await AsyncStorage.getItem("token");
@@ -86,11 +90,11 @@ const CommentCard = ({
 
     try {
       const newCommentData = await createReplyComment(
-        { content: newComment },
+        { content: newComment, parentId: detailsComment._id },
         token
       );
       if (newCommentData) {
-        await addReplyToComment(replyingTo, newCommentData._id, token);
+        await addReplyToComment(commentId, newCommentData._id, token);
       }
 
       const enrichedComment = {
@@ -104,32 +108,31 @@ const CommentCard = ({
         },
       };
 
-      setRepliesData((prev) => [enrichedComment, ...prev]);
+      setRepliesData((prev: any) => [enrichedComment, ...prev]);
 
-      if (comment.userId._id !== profile._id) {
+      if (detailsComment.userId._id !== profile._id) {
         const notificationParams = {
           senderId: profile._id,
-          receiverId: comment.userId._id,
+          receiverId: detailsComment.userId._id,
           type: "reply_comment",
-          commentId: comment._id,
+          commentId: detailsComment._id,
           ...(postId && { postId }),
           ...(mediaId && { mediaId }),
         };
 
         await createNotification(notificationParams, token);
+        const notificationParams2 = {
+          senderId: profile._id,
+          receiverId: author._id,
+          type: "comment",
+          ...(postId && { postId }),
+          ...(mediaId && { mediaId }),
+        };
+
+        await createNotification(notificationParams2, token);
       }
-
-      const notificationParams2 = {
-        senderId: profile._id,
-        receiverId: author._id,
-        type: "comment",
-        ...(postId && { postId }),
-        ...(mediaId && { mediaId }),
-      };
-
-      await createNotification(notificationParams2, token);
-
       console.log("da rep");
+
       setNewComment("");
       setReplyingTo(null);
     } catch (error) {
@@ -141,7 +144,7 @@ const CommentCard = ({
     <View>
       <View className="flex-row items-center my-2">
         <Image
-          source={{ uri: comment.userId.avatar }}
+          source={{ uri: reply.userId.avatar }}
           className="w-11 h-11 rounded-full"
         />
         <View className="ml-3">
@@ -152,7 +155,27 @@ const CommentCard = ({
             }}
             className="font-msemibold text-sm"
           >
-            {comment.userId.firstName} {comment.userId.lastName}
+            {reply.userId.firstName} {reply.userId.lastName}{" "}
+            {parentComment && (
+              <>
+                <View className="pt-3">
+                  <ArrowRightIcon size={20} color={iconColor} />
+                </View>
+
+                <Text
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
+                  }}
+                  className="font-msemibold  text-sm"
+                >
+                  {parentComment.userId.firstName || ""}{" "}
+                  {parentComment.userId.lastName || ""}
+                </Text>
+              </>
+            )}
           </Text>
           <Text
             className="text-sm mt-1 border-gray-400"
@@ -161,7 +184,7 @@ const CommentCard = ({
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
             }}
           >
-            {comment.content}
+            {reply.content}
           </Text>
           <View className="flex-row">
             <Text
@@ -171,33 +194,24 @@ const CommentCard = ({
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
             >
-              {getTimestamp(comment.createAt)}
+              {getTimestamp(reply.createAt)}
             </Text>
             <CommentAction
-              comment={comment}
+              comment={reply}
               setReplyingTo={setReplyingTo}
               postId={postId}
               mediaId={mediaId}
             />
           </View>
-          {comment.replies?.length > 0 && (
-            <TouchableOpacity onPress={() => setShowReplies(!showReplies)}>
-              <Text className="text-blue-500 text-sm mt-2">
-                {showReplies
-                  ? "Hide replies"
-                  : `${comment.replies.length} replies`}
-              </Text>
-            </TouchableOpacity>
-          )}
         </View>
       </View>
-      {replyingTo === comment._id && (
+      {replyingTo === reply._id && (
         <View className="mt-2 ml-12 flex-row">
           <TextInput
             value={newComment}
             onChangeText={setNewComment}
             placeholder="Write a reply..."
-            className="border w-60 border-gray-300 rounded-lg p-2 text-sm"
+            className="border w-52 border-gray-300 rounded-lg p-2 text-sm"
           />
           <TouchableOpacity
             onPress={handleReplyComment}
@@ -213,24 +227,8 @@ const CommentCard = ({
           </TouchableOpacity>
         </View>
       )}
-      {showReplies && Array.isArray(repliesData) && (
-        <View className="my-2 ml-10">
-          {repliesData.map((reply: any) => (
-            <View key={reply._id}>
-              <ReplyCard
-                reply={reply}
-                setRepliesData={setRepliesData}
-                commentId={comment._id}
-                author={author}
-                postId={postId}
-                mediaId={mediaId}
-              />
-            </View>
-          ))}
-        </View>
-      )}
     </View>
   );
 };
 
-export default CommentCard;
+export default ReplyCard;
