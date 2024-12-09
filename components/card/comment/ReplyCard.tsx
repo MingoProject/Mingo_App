@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   TextInput,
+  Modal,
 } from "react-native";
 import { ArrowRightIcon } from "@/components/icons/Icons";
 import { useTheme } from "@/context/ThemeContext";
@@ -20,6 +21,7 @@ import {
 import { createNotification } from "@/lib/service/notification.service";
 import { useAuth } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CommentMenu from "@/components/forms/comment/CommentMenu";
 
 const ReplyCard = ({
   reply,
@@ -31,14 +33,11 @@ const ReplyCard = ({
 }: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
-  const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
-    null
-  );
-
   const [detailsComment, setDetailsComment] = useState<any>(null);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [newComment, setNewComment] = useState("");
   const [parentComment, setParentComment] = useState<any>(null);
+  const [isModalVisible, setModalVisible] = useState(false);
   const { profile } = useAuth();
 
   useEffect(() => {
@@ -66,7 +65,6 @@ const ReplyCard = ({
           const parent = await getCommentByCommentId(
             detailsComment?.parentId?._id
           );
-          console.log(parent);
           setParentComment(parent);
         }
       } catch (error) {
@@ -140,93 +138,115 @@ const ReplyCard = ({
     }
   };
 
+  const handleLongPress = () => {
+    setModalVisible(true);
+  };
+
   return (
     <View>
-      <View className="flex-row items-center my-2">
-        <Image
-          source={{ uri: reply.userId.avatar }}
-          className="w-11 h-11 rounded-full"
-        />
-        <View className="ml-3">
-          <Text
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-            className="font-msemibold text-sm"
-          >
-            {reply.userId.firstName} {reply.userId.lastName}{" "}
-            {parentComment && (
-              <>
-                <View className="pt-3">
-                  <ArrowRightIcon size={20} color={iconColor} />
-                </View>
-
-                <Text
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[500],
-                  }}
-                  className="font-msemibold  text-sm"
-                >
-                  {parentComment.userId.firstName || ""}{" "}
-                  {parentComment.userId.lastName || ""}
-                </Text>
-              </>
-            )}
-          </Text>
-          <Text
-            className="text-sm mt-1 border-gray-400"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            {reply.content}
-          </Text>
-          <View className="flex-row">
+      <TouchableOpacity onLongPress={handleLongPress}>
+        <View className="flex-row items-center my-2">
+          <Image
+            source={{ uri: reply.userId.avatar }}
+            className="w-11 h-11 rounded-full"
+          />
+          <View className="ml-3">
             <Text
-              className="text-xs"
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+              className="font-msemibold text-sm"
+            >
+              {reply.userId.firstName} {reply.userId.lastName}{" "}
+              {parentComment && (
+                <>
+                  <View className="pt-3">
+                    <ArrowRightIcon size={20} color={iconColor} />
+                  </View>
+
+                  <Text
+                    style={{
+                      color:
+                        colorScheme === "dark"
+                          ? colors.dark[100]
+                          : colors.light[500],
+                    }}
+                    className="font-msemibold  text-sm"
+                  >
+                    {parentComment.userId.firstName || ""}{" "}
+                    {parentComment.userId.lastName || ""}
+                  </Text>
+                </>
+              )}
+            </Text>
+            <Text
+              className="text-sm mt-1 border-gray-400"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
             >
-              {getTimestamp(reply.createAt)}
+              {reply.content}
             </Text>
-            <CommentAction
-              comment={reply}
-              setReplyingTo={setReplyingTo}
-              postId={postId}
-              mediaId={mediaId}
-            />
+            <View className="flex-row">
+              <Text
+                className="text-xs"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                {getTimestamp(reply.createAt)}
+              </Text>
+              <CommentAction
+                comment={reply}
+                setReplyingTo={setReplyingTo}
+                postId={postId}
+                mediaId={mediaId}
+              />
+            </View>
           </View>
         </View>
-      </View>
-      {replyingTo === reply._id && (
-        <View className="mt-2 ml-12 flex-row">
-          <TextInput
-            value={newComment}
-            onChangeText={setNewComment}
-            placeholder="Write a reply..."
-            className="border w-52 border-gray-300 rounded-lg p-2 text-sm"
+        {replyingTo === reply._id && (
+          <View className="mt-2 ml-12 flex-row">
+            <TextInput
+              value={newComment}
+              onChangeText={setNewComment}
+              placeholder="Write a reply..."
+              className="border w-52 border-gray-300 rounded-lg p-2 text-sm"
+            />
+            <TouchableOpacity
+              onPress={handleReplyComment}
+              className="bg-blue-500  rounded-lg ml-2 px-3 py-2 flex-row justify-center items-center"
+            >
+              <Text className="text-white text-sm">Reply</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setReplyingTo(null)}
+              className=" rounded-lg ml-2 py-2 flex-row justify-center items-center"
+            >
+              <Text className="text-sm">X</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        <Modal
+          transparent={true}
+          visible={isModalVisible}
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <CommentMenu
+            comment={reply}
+            setCommentsData={setRepliesData}
+            setModalVisible={setModalVisible}
+            postId={postId}
+            mediaId={mediaId}
           />
-          <TouchableOpacity
-            onPress={handleReplyComment}
-            className="bg-blue-500  rounded-lg ml-2 px-3 py-2 flex-row justify-center items-center"
-          >
-            <Text className="text-white text-sm">Reply</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setReplyingTo(null)}
-            className=" rounded-lg ml-2 py-2 flex-row justify-center items-center"
-          >
-            <Text className="text-sm">X</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        </Modal>
+      </TouchableOpacity>
     </View>
   );
 };

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   TextInput,
+  Modal,
 } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
@@ -20,6 +21,7 @@ import { useAuth } from "@/context/AuthContext";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ReplyCard from "./ReplyCard";
+import CommentMenu from "@/components/forms/comment/CommentMenu";
 
 const CommentCard = ({
   comment,
@@ -137,98 +139,120 @@ const CommentCard = ({
     }
   };
 
+  const handleLongPress = () => {
+    setModalVisible(true);
+  };
+
   return (
     <View>
-      <View className="flex-row items-center my-2">
-        <Image
-          source={{ uri: comment.userId.avatar }}
-          className="w-11 h-11 rounded-full"
-        />
-        <View className="ml-3">
-          <Text
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-            className="font-msemibold text-sm"
-          >
-            {comment.userId.firstName} {comment.userId.lastName}
-          </Text>
-          <Text
-            className="text-sm mt-1 border-gray-400"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            {comment.content}
-          </Text>
-          <View className="flex-row">
+      <TouchableOpacity onLongPress={handleLongPress}>
+        <View className="flex-row items-center my-2">
+          <Image
+            source={{ uri: comment.userId.avatar }}
+            className="w-11 h-11 rounded-full"
+          />
+          <View className="ml-3">
             <Text
-              className="text-xs"
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+              className="font-msemibold text-sm"
+            >
+              {comment.userId.firstName} {comment.userId.lastName}
+            </Text>
+            <Text
+              className="text-sm mt-1 border-gray-400"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
             >
-              {getTimestamp(comment.createAt)}
+              {comment.content}
             </Text>
-            <CommentAction
-              comment={comment}
-              setReplyingTo={setReplyingTo}
-              postId={postId}
-              mediaId={mediaId}
-            />
-          </View>
-          {comment.replies?.length > 0 && (
-            <TouchableOpacity onPress={() => setShowReplies(!showReplies)}>
-              <Text className="text-blue-500 text-sm mt-2">
-                {showReplies
-                  ? "Hide replies"
-                  : `${comment.replies.length} replies`}
+            <View className="flex-row">
+              <Text
+                className="text-xs"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                {getTimestamp(comment.createAt)}
               </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-      {replyingTo === comment._id && (
-        <View className="mt-2 ml-12 flex-row">
-          <TextInput
-            value={newComment}
-            onChangeText={setNewComment}
-            placeholder="Write a reply..."
-            className="border w-60 border-gray-300 rounded-lg p-2 text-sm"
-          />
-          <TouchableOpacity
-            onPress={handleReplyComment}
-            className="bg-blue-500  rounded-lg ml-2 px-3 py-2 flex-row justify-center items-center"
-          >
-            <Text className="text-white text-sm">Reply</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setReplyingTo(null)}
-            className=" rounded-lg ml-2 py-2 flex-row justify-center items-center"
-          >
-            <Text className="text-sm">X</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-      {showReplies && Array.isArray(repliesData) && (
-        <View className="my-2 ml-10">
-          {repliesData.map((reply: any) => (
-            <View key={reply._id}>
-              <ReplyCard
-                reply={reply}
-                setRepliesData={setRepliesData}
-                commentId={comment._id}
-                author={author}
+              <CommentAction
+                comment={comment}
+                setReplyingTo={setReplyingTo}
                 postId={postId}
                 mediaId={mediaId}
               />
             </View>
-          ))}
+            {comment.replies?.length > 0 && (
+              <TouchableOpacity onPress={() => setShowReplies(!showReplies)}>
+                <Text className="text-blue-500 text-sm mt-2">
+                  {showReplies
+                    ? "Hide replies"
+                    : `${comment.replies.length} replies`}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      )}
+        {replyingTo === comment._id && (
+          <View className="mt-2 ml-12 flex-row">
+            <TextInput
+              value={newComment}
+              onChangeText={setNewComment}
+              placeholder="Write a reply..."
+              className="border w-60 border-gray-300 rounded-lg p-2 text-sm"
+            />
+            <TouchableOpacity
+              onPress={handleReplyComment}
+              className="bg-blue-500  rounded-lg ml-2 px-3 py-2 flex-row justify-center items-center"
+            >
+              <Text className="text-white text-sm">Reply</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setReplyingTo(null)}
+              className=" rounded-lg ml-2 py-2 flex-row justify-center items-center"
+            >
+              <Text className="text-sm">X</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {showReplies && Array.isArray(repliesData) && (
+          <View className="my-2 ml-10">
+            {repliesData.map((reply: any) => (
+              <View key={reply._id}>
+                <ReplyCard
+                  reply={reply}
+                  setRepliesData={setRepliesData}
+                  commentId={comment._id}
+                  author={author}
+                  postId={postId}
+                  mediaId={mediaId}
+                />
+              </View>
+            ))}
+          </View>
+        )}
+        <Modal
+          transparent={true}
+          visible={isModalVisible}
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <CommentMenu
+            comment={comment}
+            setCommentsData={setCommentsData}
+            setModalVisible={setModalVisible}
+            postId={postId}
+            mediaId={mediaId}
+          />
+        </Modal>
+      </TouchableOpacity>
     </View>
   );
 };
