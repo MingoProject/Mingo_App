@@ -148,7 +148,11 @@ const CommentCard = ({
       <TouchableOpacity onLongPress={handleLongPress}>
         <View className="flex-row items-center my-2">
           <Image
-            source={{ uri: comment.userId.avatar }}
+            source={{
+              uri:
+                comment.userId.avatar ||
+                "https://example.com/default-avatar.png",
+            }}
             className="w-11 h-11 rounded-full"
           />
           <View className="ml-3">

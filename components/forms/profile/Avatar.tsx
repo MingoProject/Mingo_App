@@ -77,7 +77,11 @@ const Avatar = ({ profileUser, setProfile }: any) => {
       <TouchableOpacity onPress={() => isMe && setShowModal(true)}>
         <View className="h-[105px] w-[105px] overflow-hidden rounded-full">
           <Image
-            source={{ uri: profileUser.avatar }}
+            source={{
+              uri:
+                profileUser.avatar ||
+                "https://i.pinimg.com/236x/88/bd/6b/88bd6bd828ec509f4bda0d9f9450824d.jpg",
+            }}
             style={{ width: 105, height: 105, borderRadius: 20 }}
           />
         </View>

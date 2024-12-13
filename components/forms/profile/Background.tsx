@@ -76,7 +76,11 @@ const Background = ({ profileUser, setProfile }: any) => {
     <View className="mt-4">
       <TouchableOpacity onPress={() => isMe && setShowModal(true)}>
         <Image
-          source={{ uri: profileUser.background }}
+          source={{
+            uri:
+              profileUser.background ||
+              "https://i.pinimg.com/1200x/50/51/d4/5051d41e6bf1a0b3806f4ce4cc267cac.jpg",
+          }}
           className="w-full h-[152px] rounded-lg"
         />
       </TouchableOpacity>

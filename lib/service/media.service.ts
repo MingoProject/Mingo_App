@@ -47,9 +47,7 @@ export async function getCommentsByMediaId(
   }
 }
 
-export async function getAuthorByMediaId(
-  mediaId: String
-): Promise<UserResponseDTO> {
+export async function getAuthorByMediaId(mediaId: String) {
   try {
     const response = await fetch(
       `${BASE_URL}/media/get-author?mediaId=${mediaId}`
@@ -122,9 +120,7 @@ export async function dislikeMedia(mediaId: string, token: string) {
   }
 }
 
-export async function getLikesByMediaId(
-  mediaId: String
-): Promise<CommentResponseDTO[]> {
+export async function getLikesByMediaId(mediaId: String) {
   try {
     const response = await fetch(
       `${BASE_URL}/media/get-likes?mediaId=${mediaId}`
