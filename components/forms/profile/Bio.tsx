@@ -55,7 +55,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
         }}
         className="font-mregular text-[14px] "
       >
-        {profileUser.bio}
+        {profileUser.bio || "No bio"}
       </Text>
       {isMe && (
         <TouchableOpacity className="ml-auto" onPress={() => setShowEdit(true)}>
