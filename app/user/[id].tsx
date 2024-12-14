@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Modal,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { colors } from "@/styles/colors";
@@ -18,6 +19,9 @@ import PostCard from "@/components/card/post/PostCard";
 import { getMyPosts, getMyProfile } from "@/lib/service/user.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
 import { useTheme } from "@/context/ThemeContext";
+import { checkRelation } from "@/lib/service/relation.service";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import RelationAction from "@/components/forms/user/RelationAction";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams();
@@ -27,6 +31,8 @@ const UserProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [profileUser, setProfileUser] = useState();
+  const [relation, setRelation] = useState<string>("");
+  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -43,7 +49,58 @@ const UserProfile = () => {
     fetchUser();
   }, [id]);
 
-  console.log(profileUser);
+  useEffect(() => {
+    let isMounted = true;
+    const check = async () => {
+      try {
+        const userId = await AsyncStorage.getItem("userId");
+        if (userId) {
+          const res: any = await checkRelation(userId, id);
+          if (isMounted) {
+            if (!res) {
+              setRelation("stranger");
+              // setRelationStatus(false);
+            } else {
+              const { relation, status, sender, receiver } = res;
+
+              if (relation === "bff") {
+                if (status) {
+                  setRelation("bff"); //
+                } else if (userId === sender) {
+                  setRelation("senderRequestBff"); //
+                } else if (userId === receiver) {
+                  setRelation("receiverRequestBff"); //
+                }
+              } else if (relation === "friend") {
+                if (status) {
+                  setRelation("friend"); //
+                } else if (userId === sender) {
+                  setRelation("following"); //
+                } else if (userId === receiver) {
+                  setRelation("follower"); //
+                }
+              } else if (relation === "block") {
+                if (userId === sender) {
+                  setRelation("blocked"); //
+                } else if (userId === receiver) {
+                  setRelation("blockedBy");
+                }
+              } else {
+                setRelation("stranger"); //
+              }
+              // setRelationStatus(status);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching relation:", error);
+      }
+    };
+    check();
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
 
   const fetchData = async () => {
     try {
@@ -94,11 +151,10 @@ const UserProfile = () => {
             ))}
           </View>
         );
-
       case "photos":
-        return <ImageProfile />;
+        return <ImageProfile userId={id} />;
       case "videos":
-        return <VideoProfile />;
+        return <VideoProfile userId={id} />;
       default:
         return null;
     }
@@ -129,6 +185,73 @@ const UserProfile = () => {
         <Avatar profileUser={profileUser} />
         <Bio profileUser={profileUser} />
       </View>
+      <View className="flex-row">
+        <TouchableOpacity
+          onPress={() => setModalOpen(true)}
+          className={` mt-3 rounded-xl px-4 py-3 text-white ${
+            relation === "bff"
+              ? "bg-yellow-500"
+              : relation === "senderRequestBff"
+              ? "bg-yellow-300"
+              : relation === "receiverRequestBff"
+              ? "bg-yellow-700"
+              : relation === "friend"
+              ? "bg-green-500"
+              : relation === "following"
+              ? "bg-blue-500"
+              : relation === "follower"
+              ? "bg-purple-500"
+              : relation === "blocked"
+              ? "bg-red-500"
+              : relation === "blockedBy"
+              ? "bg-gray-500"
+              : "bg-gray-400"
+          }`}
+        >
+          <Text className="text-white">
+            {relation === "bff"
+              ? "Best friend"
+              : relation === "senderRequestBff"
+              ? "Sending friend request"
+              : relation === "receiverRequestBff"
+              ? "Friend request"
+              : relation === "friend"
+              ? "Friend"
+              : relation === "following"
+              ? "Following"
+              : relation === "follower"
+              ? "Follower"
+              : relation === "blocked"
+              ? "Blocked"
+              : relation === "blockedBy"
+              ? "Blocked by"
+              : "Stranger"}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="mt-3 rounded-xl px-7 py-3 text-white bg-slate-500 ml-3 "
+          style={{
+            // height: 1,
+            backgroundColor: colors.primary[100],
+            // marginVertical: 5,
+          }}
+        >
+          <Text className="text-white">Chat</Text>
+        </TouchableOpacity>
+        <Modal
+          visible={isModalOpen}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setModalOpen(false)}
+        >
+          <RelationAction
+            relation={relation}
+            onClose={() => setModalOpen(false)}
+            id={id}
+            setRelation={setRelation}
+          />
+        </Modal>
+      </View>
       <DetailInformation profileUser={profileUser} />
       <View className="flex  flex-row justify-start  mx-[10%] mt-10">
         <TouchableOpacity onPress={() => setActiveTab("posts")}>
@@ -148,7 +271,7 @@ const UserProfile = () => {
             }}
             className="text-[14px] font-mregular "
           >
-            Bài viết
+            Posts
           </Text>
         </TouchableOpacity>
 
@@ -168,7 +291,7 @@ const UserProfile = () => {
             }}
             className="text-[14px] font-mregular ml-5"
           >
-            Ảnh
+            Pictures
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setActiveTab("videos")}>
@@ -187,7 +310,7 @@ const UserProfile = () => {
             }}
             className="text-[14px] font-mregular ml-5"
           >
-            Video
+            Videos
           </Text>
         </TouchableOpacity>
       </View>

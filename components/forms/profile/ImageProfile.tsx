@@ -4,14 +4,14 @@ import React, { useEffect, useState } from "react";
 import { View, Image, TouchableOpacity, Modal } from "react-native";
 import DetailImage from "../media/DetailImage";
 
-const ImageProfile = () => {
+const ImageProfile = ({ userId }: any) => {
   const [images, setImages] = useState<any[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<any>(null);
 
   const fetchImagesdata = async () => {
     try {
-      const userId = await AsyncStorage.getItem("userId");
+      // const userId = await AsyncStorage.getItem("userId");
       if (userId) {
         const data = await getMyImages(userId);
         setImages(data);
@@ -23,7 +23,6 @@ const ImageProfile = () => {
 
   useEffect(() => {
     fetchImagesdata();
-    console.log("image", images);
   }, []);
 
   return (

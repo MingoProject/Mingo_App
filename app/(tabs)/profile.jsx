@@ -98,9 +98,9 @@ const Profile = () => {
         );
 
       case "photos":
-        return <ImageProfile />;
+        return <ImageProfile userId={profile._id} />;
       case "videos":
-        return <VideoProfile />;
+        return <VideoProfile userId={profile._id} />;
       default:
         return null;
     }
@@ -168,7 +168,7 @@ const Profile = () => {
                   }}
                   className="text-[14px] font-mregular "
                 >
-                  Bài viết
+                  Posts
                 </Text>
               </TouchableOpacity>
 
@@ -190,7 +190,7 @@ const Profile = () => {
                   }}
                   className="text-[14px] font-mregular ml-5"
                 >
-                  Ảnh
+                  Pictures
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setActiveTab("videos")}>
@@ -211,7 +211,7 @@ const Profile = () => {
                   }}
                   className="text-[14px] font-mregular ml-5"
                 >
-                  Video
+                  Videos
                 </Text>
               </TouchableOpacity>
             </View>
