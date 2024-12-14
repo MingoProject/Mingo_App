@@ -30,7 +30,11 @@ const PostCard = ({ item }: any) => {
           onPress={() => navigateToUserProfile(item.author._id)}
         >
           <Image
-            source={{ uri: item.author.avatar }}
+            source={{
+              uri:
+                item.author.avatar ||
+                "https://i.pinimg.com/236x/88/bd/6b/88bd6bd828ec509f4bda0d9f9450824d.jpg",
+            }}
             className="w-10 h-10 rounded-full"
           />
         </TouchableOpacity>
