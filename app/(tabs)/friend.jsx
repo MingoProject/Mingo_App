@@ -10,6 +10,7 @@ import BestFriend from "../../components/friend/BestFriend";
 import MyFriend from "../../components/friend/MyFriend";
 // import { set } from "date-fns";
 import SearchFriend from "../../components/friend/SearchFriend";
+import Follower from "@/components/friend/Follower";
 
 const SearchIcon = ({ size = 24, color = "black", onPress }) => {
   return (
@@ -50,6 +51,8 @@ const Friend = () => {
 
   const renderContent = () => {
     switch (isActiveTab) {
+      case "follower":
+        return <Follower />;
       case "loimoi":
         return <Following />;
       case "banbe":
@@ -118,6 +121,33 @@ const Friend = () => {
               showsHorizontalScrollIndicator={false}
               className="pb-2"
             >
+              <MyButton
+                title="Follower"
+                onPress={() => setIsActiveTab("follower")}
+                paddingLeft={20}
+                paddingRight={20}
+                width={130}
+                height={40}
+                borderRadius={30}
+                fontSize={16}
+                isShadow={true}
+                isActive={isActiveTab === "follower"}
+                backgroundColor={
+                  isActiveTab === "follower"
+                    ? colors.primary[100]
+                    : colorScheme === "dark"
+                    ? colors.dark[200]
+                    : colors.light[600]
+                }
+                titleStyle={{
+                  color:
+                    isActiveTab === "follower"
+                      ? colors.light[100]
+                      : colorScheme === "dark"
+                      ? colors.light[300]
+                      : colors.dark[700],
+                }}
+              />
               <MyButton
                 title="Followings"
                 onPress={() => setIsActiveTab("loimoi")}

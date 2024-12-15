@@ -156,6 +156,24 @@ export async function getMyFollowings(id: string | null) {
   }
 }
 
+export async function getMyFollower(id: string | null) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/user/get-my-follower?userId=${id}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Error fetching followings");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch follower:", error);
+    throw error;
+  }
+}
+
 export async function getMyBlocks(id: string | null) {
   try {
     const response = await fetch(`${BASE_URL}/user/get-my-blocks?userId=${id}`);

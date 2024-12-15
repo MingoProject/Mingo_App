@@ -29,7 +29,8 @@ export const getAllPost = async (goOn: () => void) => {
 
 export async function fetchPosts() {
   try {
-    const response = await fetch(`http://192.168.31.244:3000/api/post/all`);
+    const response = await fetch(`${BASE_URL}/post/all`);
+
     if (!response.ok) {
       throw new Error("Error fetching posts");
     }
