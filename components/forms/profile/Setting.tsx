@@ -53,7 +53,7 @@ const Setting = ({ setSetting }) => {
                 style={{ color: colors.primary[100] }}
                 className="font-msemibold text-[17px] mt-4 ml-1"
               >
-                Cài đặt
+                Setting
               </Text>
             </View>
           </View>
@@ -85,7 +85,7 @@ const Setting = ({ setSetting }) => {
                       : colors.light[500],
                 }}
               >
-                Hoạt động
+                Activities
               </Text>
             </TouchableOpacity>
             <TouchableOpacity className="rounded p-3 flex flex-row items-center">
@@ -100,7 +100,7 @@ const Setting = ({ setSetting }) => {
                       : colors.light[500],
                 }}
               >
-                Bài viết đã lưu
+                Saved post
               </Text>
             </TouchableOpacity>
             <TouchableOpacity className="rounded p-3 flex flex-row items-center">
@@ -115,69 +115,10 @@ const Setting = ({ setSetting }) => {
                       : colors.light[500],
                 }}
               >
-                Nhật ký hoạt động
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="rounded p-4 ">
-              <Text
-                className="font-mbold"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                }}
-              >
-                Quyền riêng tư
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="rounded p-3 flex flex-row items-center">
-              <PostIcon size={28} color={iconColor} />
-
-              <Text
-                className=" font-mmedium ml-2"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                }}
-              >
-                Ai có thể xem bài viết của bạn?
+                Liked posts
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="rounded p-3 flex flex-row items-center">
-              <FriendIcon size={28} color={iconColor} />
-
-              <Text
-                className=" font-mmedium ml-2"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                }}
-              >
-                Ai có thể xem danh sách bạn bè của bạn?
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity className=" rounded p-3 flex flex-row items-center">
-              <MediaIcon size={28} color={iconColor} />
-
-              <Text
-                className=" font-mmedium ml-2"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                }}
-              >
-                Ai có thể xem ảnh và video của bạn?
-              </Text>
-            </TouchableOpacity>
             <TouchableOpacity className="rounded p-4">
               <Text
                 className="font-mbold"
@@ -188,22 +129,7 @@ const Setting = ({ setSetting }) => {
                       : colors.light[500],
                 }}
               >
-                Tài khoản
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity className=" rounded p-3 flex flex-row items-center">
-              <ProfileIcon size={28} color={iconColor} />
-
-              <Text
-                className=" font-mmedium ml-2"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                }}
-              >
-                Chỉnh sửa thông tin cá nhân
+                Account
               </Text>
             </TouchableOpacity>
 
@@ -219,7 +145,7 @@ const Setting = ({ setSetting }) => {
                       : colors.light[500],
                 }}
               >
-                Đổi mật khẩu
+                Change password
               </Text>
             </TouchableOpacity>
           </View>
@@ -227,7 +153,7 @@ const Setting = ({ setSetting }) => {
             onPress={() => setSetting(false)}
             className="mt-2 bg-primary-100 rounded p-2"
           >
-            <Text className="text-white text-center font-mmedium">Đóng</Text>
+            <Text className="text-white text-center font-mmedium">Close</Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -135,3 +135,19 @@ export async function getLikesByMediaId(mediaId: String) {
     throw error;
   }
 }
+
+export async function getMediaByMediaId(mediaId: String) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/media/get-media?mediaId=${mediaId}`
+    );
+    if (!response.ok) {
+      throw new Error("Error fetching media by mediaId");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch media by mediaId:", error);
+    throw error;
+  }
+}

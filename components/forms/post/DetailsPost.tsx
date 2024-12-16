@@ -67,6 +67,15 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
         post._id
       );
 
+      const currentTime = new Date();
+      const isoStringWithOffset = currentTime
+        .toISOString()
+        .replace("Z", "+00:00");
+      console.log(
+        "Current Time (new Date()):",
+        currentTime.toISOString().replace("Z", "+00:00")
+      );
+
       const enrichedComment = {
         ...newCommentData,
         userId: {
@@ -74,8 +83,8 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
           avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
           firstName: profile?.firstName || "Anonymous",
           lastName: profile?.lastName || "Anonymous",
-          createAt: "Now",
         },
+        createAt: isoStringWithOffset,
       };
 
       // Cập nhật state commentsData
@@ -194,16 +203,19 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
 
         {commentsData.length > 0 && (
           <View className="mt-2">
-            {commentsData.map((comment) => (
-              <View key={comment._id}>
-                <CommentCard
-                  comment={comment}
-                  setCommentsData={setCommentsData}
-                  author={post.author}
-                  postId={post._id}
-                />
-              </View>
-            ))}
+            {commentsData.map(
+              (comment) =>
+                comment.parentId === null && (
+                  <View key={comment._id}>
+                    <CommentCard
+                      comment={comment}
+                      setCommentsData={setCommentsData}
+                      author={post.author}
+                      postId={post._id}
+                    />
+                  </View>
+                )
+            )}
           </View>
         )}
 
