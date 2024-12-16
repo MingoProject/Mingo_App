@@ -24,9 +24,9 @@ export async function fetchComments(): Promise<CommentResponseDTO[]> {
 
 export async function createComment(
   params: CreateCommentDTO,
-  token: string | null,
+  token: string,
   postId: string
-) {
+): Promise<CommentResponseDTO> {
   try {
     const response = await fetch(
       `${BASE_URL}/comment/create-comment?postId=${postId}`,
@@ -45,7 +45,7 @@ export async function createComment(
       throw new Error(errorData.message || "Error creating comment");
     }
 
-    const data = await response.json();
+    const data: CommentResponseDTO = await response.json();
     return data;
   } catch (error) {
     console.error("Failed to create comment:", error);
@@ -53,19 +53,54 @@ export async function createComment(
   }
 }
 
-export async function createReplyComment(
+export async function createReplyCommentPost(
   params: CreateCommentDTO,
-  token: string
+  token: string,
+  postId: string
 ): Promise<CommentResponseDTO> {
   try {
-    const response = await fetch(`${BASE_URL}/comment/create-reply-comment`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `${token}`,
-      },
-      body: JSON.stringify(params),
-    });
+    const response = await fetch(
+      `${BASE_URL}/comment/create-reply-comment-post?postId=${postId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+        body: JSON.stringify(params),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error creating comment");
+    }
+
+    const data: CommentResponseDTO = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to create comment:", error);
+    throw error;
+  }
+}
+
+export async function createReplyCommentMedia(
+  params: CreateCommentDTO,
+  token: string,
+  mediaId: string
+): Promise<CommentResponseDTO> {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/comment/create-reply-comment-media?mediaId=${mediaId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+        body: JSON.stringify(params),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -248,7 +283,9 @@ export async function dislikeComment(commentId: string, token: string) {
   }
 }
 
-export async function getLikesByCommentId(commentId: String) {
+export async function getLikesByCommentId(
+  commentId: String
+): Promise<UserResponseDTO[]> {
   try {
     const response = await fetch(
       `${BASE_URL}/comment/get-likes?commentId=${commentId}`

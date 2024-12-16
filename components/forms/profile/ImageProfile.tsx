@@ -3,15 +3,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import { View, Image, TouchableOpacity, Modal } from "react-native";
 import DetailImage from "../media/DetailImage";
+import { getMediaByMediaId } from "@/lib/service/media.service";
 
 const ImageProfile = ({ userId }: any) => {
   const [images, setImages] = useState<any[]>([]);
-  const [isModalVisible, setModalVisible] = useState(false);
+  // const [isModalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const fetchImagesdata = async () => {
     try {
-      // const userId = await AsyncStorage.getItem("userId");
       if (userId) {
         const data = await getMyImages(userId);
         setImages(data);
@@ -25,14 +26,23 @@ const ImageProfile = ({ userId }: any) => {
     fetchImagesdata();
   }, []);
 
+  const handleClick = async (image: any) => {
+    try {
+      const data = await getMediaByMediaId(image._id);
+      setSelectedImage(data);
+      setOpenModal(true);
+    } catch (error) {
+      console.error("Error loading image details:", error);
+    }
+  };
+
   return (
     <View className="flex flex-wrap mt-2">
       <View className="flex flex-row flex-wrap">
         {images.map((item, index) => (
           <TouchableOpacity
             onPress={() => {
-              setSelectedImage(item); // Lưu hình ảnh được chọn
-              setModalVisible(true); // Hiển thị modal
+              handleClick(item); // Hiển thị modal
             }}
             key={index}
             className="flex flex-col items-center mb-4"
@@ -50,15 +60,16 @@ const ImageProfile = ({ userId }: any) => {
       <Modal
         transparent={true}
         animationType="slide"
-        visible={isModalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-          setSelectedImage(null);
-        }}
+        visible={openModal}
+        onRequestClose={
+          () => setOpenModal(false)
+          // setSelectedImage(null);
+        }
       >
-        {selectedImage && (
+        {openModal && (
           <DetailImage
-            setModalVisible={setModalVisible}
+            isModalVisible={openModal}
+            setModalVisible={setOpenModal}
             image={selectedImage}
           />
         )}

@@ -13,7 +13,10 @@ import { getTimestamp } from "@/lib/utils";
 import fetchDetailedComments from "@/hooks/useComments";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createCommentMedia } from "@/lib/service/comment.service";
+import {
+  createCommentMedia,
+  getCommentByCommentId,
+} from "@/lib/service/comment.service";
 import { useAuth } from "@/context/AuthContext";
 import MediaAction from "./MediaAction";
 import CommentCard from "@/components/card/comment/CommentCard";
@@ -32,23 +35,26 @@ const DetailImage = ({ isModalVisible, setModalVisible, image }: any) => {
 
   useEffect(() => {
     let isMounted = true;
-    const getComments = async () => {
-      const comments = await getCommentsByMediaId(image._id);
-      console.log(comments);
-      const author = await getAuthorByMediaId(image._id);
-      const detailedComments = await fetchDetailedComments(comments);
+    const fetchCommentsData = async () => {
+      const detailsComments = await Promise.all(
+        image?.comments.map(async (comment: any) => {
+          return await getCommentByCommentId(comment);
+        })
+      );
+
       if (isMounted) {
-        setCommentsData(detailedComments);
-        setAuthor(author);
+        setCommentsData(detailsComments);
       }
+      // console.log(detailsComments);
     };
 
-    getComments();
-
+    if (image?.comments.length > 0) {
+      fetchCommentsData();
+    }
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [image?.comments]);
 
   const handleSendComment = async () => {
     const token: string | null = await AsyncStorage.getItem("token");
@@ -69,6 +75,14 @@ const DetailImage = ({ isModalVisible, setModalVisible, image }: any) => {
         token,
         image._id
       );
+      const currentTime = new Date();
+      const isoStringWithOffset = currentTime
+        .toISOString()
+        .replace("Z", "+00:00");
+      console.log(
+        "Current Time (new Date()):",
+        currentTime.toISOString().replace("Z", "+00:00")
+      );
 
       const enrichedComment = {
         ...newCommentData,
@@ -77,8 +91,8 @@ const DetailImage = ({ isModalVisible, setModalVisible, image }: any) => {
           avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
           firstName: profile?.firstName || "Anonymous",
           lastName: profile?.lastName || "Anonymous",
-          createAt: "Now",
         },
+        createAt: isoStringWithOffset,
       };
 
       // Cập nhật state commentsData
@@ -129,7 +143,11 @@ const DetailImage = ({ isModalVisible, setModalVisible, image }: any) => {
         {/* Author Info */}
         <View className="flex-row items-center mb-2">
           <Image
-            source={{ uri: author?.avatar }}
+            source={{
+              uri:
+                image?.createBy.avatar ||
+                "https://i.pinimg.com/736x/d0/1f/7f/d01f7f7987f7b60bac995ee1d251025b.jpg",
+            }}
             className="w-10 h-10 rounded-full"
           />
           <View className="ml-4">
@@ -140,10 +158,10 @@ const DetailImage = ({ isModalVisible, setModalVisible, image }: any) => {
               }}
               className="font-msemibold text-[17px]"
             >
-              {author?.firstName} {author?.lastName}
+              {image?.createBy.firstName} {image?.createBy.lastName}
             </Text>
             <Text className="text-[#D9D9D9] font-mregular mt-1 text-sm">
-              {getTimestamp(image.createAt)}
+              {image?.createAt && getTimestamp(image?.createAt)}
             </Text>
           </View>
         </View>
@@ -156,10 +174,10 @@ const DetailImage = ({ isModalVisible, setModalVisible, image }: any) => {
           }}
           className="mb-4 font-mregular text-[15px]"
         >
-          {image.caption}
+          {image?.caption}
         </Text>
 
-        <Image source={{ uri: image.url }} className="w-96 h-96 rounded-lg" />
+        <Image source={{ uri: image?.url }} className="w-96 h-96 rounded-lg" />
 
         <MediaAction
           media={image}
@@ -169,16 +187,19 @@ const DetailImage = ({ isModalVisible, setModalVisible, image }: any) => {
 
         {commentsData.length > 0 && (
           <View className="mt-2">
-            {commentsData.map((comment) => (
-              <View key={comment._id}>
-                <CommentCard
-                  comment={comment}
-                  setCommentsData={setCommentsData}
-                  author={author}
-                  mediaId={image._id}
-                />
-              </View>
-            ))}
+            {commentsData.map(
+              (comment) =>
+                comment?.parentId === null && (
+                  <View key={comment?._id}>
+                    <CommentCard
+                      comment={comment}
+                      setCommentsData={setCommentsData}
+                      author={image?.createBy}
+                      mediaId={image?._id}
+                    />
+                  </View>
+                )
+            )}
           </View>
         )}
 
