@@ -11,12 +11,17 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  dislikeMedia,
+  getLikesByMediaId,
+  likeMedia,
+} from "@/lib/service/media.service";
 
-const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
+const MediaAction = ({ isModalVisible, setModalVisible, media }: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isLiked, setIsLiked] = useState(false);
-  const [numberOfLikes, setNumberOfLikes] = useState(post.likes.length);
+  const [numberOfLikes, setNumberOfLikes] = useState(media.likes.length);
   const [likes, setLikes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -25,7 +30,7 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
   useEffect(() => {
     const fetchLikes = async () => {
       try {
-        const data = await getLikesByPostId(post._id);
+        const data = await getLikesByMediaId(media._id);
         setLikes(data);
         setIsLoading(false);
       } catch (error) {
@@ -43,7 +48,7 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
       const userId: string | null = await AsyncStorage.getItem("userId");
       if (userId) {
         try {
-          const isUserLiked = post.likes.some((like: any) => like === userId);
+          const isUserLiked = media.likes.some((like: any) => like === userId);
           if (isMounted) {
             setIsLiked(isUserLiked);
           }
@@ -62,13 +67,13 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
     try {
       const token: string | null = await AsyncStorage.getItem("token");
       if (token) {
-        await likePost(post._id, token);
-        if (profile._id !== post.author._id) {
+        await likeMedia(media._id, token);
+        if (profile._id !== media.createBy._id) {
           const params = {
             senderId: profile._id,
-            receiverId: post.author._id,
+            receiverId: media.createBy._id,
             type: "like",
-            postId: post._id,
+            mediaId: media._id,
           };
           await createNotification(params, token);
         }
@@ -85,7 +90,7 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
     try {
       const token: string | null = await AsyncStorage.getItem("token");
       if (token) {
-        await dislikePost(post._id, token);
+        await dislikeMedia(media._id, token);
         console.log("da dislike");
       } else {
         console.warn("User is not authenticated");
@@ -157,7 +162,7 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
         >
-          {post.comments.length} Comments
+          {media.comments.length} Comments
         </Text>
       </TouchableOpacity>
 
@@ -170,11 +175,11 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
         >
-          {post.shares.length} Shares
+          {media.shares.length} Shares
         </Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default PostAction;
+export default MediaAction;

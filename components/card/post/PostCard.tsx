@@ -4,29 +4,41 @@ import {
   Text,
   FlatList,
   Image,
-  TouchableOpacity,
   Modal,
+  TouchableOpacity,
 } from "react-native";
 import Video from "react-native-video";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { getTimestamp } from "@/lib/utils";
-import { LikeIcon, CommentIcon, ShareIcon } from "@/components/icons/Icons";
 import DetailsPost from "@/components/forms/post/DetailsPost";
 import PostAction from "@/components/forms/post/PostAction";
+import { useRouter } from "expo-router";
 
 const PostCard = ({ item }: any) => {
+  const router = useRouter();
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isModalVisible, setModalVisible] = useState(false);
-
+  const navigateToUserProfile = (item: any) => {
+    router.push(`/user/${item}`);
+  };
   return (
     <View className="p-4 bg-transparent mb-4">
       <View className="flex-row items-center mb-2">
-        <Image
-          source={{ uri: item.author.avatar }}
-          className="w-10 h-10 rounded-full"
-        />
+        <TouchableOpacity
+          onPress={() => navigateToUserProfile(item.author._id)}
+        >
+          <Image
+            source={{
+              uri:
+                item.author.avatar ||
+                "https://i.pinimg.com/236x/88/bd/6b/88bd6bd828ec509f4bda0d9f9450824d.jpg",
+            }}
+            className="w-10 h-10 rounded-full"
+          />
+        </TouchableOpacity>
+
         <View className="ml-4">
           <Text
             style={{
@@ -81,50 +93,6 @@ const PostCard = ({ item }: any) => {
           )}
         />
       )}
-
-      {/* <View className="flex-row mt-2 justify-around">
-        <TouchableOpacity className="flex-row items-center mr-4">
-          <LikeIcon size={25} color={iconColor} />
-          <Text
-            className="ml-1 text-gray-700"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            {item.likes.length} Likes
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          className="flex-row items-center mr-4"
-        >
-          <CommentIcon size={25} color={iconColor} />
-          <Text
-            className="ml-1 text-gray-700"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            {item.comments.length} Comments
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity className="flex-row items-center">
-          <ShareIcon size={25} color={iconColor} />
-          <Text
-            className="ml-1 text-gray-700"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            {item.shares.length} Shares
-          </Text>
-        </TouchableOpacity>
-      </View> */}
       <PostAction
         post={item}
         isModalVisible={isModalVisible}

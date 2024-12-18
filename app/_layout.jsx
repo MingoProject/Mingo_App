@@ -6,6 +6,7 @@ import { hideAsync } from "expo-splash-screen";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ChatProvider } from "@/context/ChatContext";
+import { ChatItemProvider } from "@/context/ChatItemContext";
 
 SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
@@ -34,9 +35,11 @@ const RootLayout = () => {
     <AuthProvider>
       <ThemeProvider>
         <ChatProvider>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-          </Stack>
+          <ChatItemProvider>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+            </Stack>
+          </ChatItemProvider>
         </ChatProvider>
       </ThemeProvider>
     </AuthProvider>

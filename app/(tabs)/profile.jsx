@@ -5,21 +5,26 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { SettingsIcon } from "../../components/icons/Icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
 import PostCard from "@/components/card/post/PostCard";
 import { useTheme } from "../../context/ThemeContext";
-import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
+import { colors } from "../../styles/colors";
 import Setting from "../../components/forms/profile/Setting";
 import OpenAddPost from "@/components/forms/post/OpenAddPost";
 import ImageProfile from "@/components/forms/profile/ImageProfile";
-import AddPost from "@/components/home-component/AddPost";
+import AddPost from "@/components/forms/post/AddPost";
 import { useAuth } from "@/context/AuthContext";
 import { getMyPosts } from "@/lib/service/user.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
 import VideoProfile from "@/components/forms/profile/VideoProfile";
+import Background from "@/components/forms/profile/Background";
+import Avatar from "@/components/forms/profile/Avatar";
+import Bio from "@/components/forms/profile/Bio";
+import DetailInformation from "@/components/forms/profile/DetailInfomation";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
@@ -27,34 +32,26 @@ const Profile = () => {
   const [setting, setSetting] = useState(false);
   const [isSelect, setIsSelect] = useState("profile");
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
-  const { profile } = useAuth();
-  const [posts, setPosts] = useState([]);
+  const { profile, setProfile } = useAuth();
   const [postsData, setPostsData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   const fetchData = async () => {
     try {
-      const userId = await AsyncStorage.getItem("userId");
-      if (userId) {
-        const data = await getMyPosts(userId);
-        setPosts(data.userPosts);
-      }
+      const data = await getMyPosts(profile._id);
+      const postsData = await fetchDetailedPosts(data.userPosts);
+      setPostsData(postsData);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching posts:", error);
-    }
-  };
-
-  const fetchPostsData = async () => {
-    try {
-      const data = await fetchDetailedPosts(posts);
-      setPostsData(data);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
+      setIsError(true);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
-    fetchPostsData();
   }, []);
 
   const handleAddPost = () => {
@@ -63,6 +60,23 @@ const Profile = () => {
   const handleClose = () => {
     setIsSelect("profile");
   };
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Error fetching posts. Please try again later.</Text>
+      </View>
+    );
+  }
 
   const renderContent = () => {
     switch (activeTab) {
@@ -78,15 +92,15 @@ const Profile = () => {
               <OpenAddPost handleAddPost={handleAddPost} />
             </>
             {postsData.map((item) => (
-              <PostCard item={item} />
+              <PostCard key={item._id} item={item} />
             ))}
           </View>
         );
 
       case "photos":
-        return <ImageProfile />;
+        return <ImageProfile userId={profile._id} />;
       case "videos":
-        return <VideoProfile />;
+        return <VideoProfile userId={profile._id} />;
       default:
         return null;
     }
@@ -102,7 +116,7 @@ const Profile = () => {
             className="p-3"
             style={{
               backgroundColor:
-                colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[300] : colors.light[700],
               flex: 1,
             }}
           >
@@ -112,7 +126,7 @@ const Profile = () => {
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500], // Sử dụng màu text phù hợp
+                      : colors.light[500],
                 }}
                 className="text-[20px] font-msemibold"
               >
@@ -125,33 +139,15 @@ const Profile = () => {
                 <SettingsIcon size={27} color={iconColor} />
               </TouchableOpacity>
             </View>
-            <View className="mt-4">
-              <Image
-                source={{ uri: profile.background }}
-                className="w-full h-[152px] rounded-lg"
-              />
-            </View>
+            <Background profileUser={profile} setProfile={setProfile} />
             <View className="flex flex-row mt-2">
-              <View className="h-[105px] w-[105px] overflow-hidden rounded-full">
-                <Image
-                  source={{ uri: profile.avatar }}
-                  style={{ width: 105, height: 105, borderRadius: 20 }}
-                />
-              </View>
-              <View className="p-3 w-[266px]">
-                <Text
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[500],
-                  }}
-                  className="font-mregular text-[14px] "
-                >
-                  {profile.bio}
-                </Text>
-              </View>
+              <Avatar profileUser={profile} setProfile={setProfile} />
+              <Bio profileUser={profile} setProfile={setProfile} />
             </View>
+            <DetailInformation
+              profileUser={profile}
+              setProfileUser={setProfile}
+            />
             <View className="flex  flex-row justify-start  mx-[10%] mt-10">
               <TouchableOpacity onPress={() => setActiveTab("posts")}>
                 <Text
@@ -172,7 +168,7 @@ const Profile = () => {
                   }}
                   className="text-[14px] font-mregular "
                 >
-                  Bài viết
+                  Posts
                 </Text>
               </TouchableOpacity>
 
@@ -194,7 +190,7 @@ const Profile = () => {
                   }}
                   className="text-[14px] font-mregular ml-5"
                 >
-                  Ảnh
+                  Pictures
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setActiveTab("videos")}>
@@ -215,7 +211,7 @@ const Profile = () => {
                   }}
                   className="text-[14px] font-mregular ml-5"
                 >
-                  Video
+                  Videos
                 </Text>
               </TouchableOpacity>
             </View>

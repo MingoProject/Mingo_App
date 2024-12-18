@@ -91,7 +91,6 @@ export async function getMyProfile(id: string | null) {
 export async function getMyPosts(id: string | null) {
   try {
     const response = await fetch(`${BASE_URL}/user/get-my-posts?userId=${id}`);
-
     if (!response.ok) {
       throw new Error("Error fetching posts");
     }

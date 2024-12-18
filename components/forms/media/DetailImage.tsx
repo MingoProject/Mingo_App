@@ -2,41 +2,44 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  FlatList,
   Image,
   TouchableOpacity,
-  Modal,
   TextInput,
   ScrollView,
 } from "react-native";
-import Video from "react-native-video";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { getTimestamp } from "@/lib/utils";
-import { LikeIcon, CommentIcon, ShareIcon } from "@/components/icons/Icons";
-import { getCommentsByPostId } from "@/lib/service/post.service";
 import fetchDetailedComments from "@/hooks/useComments";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createComment } from "@/lib/service/comment.service";
+import { createCommentMedia } from "@/lib/service/comment.service";
 import { useAuth } from "@/context/AuthContext";
-import PostAction from "./PostAction";
+import MediaAction from "./MediaAction";
 import CommentCard from "@/components/card/comment/CommentCard";
+import {
+  getAuthorByMediaId,
+  getCommentsByMediaId,
+} from "@/lib/service/media.service";
 
-const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
+const DetailImage = ({ isModalVisible, setModalVisible, image }: any) => {
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [comment, setComment] = useState("");
   const [commentsData, setCommentsData] = useState<any[]>([]);
+  const [author, setAuthor] = useState();
+
   const { profile } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
     const getComments = async () => {
-      const comments = await getCommentsByPostId(post._id);
+      const comments = await getCommentsByMediaId(image._id);
+      console.log(comments);
+      const author = await getAuthorByMediaId(image._id);
       const detailedComments = await fetchDetailedComments(comments);
       if (isMounted) {
         setCommentsData(detailedComments);
+        setAuthor(author);
       }
     };
 
@@ -61,10 +64,10 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
     }
 
     try {
-      const newCommentData = await createComment(
+      const newCommentData = await createCommentMedia(
         { content: comment },
         token,
-        post._id
+        image._id
       );
 
       const enrichedComment = {
@@ -81,12 +84,12 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
       // Cập nhật state commentsData
       setCommentsData((prev) => [enrichedComment, ...prev]);
 
-      if (post.author._id !== profile._id) {
+      if (image.createBy._id !== profile._id) {
         const notificationParams = {
           senderId: profile._id,
-          receiverId: post.author._id,
+          receiverId: image.createBy._id,
           type: "comment",
-          postId: post._id,
+          imageId: image._id,
         };
 
         await createNotification(notificationParams, token);
@@ -109,7 +112,7 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
             }}
             className="font-msemibold text-lg"
           >
-            Post Details
+            Image Details
           </Text>
           <TouchableOpacity onPress={() => setModalVisible(false)}>
             <Text
@@ -126,7 +129,7 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
         {/* Author Info */}
         <View className="flex-row items-center mb-2">
           <Image
-            source={{ uri: post.author.avatar }}
+            source={{ uri: author?.avatar }}
             className="w-10 h-10 rounded-full"
           />
           <View className="ml-4">
@@ -137,10 +140,10 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
               }}
               className="font-msemibold text-[17px]"
             >
-              {post.author.firstName} {post.author.lastName}
+              {author?.firstName} {author?.lastName}
             </Text>
             <Text className="text-[#D9D9D9] font-mregular mt-1 text-sm">
-              {getTimestamp(post.createAt)}
+              {getTimestamp(image.createAt)}
             </Text>
           </View>
         </View>
@@ -153,41 +156,13 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
           }}
           className="mb-4 font-mregular text-[15px]"
         >
-          {post.content}
+          {image.caption}
         </Text>
 
-        {/* Media */}
-        {post.media && (
-          <FlatList
-            data={post.media}
-            horizontal
-            keyExtractor={(media) => media._id}
-            renderItem={({ item: media }) => (
-              <View className="mr-2">
-                {media.type === "image" ? (
-                  <Image
-                    source={{ uri: media.url }}
-                    className="w-96 h-96 rounded-lg"
-                  />
-                ) : media.type === "video" ? (
-                  <View className="w-96 h-96 bg-gray-200 rounded-lg">
-                    {/* <Video
-                              source={{ uri: media.url }} // Đường dẫn URL video
-                              style={{ width: "100%", height: "100%" }}
-                              controls={true} // Hiển thị các controls như play, pause, volume,...
-                              resizeMode="contain" // Điều chỉnh video sao cho phù hợp với container
-                            /> */}
-                  </View>
-                ) : (
-                  <Text>Unsupported Media</Text>
-                )}
-              </View>
-            )}
-          />
-        )}
+        <Image source={{ uri: image.url }} className="w-96 h-96 rounded-lg" />
 
-        <PostAction
-          post={post}
+        <MediaAction
+          media={image}
           isModalVisible={isModalVisible}
           setModalVisible={setModalVisible}
         />
@@ -199,8 +174,8 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
                 <CommentCard
                   comment={comment}
                   setCommentsData={setCommentsData}
-                  author={post.author}
-                  postId={post._id}
+                  author={author}
+                  mediaId={image._id}
                 />
               </View>
             ))}
@@ -236,4 +211,4 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
   );
 };
 
-export default DetailsPost;
+export default DetailImage;

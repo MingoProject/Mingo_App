@@ -41,7 +41,7 @@ const InfoChat = ({
   item,
   setModalVisible,
 }: {
-  item: ItemChat;
+  item: any;
   setModalVisible: (visible: boolean) => void;
 }) => {
   const { colorScheme } = useTheme();
@@ -49,6 +49,7 @@ const InfoChat = ({
   const [notification, setNotification] = useState(true);
   const [showAllImages, setShowAllImages] = useState(false);
   const [showAllFiles, setShowAllFiles] = useState(false);
+
   const toggleNotification = () => {
     setNotification((prev) => !prev);
   };
@@ -77,6 +78,7 @@ const InfoChat = ({
       isMounted = false; // Cleanup khi component unmount
     };
   }, [item.id.toString()]);
+
   useEffect(() => {
     let isMounted = true;
 

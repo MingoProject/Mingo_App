@@ -248,9 +248,7 @@ export async function dislikeComment(commentId: string, token: string) {
   }
 }
 
-export async function getLikesByCommentId(
-  commentId: String
-): Promise<UserResponseDTO[]> {
+export async function getLikesByCommentId(commentId: String) {
   try {
     const response = await fetch(
       `${BASE_URL}/comment/get-likes?commentId=${commentId}`

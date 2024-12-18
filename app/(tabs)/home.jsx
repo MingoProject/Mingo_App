@@ -11,7 +11,7 @@ import { Link } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
 import SearchHome from "../../components/home-component/SearchHome";
-import AddPost from "@/components/home-component/AddPost";
+import AddPost from "@/components/forms/post/AddPost";
 import fetchDetailedPosts from "@/hooks/usePosts";
 import { fetchPosts } from "@/lib/service/post.service";
 import OpenAddPost from "@/components/forms/post/OpenAddPost";
