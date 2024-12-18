@@ -96,7 +96,7 @@ const Friend = () => {
                   }}
                   className="text-[26px] font-msemibold"
                 >
-                  Bạn bè
+                  Friend
                 </Text>
               </View>
 
