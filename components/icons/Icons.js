@@ -187,14 +187,8 @@ const InfoIcon = ({ size = 24, color = "currentColor" }) => (
   </Svg>
 );
 
-const CameraIcon = ({ size = 50, color = "currentColor", onClick }) => (
-  <Svg
-    width={size}
-    height={size}
-    viewBox="0 0 50 50"
-    fill="none"
-    onPress={onClick}
-  >
+const CameraIcon = ({ size = 50, color = "currentColor" }) => (
+  <Svg width={size} height={size} viewBox="0 0 50 50" fill="none">
     <Path
       fill={color}
       d="M39 38H11c-1.7 0-3-1.3-3-3V17c0-1.7 1.3-3 3-3h6c.2 0 .5-.2.6-.3l1.1-2.2c.4-.8 1.4-1.4 2.3-1.4h8c.9 0 1.9.6 2.3 1.4l1.1 2.2c.1.2.4.3.6.3h6c1.7 0 3 1.3 3 3v18c0 1.7-1.3 3-3 3M11 16c-.6 0-1 .4-1 1v18c0 .6.4 1 1 1h28c.6 0 1-.4 1-1V17c0-.6-.4-1-1-1h-6c-.9 0-1.9-.6-2.3-1.4l-1.1-2.2c-.1-.2-.4-.4-.6-.4h-8c-.2 0-.5.2-.6.3l-1.1 2.2c-.4.9-1.4 1.5-2.3 1.5z"
@@ -211,14 +205,8 @@ const CameraIcon = ({ size = 50, color = "currentColor", onClick }) => (
   </Svg>
 );
 
-const ImageIcon = ({ size = 24, color = "currentColor", onClick }) => (
-  <Svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    onPress={onClick}
-  >
+const ImageIcon = ({ size = 24, color = "currentColor" }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <Path
       fill="none"
       stroke={color}
@@ -246,14 +234,8 @@ const ImageIcon = ({ size = 24, color = "currentColor", onClick }) => (
   </Svg>
 );
 
-const PlusIcon = ({ size = 50, color = "currentColor", onClick }) => (
-  <Svg
-    width={size}
-    height={size}
-    viewBox="0 0 50 50"
-    fill="none"
-    onPress={onClick}
-  >
+const PlusIcon = ({ size = 50, color = "currentColor" }) => (
+  <Svg width={size} height={size} viewBox="0 0 50 50" fill="none">
     <Path
       fill={color}
       d="M25 42c-9.4 0-17-7.6-17-17S15.6 8 25 8s17 7.6 17 17s-7.6 17-17 17m0-32c-8.3 0-15 6.7-15 15s6.7 15 15 15s15-6.7 15-15s-6.7-15-15-15"
@@ -285,14 +267,8 @@ const MicroIcon = ({ size = 24, color = "currentColor" }) => (
   </Svg>
 );
 
-const SendIcon = ({ size = 24, color = "currentColor", onClick }) => (
-  <Svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    onPress={onClick}
-  >
+const SendIcon = ({ size = 24, color = "currentColor" }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <Path
       fill="none"
       stroke={color}
@@ -890,6 +866,40 @@ const ThreeDotsIcon = ({ size = 16, color = "currentColor" }) => (
   </Svg>
 );
 
+const CircleTickIcon = ({ size = 24, color = "currentColor" }) => (
+  <Svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+  >
+    <Path
+      fill="none"
+      stroke={color}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M3 12a9 9 0 1 1 18 0a9 9 0 0 1-18 0"
+    />
+  </Svg>
+);
+
+const CircleFillIcon = ({ size = 24, color = "currentColor" }) => (
+  <Svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+  >
+    <Path
+      fill={color}
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2m0 6a4 4 0 1 0 0 8a4 4 0 0 0 0-8"
+    />
+  </Svg>
+);
+
 export {
   SearchIcon,
   MessageIcon,
@@ -948,4 +958,6 @@ export {
   MicrophoneIcon,
   CancelIcon,
   ThreeDotsIcon,
+  CircleTickIcon,
+  CircleFillIcon,
 };

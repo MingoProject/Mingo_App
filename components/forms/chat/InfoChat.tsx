@@ -6,6 +6,7 @@ import {
   Image,
   Modal,
   FlatList,
+  Alert,
 } from "react-native";
 import {
   ArrowIcon,
@@ -21,13 +22,21 @@ import {
 } from "../../icons/Icons"; // Đảm bảo đường dẫn đúng
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { FileContent, ItemChat } from "@/dtos/MessageDTO";
 import {
   getImageList,
+  getListChat,
+  getListGroupChat,
   getOrtherList,
   getVideoList,
+  removeChatBox,
 } from "@/lib/service/message.service";
+import { useChatItemContext } from "@/context/ChatItemContext";
+import { FriendRequestDTO } from "@/dtos/FriendDTO";
+import { block } from "@/lib/service/friend.service";
+import ReportCard from "@/components/card/report/ReportCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const getAllImagesFromChat = (chatMessages: FileContent[]) => {
   return chatMessages.filter((message) => message.type === "Image");
@@ -40,23 +49,36 @@ const getAllVideosFromChat = (chatMessages: FileContent[]) => {
 const InfoChat = ({
   item,
   setModalVisible,
+  setRelation,
 }: {
   item: any;
   setModalVisible: (visible: boolean) => void;
+  setRelation: any;
 }) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [notification, setNotification] = useState(true);
   const [showAllImages, setShowAllImages] = useState(false);
   const [showAllFiles, setShowAllFiles] = useState(false);
-
+  const { allChat, setAllChat } = useChatItemContext();
+  const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
+  const { id } = useLocalSearchParams();
   const toggleNotification = () => {
     setNotification((prev) => !prev);
   };
-
+  const router = useRouter(); // Khởi tạo router
   const [messages, setMessages] = useState<FileContent[]>([]);
   const [videoList, setVideoList] = useState<FileContent[]>([]);
   const [files, setFiles] = useState<FileContent[]>([]);
+  const [isReport, setIsReport] = useState(false);
+
+  const handleIsReport = () => {
+    setIsReport(true);
+  };
+
+  const closeReport = () => {
+    setIsReport(false);
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -111,6 +133,94 @@ const InfoChat = ({
 
   const imagesInChat = getAllImagesFromChat(messages);
   const videosInChat = getAllVideosFromChat(videoList);
+
+  const handleDeleteChat = async () => {
+    try {
+      Alert.alert(
+        "Delete Message", // Tiêu đề
+        "Are you sure you want to delete this message?", // Nội dung
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Yes",
+            onPress: async () => {
+              await removeChatBox(id?.toString() || "");
+
+              // Lấy danh sách chat sau khi xóa
+              const normalChats = await getListChat();
+              const groupChats = await getListGroupChat();
+              const combinedChats = [...normalChats, ...groupChats];
+
+              // Cập nhật danh sách chat
+              setAllChat(combinedChats);
+              setFilteredChat(combinedChats);
+              Alert.alert("Xóa đoạn chat thành công");
+
+              if (combinedChats.length >= 0) {
+                const firstChat = combinedChats[0];
+                router.push(`./message/${firstChat.id}`); // Điều hướng sang chat đầu tiên
+              } else {
+                router.push("/message"); // Nếu không còn chat, điều hướng về trang tin nhắn chính
+              }
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    } catch (error) {
+      alert("Xóa chat thất bại. Vui lòng thử lại.");
+    }
+  };
+
+  const handleBlockChat = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+
+    if (!item && !userId) return;
+    try {
+      Alert.alert(
+        "Block Message", // Tiêu đề
+        "Are you sure you want to block this message?", // Nội dung
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Yes",
+            onPress: async () => {
+              const token = await AsyncStorage.getItem("token");
+              // Kiểm tra xem receiverId và senderId có tồn tại hay không
+              if (!item?.receiverId || !item?.senderId) {
+                alert("Lỗi: Không có ID người nhận hoặc người gửi.");
+                return;
+              }
+
+              // Tạo đối tượng params theo kiểu FriendRequestDTO
+              const params: FriendRequestDTO = {
+                sender: item.senderId || null, // Nếu senderId là undefined, sử dụng null
+                receiver: item.receiverId || null, // Nếu receiverId là undefined, sử dụng null
+              };
+
+              await block(params, token); // Gọi API block
+              setRelation("blocked"); // Hoặc bạn có thể thay thế với giá trị mới mà bạn muốn
+
+              Alert.alert("Block thành công!");
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    } catch (error) {
+      alert("Block chat thất bại. Vui lòng thử lại.");
+    }
+  };
+
+  const handleProfileClick = () => {
+    router.push(`/user/${item.receiverId}`); // Điều hướng sang chat đầu tiên
+  };
 
   return (
     <>
@@ -169,6 +279,7 @@ const InfoChat = ({
                 backgroundColor:
                   colorScheme === "dark" ? colors.dark[200] : colors.light[800],
               }}
+              onPress={handleProfileClick}
             >
               <UserIcon size={28} color={iconColor} />
             </TouchableOpacity>
@@ -263,6 +374,7 @@ const InfoChat = ({
             />
           ))}
         </View>
+
         <View className="ml-5 mt-5">
           <View className="flex flex-row">
             <FileIcon size={28} color={iconColor} />
@@ -285,7 +397,7 @@ const InfoChat = ({
             </TouchableOpacity>
           </View>
         </View>
-        <View className="flex flex-1 mt-3 max-h-24">
+        <View className="flex flex-row mt-3 mx-10">
           {files.slice(0, 2).map((file, index) => (
             <View
               className={`flex-1 flex-row h-[32px] mb-2 items-center font-mregular px-4 mx-8 rounded-lg text-sm border border-[#D9D9D9] ${
@@ -316,7 +428,7 @@ const InfoChat = ({
         </View>
 
         <View className="ml-5 mt-5">
-          <View className="flex flex-row">
+          <TouchableOpacity className="flex flex-row" onPress={handleIsReport}>
             <ReportIcon size={30} color={iconColor} />
             <Text
               style={{
@@ -327,10 +439,10 @@ const InfoChat = ({
             >
               Báo cáo
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View className="ml-5 mt-5">
-          <View className="flex flex-row">
+          <TouchableOpacity className="flex flex-row" onPress={handleBlockChat}>
             <BlockIcon size={28} color={iconColor} />
             <Text
               style={{
@@ -341,10 +453,13 @@ const InfoChat = ({
             >
               Chặn
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View className="ml-5 mt-5">
-          <View className="flex flex-row">
+          <TouchableOpacity
+            className="flex flex-row"
+            onPress={handleDeleteChat}
+          >
             <TrashIcon size={28} color={iconColor} />
             <Text
               style={{
@@ -355,7 +470,7 @@ const InfoChat = ({
             >
               Xóa đoạn chat
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -427,6 +542,7 @@ const InfoChat = ({
           </View>
         </View>
       </Modal>
+
       <Modal
         transparent={true}
         animationType="slide"
@@ -524,6 +640,15 @@ const InfoChat = ({
           </View>
         </View>
       </Modal>
+
+      {isReport && (
+        <ReportCard
+          onClose={closeReport}
+          type="message"
+          entityId={id.toString()}
+          reportedId={item?.receiverId || ""}
+        />
+      )}
     </>
   );
 };

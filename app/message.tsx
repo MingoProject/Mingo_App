@@ -57,14 +57,6 @@ const Message = () => {
     fetchChats();
   }, []);
 
-  const handleMessagePress = (item: any) => {
-    // Cập nhật người dùng được chọn
-    setSelectedItem(item);
-    // Điều hướng đến trang chat với thông tin người dùng được chọn
-    // router.push(`/chat?boxId=${item.id}`); // Đường dẫn tới chat.jsx
-    router.push(`./chats/${item.id}`);
-  };
-
   // Hàm lọc các cuộc trò chuyện theo tên
   const handleSearch = (text: string) => {
     const searchValue = text;

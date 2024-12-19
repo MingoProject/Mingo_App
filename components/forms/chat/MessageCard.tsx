@@ -47,7 +47,6 @@ const MessageCard = ({
   const [isModalVisible, setModalVisible] = useState(false); // Điều khiển việc hiển thị modal
 
   const toggleModal = () => setModalVisible(!isModalVisible);
-  const [isAction, setIsAction] = useState(false);
 
   const handleDelete = async () => {
     try {
@@ -69,6 +68,7 @@ const MessageCard = ({
             },
           },
         ],
+
         { cancelable: true }
       );
     } catch (error) {

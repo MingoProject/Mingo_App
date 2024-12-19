@@ -41,24 +41,19 @@ import {
 import InfoChat from "../../components/forms/chat/InfoChat";
 import { useAuth } from "../../context/AuthContext";
 import {
-  FileContent,
-  ItemChat,
   PusherDelete,
   PusherRevoke,
   ResponseMessageDTO,
 } from "@/dtos/MessageDTO";
-import { FindUserDTO } from "@/dtos/UserDTO";
-import { getFileFormat } from "@/lib/utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { pusherClient } from "@/lib/pusher";
 import * as FileSystem from "expo-file-system";
-import { shareAsync } from "expo-sharing";
-import { checkRelation } from "@/lib/service/relation.service";
 import { useChatItemContext } from "@/context/ChatItemContext";
-import { Audio } from "expo-av";
-import * as ImagePicker from "expo-image-picker";
 import { pickMedia } from "@/lib/untils/GalleryPicker";
 import MessageCard from "@/components/forms/chat/MessageCard";
+import { checkRelation } from "@/lib/service/relation.service";
+import { FriendRequestDTO } from "@/dtos/FriendDTO";
+import { unblock } from "@/lib/service/friend.service";
 
 const Chat = () => {
   const [messages, setMessages] = useState<ResponseMessageDTO[]>([]); // Mảng tin nhắn
@@ -135,7 +130,66 @@ const Chat = () => {
     return () => {
       isMounted = false; // Cleanup khi component unmount
     };
-  }, []);
+  }, [setRelation]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const check = async () => {
+      try {
+        const userId = await AsyncStorage.getItem("userId");
+        // const userId = await AsyncStorage.getItem("userId");
+        if (userId) {
+          const res: any = await checkRelation(
+            userId,
+            chatItem?.receiverId?.toString()
+          );
+          if (isMounted) {
+            if (!res) {
+              setRelation("stranger");
+              // setRelationStatus(false);
+            } else {
+              const { relation, status, sender, receiver } = res;
+
+              if (relation === "bff") {
+                if (status) {
+                  setRelation("bff"); //
+                } else if (userId === sender) {
+                  setRelation("senderRequestBff"); //
+                } else if (userId === receiver) {
+                  setRelation("receiverRequestBff"); //
+                }
+              } else if (relation === "friend") {
+                if (status) {
+                  setRelation("friend"); //
+                } else if (userId === sender) {
+                  setRelation("following"); //
+                } else if (userId === receiver) {
+                  setRelation("follower"); //
+                }
+              } else if (relation === "block") {
+                if (userId === sender) {
+                  setRelation("blocked"); //
+                } else if (userId === receiver) {
+                  setRelation("blockedBy");
+                }
+              } else {
+                setRelation("stranger"); //
+              }
+              // setRelationStatus(status);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching relation:", error);
+      }
+    };
+    check();
+
+    return () => {
+      isMounted = false; // Cleanup khi component unmount
+    };
+  }, [chatItem?.receiverId]);
 
   const handlePickMedia = async () => {
     const media = await pickMedia();
@@ -342,14 +396,139 @@ const Chat = () => {
     }
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //       <ActivityIndicator size="large" color="#0000ff" />
-  //       <Text>Loading...</Text>
-  //     </View>
-  //   );
-  // }
+  const handleUnBlockChat = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+
+    if (!chatItem) return;
+
+    try {
+      const token = await AsyncStorage.getItem("token");
+
+      // Kiểm tra xem receiverId và senderId có tồn tại hay không
+      if (!chatItem?.receiverId || !userId) {
+        Alert.alert("Lỗi: Không có ID người nhận hoặc người gửi.");
+        return;
+      }
+
+      // Tạo đối tượng params theo kiểu FriendRequestDTO
+      const params: FriendRequestDTO = {
+        sender: userId || null, // Nếu senderId là undefined, sử dụng null
+        receiver: chatItem?.receiverId?.toString() || null, // Nếu receiverId là undefined, sử dụng null
+      };
+
+      await unblock(params, token);
+
+      setRelation("stranger"); // Hoặc bạn có thể thay thế với giá trị mới mà bạn muốn
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const DefaultView = () => (
+    <View className="flex flex-col items-center justify-center w-full h-full">
+      <Text className="text-lg text-gray-600">
+        Chọn một cuộc trò chuyện để bắt đầu.
+      </Text>
+      <Text className="text-sm text-gray-400">
+        Không có cuộc trò chuyện nào được chọn.
+      </Text>
+    </View>
+  );
+
+  // Component khi đang tải
+  const LoadingView = () => (
+    <View className="flex flex-col items-center justify-center w-full h-full">
+      <View className="loader"></View>
+      <Text className="text-sm text-gray-500">Đang tải...</Text>
+    </View>
+  );
+
+  // Component khi bị chặn bởi người dùng
+  const BlockedByView = () => (
+    <View className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
+      <Text className="text-sm">
+        Bạn không thể liên lạc với người dùng này.
+      </Text>
+    </View>
+  );
+
+  // Component khi bị người dùng chặn
+  const BlockedView = () => (
+    <View className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
+      <Text className="text-sm p-4 flex">Bạn đã chặn người dùng này.</Text>
+      {/* Nút "Bỏ chặn" */}
+      <TouchableOpacity
+        style={[styles.button, styles.unblockButton]}
+        className="flex  items-center justify-center w-fit  h-11"
+        onPress={handleUnBlockChat}
+      >
+        <Text className="self-center w-14 justify-center">Bỏ chặn</Text>
+      </TouchableOpacity>
+
+      {/* Nút "Báo cáo" */}
+      <TouchableOpacity
+        style={[styles.button, styles.reportButton]}
+        className="flex  items-center justify-center w-fit  h-11"
+      >
+        <Text className="self-center w-14 justify-center text-white">
+          Báo cáo
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const ChatView = () => (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <View style={styles.inputContainer} className="gap-2 flex">
+        <TouchableOpacity onPress={handleIconClick}>
+          <PlusIcon size={27} color={iconColor} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePickMedia}>
+          <CameraIcon size={27} color={iconColor} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePickMedia}>
+          <ImageIcon size={25} color={iconColor} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <MicroIcon size={25} color={iconColor} />
+        </TouchableOpacity>
+        <TextInput
+          placeholder="Nhập tin nhắn..."
+          className={`flex-1 text-sm border rounded-full px-4`}
+          onChangeText={handleTextInput}
+          value={value}
+        />
+        <TouchableOpacity onPress={handleSend}>
+          <SendIcon size={28} color={iconColor} />
+        </TouchableOpacity>
+        <View>
+          {selectedFiles.map((file, index) => (
+            <Text key={index}>{file.name}</Text>
+          ))}
+        </View>
+      </View>
+    </KeyboardAvoidingView>
+  );
+
+  const renderContent = () => {
+    if (!chatItem) {
+      return <DefaultView />;
+    }
+
+    switch (relation) {
+      case "":
+        return <LoadingView />;
+      case "blockedBy":
+        return <BlockedByView />;
+      case "blocked":
+        return <BlockedView />;
+      default:
+        return <ChatView />;
+    }
+  };
 
   useEffect(() => {
     if (scrollViewRef.current) {
@@ -456,10 +635,15 @@ const Chat = () => {
         visible={isModalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <InfoChat item={chatItem} setModalVisible={setModalVisible} />
+        <InfoChat
+          item={chatItem}
+          setModalVisible={setModalVisible}
+          setRelation={setRelation}
+        />
       </Modal>
 
-      <KeyboardAvoidingView
+      {/*   
+<KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
@@ -496,7 +680,10 @@ const Chat = () => {
             ))}
           </View>
         </View>
-      </KeyboardAvoidingView>
+        
+      </KeyboardAvoidingView> */}
+
+      <View className="justify-end">{renderContent()}</View>
     </View>
   );
 };
@@ -512,6 +699,31 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 20,
     paddingHorizontal: 10,
+  },
+
+  message: {
+    fontSize: 14,
+    color: "#4B5563", // Màu xám
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  button: {
+    width: "70%",
+    paddingVertical: 12,
+    borderRadius: 16,
+    alignItems: "center",
+    marginBottom: 10, // Khoảng cách giữa các nút
+  },
+  unblockButton: {
+    backgroundColor: "#d6d9de", // Màu đỏ cho nút "Báo cáo"
+  },
+  reportButton: {
+    backgroundColor: colors.primary[100], // Màu xanh dương cho nút "Bỏ chặn"
+  },
+  buttonText: {
+    fontSize: 14,
+    color: "white", // Màu chữ trắng cho các nút
+    alignSelf: "center",
   },
 });
 
