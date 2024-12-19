@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
-import { View, Text, FlatList } from "react-native";
-import { getMyBlocks } from "@/lib/service/user.service";
+import { getMyFollowers, getMyFollowings } from "@/lib/service/user.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, Text, FlatList } from "react-native";
+import { useTheme } from "../../context/ThemeContext"; // Make sure this is correctly imported
+import { colors } from "../../styles/colors"; // Adjust the import path as necessary
 import Card from "./Card";
 
-const Block = () => {
-  const [friendList, setFriendList] = useState([]);
+const Follower = () => {
+  const { colorScheme } = useTheme(); // Get the color scheme from context
+  const [followersData, setFollowersData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
-  const fetchFriendListData = async () => {
+  const fetchFollowersData = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
-      if (!token) throw new Error("Token không tồn tại");
       const userId = await AsyncStorage.getItem("userId");
-
-      const data = await getMyBlocks(userId);
-      setFriendList(data);
+      if (!token) throw new Error("Token không tồn tại");
+      const data = await getMyFollowers(userId);
+      setFollowersData(data);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching friend request:", error);
@@ -27,7 +29,7 @@ const Block = () => {
   };
 
   useEffect(() => {
-    fetchFriendListData();
+    fetchFollowersData();
   }, []);
 
   if (isLoading) {
@@ -50,15 +52,15 @@ const Block = () => {
   return (
     <View className={`w-full h-5/6`}>
       <FlatList
-        data={friendList} // Use the fake data here
+        data={followersData}
         keyExtractor={(item: any) => item._id}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <Card
             item={item}
-            actionButton="block"
-            isLoiMoi={false}
-            setData={setFriendList}
+            actionButton="follower"
+            isLoiMoi={true}
+            setData={setFollowersData}
           />
         )}
       />
@@ -66,4 +68,4 @@ const Block = () => {
   );
 };
 
-export default Block;
+export default Follower;

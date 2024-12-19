@@ -28,7 +28,7 @@ import DetailInformation from "@/components/forms/profile/DetailInfomation";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
-  const { colorScheme, toggleColorScheme } = useTheme();
+  const { colorScheme } = useTheme();
   const [setting, setSetting] = useState(false);
   const [isSelect, setIsSelect] = useState("profile");
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
@@ -92,7 +92,11 @@ const Profile = () => {
               <OpenAddPost handleAddPost={handleAddPost} />
             </>
             {postsData.map((item) => (
-              <PostCard key={item._id} item={item} />
+              <PostCard
+                key={item._id}
+                item={item}
+                setPostsData={setPostsData}
+              />
             ))}
           </View>
         );

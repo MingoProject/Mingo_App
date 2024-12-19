@@ -94,3 +94,18 @@ export const getFileFormat = (mimeType: string, fileName: string): string => {
   // Trả về "unknown" nếu không xác định được
   return "unknown";
 };
+
+export const timeSinceMessage = (timestamp: Date | string) => {
+  const now = new Date();
+  const messageTimestamp = new Date(timestamp);
+  const diffInMs = now.getTime() - messageTimestamp.getTime();
+  const diffInSeconds = Math.floor(diffInMs / 1000);
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInDays > 0) return `${diffInDays} ngày`;
+  if (diffInHours > 0) return `${diffInHours} giờ`;
+  if (diffInMinutes > 0) return `${diffInMinutes} phút`;
+  return `${diffInSeconds} giây`;
+};
