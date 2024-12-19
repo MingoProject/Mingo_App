@@ -56,7 +56,12 @@ const BestFriend = () => {
         keyExtractor={(item: any) => item._id}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <Card item={item} actionButton="Nhắn tin" isLoiMoi={false} />
+          <Card
+            item={item}
+            actionButton="bestfriend"
+            isLoiMoi={false}
+            setData={setFriendList}
+          />
         )}
       />
     </View>

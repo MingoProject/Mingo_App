@@ -1,11 +1,23 @@
-import { View, Text } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  Platform,
+  TouchableOpacity,
+  ScrollView,
+  Modal,
+  TextInput,
+} from "react-native";
+import React, { useState } from "react";
 import MyInput from "../../components/share/MyInput";
 import Svg, { Path } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors";
 import MyButton from "../../components/share/MyButton";
 import { useRouter } from "expo-router";
+import { register } from "@/lib/service/user.service";
+import { sendOTP } from "@/lib/service/auth.service";
+import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const PlusIcon = ({ color = "#dc0404", width = 8, height = 8 }) => (
   <Svg
@@ -23,10 +35,96 @@ const PlusIcon = ({ color = "#dc0404", width = 8, height = 8 }) => (
 
 const SignUp = () => {
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const router = useRouter();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [gender, setGender] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [otp, setOtp] = useState("");
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [isOtpStep, setIsOtpStep] = useState(false);
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  const [selectedDay, setSelectedDay] = useState(0);
+  const [selectedMonth, setSelectedMonth] = useState(0);
+  const [selectedYear, setSelectedYear] = useState(0);
+
+  const handleOtpSubmit = async (e) => {
+    e.preventDefault();
+
+    if (otp !== generatedOtp.toString()) {
+      setErrorMessage("Invalid OTP!");
+      return;
+    }
+    const selectedDate = new Date(selectedYear, selectedMonth - 1, selectedDay);
+
+    setErrorMessage("");
+
+    const userData = {
+      firstName,
+      lastName,
+      nickName: "",
+      phoneNumber,
+      email,
+      password,
+      rePassword: confirmPassword,
+      gender: gender === "male",
+      birthDay: new Date(selectedDate),
+    };
+
+    try {
+      const newUser = await register(userData);
+
+      if (newUser) {
+        setSuccessMessage("Registration successful! Please log in.");
+        setFirstName("");
+        setLastName("");
+        setEmail("");
+        setPhoneNumber("");
+        setGender("");
+        setPassword("");
+        setConfirmPassword("");
+        setIsOtpStep(false);
+        router.push("signin");
+      } else {
+        setErrorMessage("Registration failed!");
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      setErrorMessage(error.message || "An unexpected error occurred.");
+    }
+  };
+
+  const handleOtpRequest = async (e) => {
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match!");
+      return;
+    }
+
+    setSuccessMessage("");
+    e.preventDefault();
+    setErrorMessage("");
+    console.log(phoneNumber);
+
+    try {
+      const otpResponse = await sendOTP(phoneNumber);
+      setGeneratedOtp(otpResponse.otp);
+      setIsOtpStep(true);
+    } catch (error) {
+      console.error("Error during OTP request:", error);
+      setErrorMessage(error.message || "Failed to send OTP.");
+    }
+  };
+
   return (
-    <View
+    <ScrollView
       className="w-full h-full p-4 bg-white flex flex-col"
       style={{
         backgroundColor:
@@ -34,7 +132,7 @@ const SignUp = () => {
         flex: 1,
       }}
     >
-      <View className="w-full items-center justify-end pb-10 mt-8">
+      <View className="w-full items-center justify-end pb-10">
         <Text
           className="font-msemibold text-[36px] text-light-500"
           style={{
@@ -42,16 +140,93 @@ const SignUp = () => {
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
         >
-          Đăng Ký
+          Sign-up
         </Text>
       </View>
 
       <View className=" w-full">
         <View className="flex flex-col gap-6">
-          <View className="relative">
+          <View className="flex-row w-full">
+            <View className="relative w-[45%]">
+              <View
+                className="absolute left-3 -top-2  flex flex-row items-center px-1 z-10"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark"
+                      ? colors.dark[300]
+                      : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                  flex: 1,
+                }}
+              >
+                <Text
+                  className="font-mregular text-[12px]"
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
+                  }}
+                >
+                  First Name
+                </Text>
+                <View className="ml-1 pb-1">
+                  <PlusIcon />
+                </View>
+              </View>
+
+              <MyInput
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="First Name"
+                borderRadius={8}
+                height={56}
+                fontSize={14}
+                style={{ zIndex: 1 }} // Đảm bảo input có z-index thấp hơn nhãn
+              />
+            </View>
+            <View className="relative w-[45%] ml-3">
+              {/* Nhãn (Label) */}
+              <View
+                className="absolute left-3 -top-2  flex flex-row items-center px-1 z-10"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark"
+                      ? colors.dark[300]
+                      : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                  flex: 1,
+                }}
+              >
+                <Text
+                  className="font-mregular text-[12px]"
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
+                  }}
+                >
+                  Last Name
+                </Text>
+                <View className="ml-1 pb-1">
+                  <PlusIcon />
+                </View>
+              </View>
+
+              <MyInput
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="Last Name"
+                borderRadius={8}
+                height={56}
+                fontSize={14}
+                style={{ zIndex: 1 }} // Đảm bảo input có z-index thấp hơn nhãn
+              />
+            </View>
+          </View>
+          <View className="relative ">
             {/* Nhãn (Label) */}
             <View
-              className="absolute left-3 -top-2  flex flex-row items-center px-1 z-10"
+              className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
               style={{
                 backgroundColor:
                   colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
@@ -67,7 +242,139 @@ const SignUp = () => {
                       : colors.light[500],
                 }}
               >
-                Họ và tên
+                Gender
+              </Text>
+              <View className="ml-1 pb-1">
+                <PlusIcon />
+              </View>
+            </View>
+
+            {/* Input */}
+            <View
+              style={{
+                overflow: "hidden",
+                height: 140, // Điều chỉnh chiều cao tổng thể của View
+              }}
+            >
+              <Picker
+                selectedValue={gender}
+                onValueChange={(itemValue) => setGender(itemValue)}
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                  height: 20,
+                  fontSize: 12,
+                }}
+                className="text-sm"
+              >
+                <Picker.Item
+                  className="text-sm"
+                  label="Select Gender"
+                  value=""
+                />
+                <Picker.Item className="text-sm" label="Male" value="male" />
+                <Picker.Item
+                  className="text-sm"
+                  label="Female"
+                  value="female"
+                />
+              </Picker>
+            </View>
+          </View>
+          <View className="relative ">
+            <View
+              className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                flex: 1,
+              }}
+            >
+              <Text
+                className="font-mregular text-[12px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                BirthDay
+              </Text>
+              <View className="ml-1 pb-1">
+                <PlusIcon />
+              </View>
+            </View>
+
+            <View className="mb-5 h-56">
+              <View className="flex-row">
+                <Picker
+                  selectedValue={selectedDay.toString()}
+                  style={{ flex: 1, height: 50 }}
+                  onValueChange={(itemValue) => setSelectedDay(itemValue)}
+                >
+                  {days.map((day) => (
+                    <Picker.Item
+                      key={day}
+                      label={day.toString()}
+                      value={day.toString()}
+                    />
+                  ))}
+                </Picker>
+
+                <Picker
+                  selectedValue={selectedMonth.toString()}
+                  style={{ flex: 1, height: 50 }}
+                  onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+                >
+                  {months.map((month) => (
+                    <Picker.Item
+                      key={month}
+                      label={month.toString()}
+                      value={month.toString()}
+                    />
+                  ))}
+                </Picker>
+
+                {/* Year Picker */}
+                <Picker
+                  selectedValue={selectedYear.toString()}
+                  style={{ flex: 1, height: 50 }}
+                  onValueChange={(itemValue) => setSelectedYear(itemValue)}
+                >
+                  {years.map((year) => (
+                    <Picker.Item
+                      key={year}
+                      label={year.toString()}
+                      value={year.toString()}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+          </View>
+
+          <View className="relative">
+            <View
+              className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                flex: 1,
+              }}
+            >
+              <Text
+                className="font-mregular text-[12px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                Phone Number
               </Text>
               <View className="ml-1 pb-1">
                 <PlusIcon />
@@ -76,128 +383,16 @@ const SignUp = () => {
 
             {/* Input */}
             <MyInput
-              placeholder="Họ và tên"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              placeholder="Phone Number"
               borderRadius={8}
               height={56}
               fontSize={14}
               style={{ zIndex: 1 }} // Đảm bảo input có z-index thấp hơn nhãn
             />
           </View>
-          <View className="relative">
-            {/* Nhãn (Label) */}
-            <View
-              className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
-              style={{
-                backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-                flex: 1,
-              }}
-            >
-              <Text
-                className="font-mregular text-[12px]"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                }}
-              >
-                Giới tính
-              </Text>
-              <View className="ml-1 pb-1">
-                <PlusIcon />
-              </View>
-            </View>
 
-            {/* Input */}
-            <MyInput
-              placeholder="Giới tính"
-              borderRadius={8}
-              height={56}
-              fontSize={14}
-              style={{
-                zIndex: 1,
-                backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-                flex: 1,
-              }} // Đảm bảo input có z-index thấp hơn nhãn
-            />
-          </View>
-          <View className="relative">
-            {/* Nhãn (Label) */}
-            <View
-              className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
-              style={{
-                backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-                flex: 1,
-              }}
-            >
-              <Text
-                className="font-mregular text-[12px]"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                }}
-              >
-                Số điện thoại
-              </Text>
-              <View className="ml-1 pb-1">
-                <PlusIcon />
-              </View>
-            </View>
-
-            {/* Input */}
-            <MyInput
-              placeholder="Số điện thoại"
-              borderRadius={8}
-              height={56}
-              fontSize={14}
-              style={{ zIndex: 1 }} // Đảm bảo input có z-index thấp hơn nhãn
-            />
-          </View>
-          <View className="relative">
-            {/* Nhãn (Label) */}
-            <View
-              className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
-              style={{
-                backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-                flex: 1,
-              }}
-            >
-              <Text
-                className="font-mregular text-[12px]"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                }}
-              >
-                Địa chỉ
-              </Text>
-              <View className="ml-1 pb-1">
-                <PlusIcon />
-              </View>
-            </View>
-
-            {/* Input */}
-            <MyInput
-              placeholder="Địa chỉ"
-              borderRadius={8}
-              height={56}
-              fontSize={14}
-              backgroundColor={`backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-                `}
-              style={{
-                zIndex: 1,
-              }} // Đảm bảo input có z-index thấp hơn nhãn
-            />
-          </View>
           <View className="relative">
             {/* Nhãn (Label) */}
             <View
@@ -226,6 +421,8 @@ const SignUp = () => {
 
             {/* Input */}
             <MyInput
+              value={email}
+              onChangeText={setEmail}
               placeholder="Email@gmail.com"
               borderRadius={8}
               height={56}
@@ -233,14 +430,92 @@ const SignUp = () => {
               style={{ zIndex: 1 }} // Đảm bảo input có z-index thấp hơn nhãn
             />
           </View>
+          <View className="flex-row w-full">
+            <View className="relative w-[45%]">
+              <View
+                className="absolute left-3 -top-2  flex flex-row items-center px-1 z-10"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark"
+                      ? colors.dark[300]
+                      : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                  flex: 1,
+                }}
+              >
+                <Text
+                  className="font-mregular text-[12px]"
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
+                  }}
+                >
+                  Password
+                </Text>
+                <View className="ml-1 pb-1">
+                  <PlusIcon />
+                </View>
+              </View>
+
+              <MyInput
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Password"
+                borderRadius={8}
+                height={56}
+                fontSize={14}
+                style={{ zIndex: 1 }} // Đảm bảo input có z-index thấp hơn nhãn
+              />
+            </View>
+            <View className="relative w-[45%] ml-3">
+              {/* Nhãn (Label) */}
+              <View
+                className="absolute left-3 -top-2  flex flex-row items-center px-1 z-10"
+                style={{
+                  backgroundColor:
+                    colorScheme === "dark"
+                      ? colors.dark[300]
+                      : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                  flex: 1,
+                }}
+              >
+                <Text
+                  className="font-mregular text-[12px]"
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
+                  }}
+                >
+                  Confirm password
+                </Text>
+                <View className="ml-1 pb-1">
+                  <PlusIcon />
+                </View>
+              </View>
+
+              <MyInput
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="Confirm password"
+                borderRadius={8}
+                height={56}
+                fontSize={14}
+                style={{ zIndex: 1 }} // Đảm bảo input có z-index thấp hơn nhãn
+              />
+            </View>
+          </View>
           <View>
             <MyButton
-              title="Đăng Ký"
+              title="Signup"
               borderRadius={12}
               backgroundColor="#FFAABB"
               fontSize={16}
               color="white"
               fontFamily="Montserrat-Bold"
+              onPress={handleOtpRequest}
             />
           </View>
         </View>
@@ -255,10 +530,10 @@ const SignUp = () => {
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
             }}
           >
-            Hoặc
+            Or
           </Text>
         </View>
-        <View className="mt-4 w-full flex flex-row items-center justify-center">
+        <View className="mt-4 mb-10 w-full flex flex-row items-center justify-center">
           <Text
             className="font-mregular text-[16px] text-light-500 "
             style={{
@@ -266,7 +541,7 @@ const SignUp = () => {
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
             }}
           >
-            Bạn đã có tài khoản?{" "}
+            Already have an account?{" "}
             <Text
               onPress={() => router.push("signin")}
               style={{
@@ -275,12 +550,85 @@ const SignUp = () => {
               }}
               className="font-mbold text-light-500 text-[16px] "
             >
-              Đăng Nhập
+              Login
             </Text>
           </Text>
         </View>
       </View>
-    </View>
+      <Modal
+        visible={isOtpStep}
+        onRequestClose={() => setIsOtpStep(false)}
+        animationType="slide"
+      >
+        <View
+          className="flex-1 mt-16"
+          style={{
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+          }}
+        >
+          <View className="flex-row">
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+              className="font-msemibold text-lg ml-3"
+            >
+              Verify OTP
+            </Text>
+            <TouchableOpacity
+              onPress={() => setIsOtpStep(false)}
+              className="ml-auto pr-5"
+            >
+              <Text
+                style={{
+                  color: colorScheme === "dark" ? colors.dark[100] : "#D9D9D9",
+                }}
+                className="font-msemibold mt-2"
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View>
+            <View className="mt-6 px-5">
+              <Text
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+                className="font-mmedium mb-2"
+              >
+                OTP
+              </Text>
+              <TextInput
+                value={otp}
+                onChangeText={setOtp}
+                secureTextEntry
+                className="border-gray-200 border rounded p-3"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              />
+            </View>
+            <TouchableOpacity
+              onPress={handleOtpSubmit}
+              className="bg-primary-100 rounded p-3 mt-6 mx-6"
+            >
+              <Text className="text-white text-center font-mmedium">
+                Submit
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </ScrollView>
   );
 };
 

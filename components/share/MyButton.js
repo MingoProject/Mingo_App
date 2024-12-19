@@ -12,7 +12,7 @@ const MyButton = ({
   paddingTop,
   backgroundColor = "white",
   paddingBottom,
-  color = "black",
+  color = colors.light[500],
   paddingLeft,
   paddingRight,
   borderRadius = 10,

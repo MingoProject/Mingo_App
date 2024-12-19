@@ -88,7 +88,9 @@ const DetailImage = ({ isModalVisible, setModalVisible, image }: any) => {
         ...newCommentData,
         userId: {
           _id: profile?._id,
-          avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
+          avatar:
+            profile?.avatar ||
+            "https://i.pinimg.com/736x/e0/90/1f/e0901fe498301d96aa23ad2fe9e4c9f0.jpg",
           firstName: profile?.firstName || "Anonymous",
           lastName: profile?.lastName || "Anonymous",
         },

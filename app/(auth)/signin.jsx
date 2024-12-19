@@ -81,10 +81,10 @@ const SignIn = () => {
         setProfile(profileData.userProfile);
         router.push("home");
       } else {
-        setErrorMessage("Đăng nhập không thành công!");
+        setErrorMessage("login failed!");
       }
     } catch (error) {
-      console.error("Lỗi đăng nhập:", error);
+      console.error("Error:", error);
       setErrorMessage(error.message || "Có lỗi xảy ra.");
     }
   };
@@ -108,7 +108,7 @@ const SignIn = () => {
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
             }}
           >
-            Đăng Nhập
+            Login
           </Text>
         </View>
 
@@ -190,7 +190,7 @@ const SignIn = () => {
 
             <View>
               <MyButton
-                title="Đăng nhập"
+                title="Login"
                 borderRadius={12}
                 backgroundColor="#FFAABB"
                 fontSize={16}
@@ -201,24 +201,6 @@ const SignIn = () => {
             </View>
 
             <View className="px-2 flex flex-row justify-between items-center">
-              <TouchableOpacity
-                onPress={() => setIsRemember(!isRemember)}
-                style={{ flexDirection: "row", alignItems: "center" }}
-              >
-                <CheckBoxIcon checked={isRemember} />
-                <Text
-                  className="ml-2 text-light-500"
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[500],
-                  }}
-                >
-                  Ghi nhớ mật khẩu
-                </Text>
-              </TouchableOpacity>
-
               <TouchableOpacity
                 onPressIn={() => {
                   setIsPressed(true);
@@ -234,7 +216,7 @@ const SignIn = () => {
                         : colors.light[500],
                   }}
                 >
-                  Quên mật khẩu?
+                  Forget password?
                 </Text>
               </TouchableOpacity>
             </View>
@@ -252,7 +234,7 @@ const SignIn = () => {
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
             }}
           >
-            Hoặc
+            Or
           </Text>
         </View>
         <View className="mt-4 w-full flex flex-row items-center justify-center">
@@ -263,7 +245,7 @@ const SignIn = () => {
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
             }}
           >
-            Bạn chưa có tài khoản?{" "}
+            You don't have an account yet?{" "}
             <Text
               onPress={() => router.push("signup")}
               className="font-mbold text-light-500 text-[16px]"
@@ -272,7 +254,7 @@ const SignIn = () => {
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
             >
-              Đăng Ký
+              Sign up
             </Text>
           </Text>
         </View>
