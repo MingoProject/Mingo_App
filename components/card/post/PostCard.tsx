@@ -85,6 +85,14 @@ const PostCard = ({ item }: any) => {
                               controls={true} // Hiển thị các controls như play, pause, volume,...
                               resizeMode="contain" // Điều chỉnh video sao cho phù hợp với container
                             /> */}
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "#000",
+                    }}
+                  ></View>
                 </View>
               ) : (
                 <Text>Unsupported Media</Text>

@@ -11,7 +11,11 @@ import {
   unfriend,
   unrequestBffOrRefuseBffRequest,
 } from "@/lib/service/friend.service";
-import { createNotification } from "@/lib/service/notification.service";
+import {
+  createNotification,
+  deleteNotification,
+  getNotification,
+} from "@/lib/service/notification.service";
 import { colors } from "@/styles/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
@@ -38,6 +42,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
         case "addFriend":
           await requestAddFriend(params, token);
           setRelation("following");
+          onClose();
           await createNotification(
             {
               senderId: userId,
@@ -50,18 +55,22 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
         case "unfriend":
           await unfriend(params, token);
           setRelation("stranger");
+          onClose();
           break;
         case "block":
           await block(params, token);
           setRelation("blocked");
+          onClose();
           break;
         case "unBlock":
           await unblock(params, token);
           setRelation("stranger");
+          onClose();
           break;
         case "addBFF":
           await requestAddBFF(params, token);
           setRelation("senderRequestBff");
+          onClose();
           await createNotification(
             {
               senderId: userId,
@@ -74,6 +83,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
         case "unBFF":
           await unBFF(params, token);
           setRelation("friend");
+          onClose();
           break;
         case "unRequestBff":
           // Cancel the sent BFF request
@@ -85,9 +95,20 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
             token
           );
           setRelation("friend");
+          onClose();
+          try {
+            const notification = await getNotification(
+              userId,
+              id,
+              "bff_request"
+            );
+            await deleteNotification(notification._id, token);
+          } catch (error) {
+            console.error("Error fetching notification:", error);
+          }
+
           break;
         case "refuseRequestBff":
-          // Refuse the received BFF request
           await unrequestBffOrRefuseBffRequest(
             {
               sender: id,
@@ -96,6 +117,18 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
             token
           );
           setRelation("friend");
+          onClose();
+          try {
+            const notification = await getNotification(
+              id,
+              userId,
+              "bff_request"
+            );
+            await deleteNotification(notification._id, token);
+          } catch (error) {
+            console.error("Error fetching notification:", error);
+          }
+
           break;
         case "unfollow":
           await unfollowOrRefuseFriendRequest(
@@ -106,6 +139,18 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
             token
           );
           setRelation("stranger");
+          onClose();
+          try {
+            const notification = await getNotification(
+              userId,
+              id,
+              "friend_request"
+            );
+            await deleteNotification(notification._id, token);
+          } catch (error) {
+            console.error("Error fetching notification:", error);
+          }
+
           break;
         case "refuseRequestFriend":
           // Refuse a friend request
@@ -117,6 +162,18 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
             token
           );
           setRelation("stranger");
+          onClose();
+          try {
+            const notification = await getNotification(
+              id,
+              userId,
+              "friend_request"
+            );
+            await deleteNotification(notification._id, token);
+          } catch (error) {
+            console.error("Error fetching notification:", error);
+          }
+
           break;
         case "acceptRequestFriend":
           await acceptAddFriend(
@@ -127,6 +184,18 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
             token
           );
           setRelation("friend");
+          onClose();
+          try {
+            const notification = await getNotification(
+              id,
+              userId,
+              "friend_request"
+            );
+            await deleteNotification(notification._id, token);
+          } catch (error) {
+            console.error("Error fetching notification:", error);
+          }
+
           await createNotification(
             {
               senderId: userId,
@@ -145,6 +214,18 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
             token
           );
           setRelation("bff");
+          onClose();
+          try {
+            const notification = await getNotification(
+              id,
+              userId,
+              "bff_request"
+            );
+            await deleteNotification(notification._id, token);
+          } catch (error) {
+            console.error("Error fetching notification:", error);
+          }
+
           await createNotification(
             {
               senderId: userId,
@@ -157,8 +238,6 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
         default:
           break;
       }
-
-      onClose();
     } catch (error: any) {
       console.error("Error:", error);
       alert(error.message || "Đã xảy ra lỗi.");

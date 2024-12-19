@@ -11,6 +11,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
+const fileContent: FileContent = {
+  fileName: "",
+  url: "",
+  publicId: "",
+  bytes: "",
+  width: "0",
+  height: "0",
+  format: "",
+  type: "",
+};
+
 export async function getAllChat(boxId: string): Promise<ChatResponse> {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
@@ -120,11 +131,11 @@ export async function getListChat(): Promise<ItemChat[]> {
 
 export async function getListGroupChat(): Promise<ItemChat[]> {
   const token = await AsyncStorage.getItem("token");
-  const userId = await AsyncStorage.getItem("userId");
+  const userId = await AsyncStorage.getItem("userId"); // Assuming userId is stored in AsyncStorage, adjust if necessary.
 
   console.log(userId, "log userId");
 
-  // Kiểm tra xem token và userId có tồn tại trong AsyncStorage không
+  // Kiểm tra xem token và userId có tồn tại trong localStorage không
   if (!token || !userId) {
     console.error("Token or User ID is missing");
     throw new Error("Authentication token or User ID is missing.");
@@ -148,6 +159,7 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
 
     const rawData: ResponseMessageBoxDTO = await response.json();
     // console.log(rawData, "raw data");
+    console.log(rawData, "rawData");
 
     // Mapping the response to ItemChat
     const chat: ItemChat[] = rawData.box
@@ -161,16 +173,23 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
         if (!receiver && !box.groupName) return null;
 
         // Xử lý trường hợp lastMessage là null
-        const lastMessage = box.responseLastMessage
+        const lastMessage = box.lastMessage
           ? {
-              id: box.responseLastMessage.id,
-              text: box.responseLastMessage.text
-                ? box.responseLastMessage.text
-                : box.responseLastMessage.text || "",
-              timestamp: new Date(box.responseLastMessage.createAt),
-              createBy: box.responseLastMessage.createBy,
+              id: box.lastMessage.id,
+              text: box.lastMessage.text
+                ? box.lastMessage.text
+                : box.lastMessage.text || "Bắt đầu đoạn chat",
+              contentId: box.lastMessage.contentId || fileContent,
+              timestamp: new Date(box.lastMessage.createAt),
+              createBy: box.lastMessage.createBy,
             }
-          : { id: "", text: "", timestamp: new Date(), createBy: "" };
+          : {
+              id: "",
+              text: "Bắt đầu đoạn chat",
+              timestamp: new Date(),
+              createBy: "",
+              contentId: fileContent,
+            };
 
         return {
           id: box._id,
@@ -206,6 +225,7 @@ export async function sendMessage(formData: any): Promise<void> {
       method: "POST",
       headers: {
         Authorization: `${token}`, // Use 'Bearer' for token authorization
+        "Content-Type": "multipart/form-data",
       },
       body: formData, // FormData should be sent directly as the body
     });
@@ -393,7 +413,7 @@ export async function findMessage(
 }
 
 export async function createGroup(data: any): Promise<any> {
-  // Lấy token từ AsyncStorage
+  // Lấy token từ localStorage
   const token = await AsyncStorage.getItem("token");
   if (!token) {
     console.error("No token found");

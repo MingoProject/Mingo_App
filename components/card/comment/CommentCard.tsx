@@ -14,7 +14,8 @@ import { getTimestamp } from "@/lib/utils";
 import CommentAction from "@/components/forms/comment/CommentAction";
 import {
   addReplyToComment,
-  createReplyComment,
+  createReplyCommentPost,
+  createReplyCommentMedia,
   getCommentByCommentId,
 } from "@/lib/service/comment.service";
 import { useAuth } from "@/context/AuthContext";
@@ -87,53 +88,118 @@ const CommentCard = ({
     }
 
     try {
-      const newCommentData = await createReplyComment(
-        { content: newComment },
-        token
-      );
-      if (newCommentData) {
-        await addReplyToComment(replyingTo, newCommentData._id, token);
-      }
+      setNewComment("");
+      setReplyingTo(null);
+      if (postId) {
+        console.log({ content: newComment, parentId: comment._id });
+        const newCommentData = await createReplyCommentPost(
+          { content: newComment, parentId: comment._id },
+          token,
+          postId
+        );
+        if (newCommentData) {
+          await addReplyToComment(replyingTo, newCommentData._id, token);
+        }
 
-      const enrichedComment = {
-        ...newCommentData,
-        userId: {
-          _id: profile?._id,
-          avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
-          firstName: profile?.firstName || "Anonymous",
-          lastName: profile?.lastName || "Anonymous",
-          createAt: "Now",
-        },
-      };
+        const currentTime = new Date();
+        const isoStringWithOffset = currentTime
+          .toISOString()
+          .replace("Z", "+00:00");
+        console.log(
+          "Current Time (new Date()):",
+          currentTime.toISOString().replace("Z", "+00:00")
+        );
 
-      setRepliesData((prev) => [enrichedComment, ...prev]);
+        const enrichedComment = {
+          ...newCommentData,
+          userId: {
+            _id: profile?._id,
+            avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
+            firstName: profile?.firstName || "Anonymous",
+            lastName: profile?.lastName || "Anonymous",
+          },
+          createAt: isoStringWithOffset,
+        };
 
-      if (comment.userId._id !== profile._id) {
-        const notificationParams = {
+        setRepliesData((prev) => [enrichedComment, ...prev]);
+
+        if (comment.userId._id !== profile._id) {
+          const notificationParams = {
+            senderId: profile._id,
+            receiverId: comment.userId._id,
+            type: "reply_comment",
+            commentId: comment._id,
+            ...(postId && { postId }),
+            ...(mediaId && { mediaId }),
+          };
+
+          await createNotification(notificationParams, token);
+        }
+
+        const notificationParams2 = {
           senderId: profile._id,
-          receiverId: comment.userId._id,
-          type: "reply_comment",
-          commentId: comment._id,
+          receiverId: author._id,
+          type: "comment",
           ...(postId && { postId }),
           ...(mediaId && { mediaId }),
         };
 
-        await createNotification(notificationParams, token);
+        await createNotification(notificationParams2, token);
+      } else {
+        const newCommentData = await createReplyCommentMedia(
+          { content: newComment, parentId: comment._id },
+          token,
+          mediaId
+        );
+        if (newCommentData) {
+          await addReplyToComment(replyingTo, newCommentData._id, token);
+        }
+
+        const currentTime = new Date();
+        const isoStringWithOffset = currentTime
+          .toISOString()
+          .replace("Z", "+00:00");
+        console.log(
+          "Current Time (new Date()):",
+          currentTime.toISOString().replace("Z", "+00:00")
+        );
+
+        const enrichedComment = {
+          ...newCommentData,
+          userId: {
+            _id: profile?._id,
+            avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
+            firstName: profile?.firstName || "Anonymous",
+            lastName: profile?.lastName || "Anonymous",
+          },
+          createAt: isoStringWithOffset,
+        };
+
+        setRepliesData((prev) => [enrichedComment, ...prev]);
+
+        if (comment.userId._id !== profile._id) {
+          const notificationParams = {
+            senderId: profile._id,
+            receiverId: comment.userId._id,
+            type: "reply_comment",
+            commentId: comment._id,
+            ...(postId && { postId }),
+            ...(mediaId && { mediaId }),
+          };
+
+          await createNotification(notificationParams, token);
+        }
+
+        const notificationParams2 = {
+          senderId: profile._id,
+          receiverId: author._id,
+          type: "comment",
+          ...(postId && { postId }),
+          ...(mediaId && { mediaId }),
+        };
+
+        await createNotification(notificationParams2, token);
       }
-
-      const notificationParams2 = {
-        senderId: profile._id,
-        receiverId: author._id,
-        type: "comment",
-        ...(postId && { postId }),
-        ...(mediaId && { mediaId }),
-      };
-
-      await createNotification(notificationParams2, token);
-
-      console.log("da rep");
-      setNewComment("");
-      setReplyingTo(null);
     } catch (error) {
       console.error("Failed to reply to comment:", error);
     }

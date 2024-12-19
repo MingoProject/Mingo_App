@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
 import MyButton from "../../components/share/MyButton";
-import NotificationCard from "../../components/notifications/NotificationCard";
-import { Notifications } from "../../components/share/data";
+import Notifications from "../../components/notifications/Notifications.tsx";
+// import { Notifications } from "../../components/share/data";
+import { getNotifications } from "@/lib/service/notification.service";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SearchIcon = ({ size = 24, color = "black", onPress }) => {
   return (
@@ -29,6 +31,7 @@ const Notification = () => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isSearch, setIsSearch] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   const handleIsSearch = () => {
     setIsSearch(true);
@@ -38,70 +41,77 @@ const Notification = () => {
     setIsSearch(false);
   };
 
-  const renderHeader = () => (
-    <View
-      className={`flex flex-row justify-between items-center pb-2`}
-      style={{
-        backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-        flex: 1,
-      }}
-    >
-      <View>
-        <Text
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors["title-pink"], // Sử dụng giá trị màu từ file colors.js
-          }}
-          className={`text-[26px] font-msemibold `}
-        >
-          Thông báo
-        </Text>
-      </View>
+  useEffect(() => {
+    let isMounted = true;
+    const fetchNotification = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        if (!token) {
+          console.error("User is not authenticated");
+          return;
+        }
 
-      <View>
-        <SearchIcon size={28} color={iconColor} onPress={handleIsSearch} />
-      </View>
-    </View>
-  );
+        const res = await getNotifications(token);
+        console.log("res", res);
+        if (isMounted) {
+          setNotifications(res);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchNotification();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <View
-      className={`w-full p-4 pb-0 h-full `}
       style={{
+        flex: 1,
         backgroundColor:
           colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-        flex: 1,
       }}
     >
-      <View className={` h-full w-full`}>
-        {/* <View className={`flex flex-row justify-between items-center`}>
-          <View>
-            <Text
-              style={{
-                color:
-                  colorScheme === "dark"
-                    ? colors.dark[100]
-                    : colors["title-pink"], // Sử dụng giá trị màu từ file colors.js
-              }}
-              className={`text-[26px] font-msemibold `}
-            >
-              Thông báo
-            </Text>
-          </View>
-
-          <View>
-            <SearchIcon size={28} color={iconColor} onPress={handleIsSearch} />
-          </View>
-        </View> */}
-        <FlatList
-          data={Notifications} // Use the fake data here
-          keyExtractor={(item) => item._id}
-          showsVerticalScrollIndicator={false}
-          ListHeaderComponent={renderHeader} // Sử dụng component tiêu đề
-          renderItem={({ item }) => <NotificationCard item={item} />}
-        />
+      {/* Header */}
+      <View
+        style={{
+          padding: 16,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 26,
+            fontWeight: "600",
+            color:
+              colorScheme === "dark" ? colors.dark[100] : colors["title-pink"], // Sử dụng giá trị màu từ file colors.js
+          }}
+        >
+          Notifications
+        </Text>
+        <SearchIcon size={28} color={iconColor} onPress={() => {}} />
       </View>
+
+      {/* List */}
+      <FlatList
+        data={notifications}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <Notifications
+            notification={item}
+            notifications={notifications}
+            setNotifications={setNotifications}
+          />
+        )}
+        contentContainerStyle={{
+          paddingBottom: 16,
+        }}
+      />
     </View>
   );
 };

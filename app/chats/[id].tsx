@@ -54,12 +54,14 @@ import { pusherClient } from "@/lib/pusher";
 import * as FileSystem from "expo-file-system";
 import { shareAsync } from "expo-sharing";
 import { checkRelation } from "@/lib/service/relation.service";
-import MyInput from "@/components/share/MyInput";
 import { useChatItemContext } from "@/context/ChatItemContext";
-import { isLoading } from "expo-font";
+import { Audio } from "expo-av";
+import * as ImagePicker from "expo-image-picker";
+import { pickMedia } from "@/lib/untils/GalleryPicker";
+import MessageCard from "@/components/forms/chat/MessageCard";
 
 const Chat = () => {
-  const { messages, setMessages } = useChatContext();
+  const [messages, setMessages] = useState<ResponseMessageDTO[]>([]); // Mảng tin nhắn
   const { profile } = useAuth();
   const { colorScheme } = useTheme();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -67,23 +69,28 @@ const Chat = () => {
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [value, setValue] = useState("");
   const { allChat, setAllChat } = useChatItemContext();
-
   const { width: screenWidth } = Dimensions.get("window");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [temporaryToCloudinaryMap, setTemporaryToCloudinaryMap] = useState<
     { tempUrl: string; cloudinaryUrl: string }[]
   >([]);
-  const messageEndRef = useRef<HTMLDivElement | null>(null);
-  const [isRecording, setIsRecording] = useState(false); // Để theo dõi trạng thái ghi âm
+  const scrollViewRef = useRef<ScrollView | null>(null);
+  // const [isRecording, setIsRecording] = useState(false); // Để theo dõi trạng thái ghi âm
   const [audioUrl, setAudioUrl] = useState<string | null>(null); // URL của file audio
   const mediaRecorderRef = useRef<MediaRecorder | null>(null); // Để lưu MediaRecorder instance
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [currentContentType, setCurrentContentType] = useState<
     "text" | "voice" | "file" | null
   >(null);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   // const [isLoading, setIsLoading] = useState(true);
   const [relation, setRelation] = useState<string>("");
+
+  // const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  const [selectedMedia, setSelectedMedia] = useState<
+    { uri: string; type: string; name: string | null | undefined }[]
+  >([]);
 
   useEffect(() => {
     if (temporaryToCloudinaryMap.length === 0) return;
@@ -109,72 +116,12 @@ const Chat = () => {
   const chatItem = allChat.find((chat) => chat.id === id);
 
   useEffect(() => {
-    if (!chatItem) {
-      return; // Nếu chưa có chatItem, không thực hiện gì
-    }
-    let isMounted = true;
-
-    const check = async () => {
-      try {
-        const userId = await AsyncStorage.getItem("userId");
-        if (userId) {
-          const res: any = await checkRelation(
-            userId,
-            chatItem?.receiverId?.toString()
-          );
-          if (isMounted) {
-            if (!res) {
-              setRelation("stranger");
-              // setRelationStatus(false);
-            } else {
-              const { relation, status, sender, receiver } = res;
-
-              if (relation === "bff") {
-                if (status) {
-                  setRelation("bff"); //
-                } else if (userId === sender) {
-                  setRelation("senderRequestBff"); //
-                } else if (userId === receiver) {
-                  setRelation("receiverRequestBff"); //
-                }
-              } else if (relation === "friend") {
-                if (status) {
-                  setRelation("friend"); //
-                } else if (userId === sender) {
-                  setRelation("following"); //
-                } else if (userId === receiver) {
-                  setRelation("follower"); //
-                }
-              } else if (relation === "block") {
-                if (userId === sender) {
-                  setRelation("blocked"); //
-                } else if (userId === receiver) {
-                  setRelation("blockedBy");
-                }
-              } else {
-                setRelation("stranger"); //
-              }
-              // setRelationStatus(status);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching relation:", error);
-      }
-    };
-    check();
-    return () => {
-      isMounted = false;
-    };
-  }, [chatItem]);
-
-  useEffect(() => {
     let isMounted = true;
 
     const myChat = async () => {
       try {
         const data = await getAllChat(chatItem?.id.toString() || ""); // Gọi API
-        console.log(data, "this is data of body");
+        // console.log(data, "this is data of body");
         if (isMounted && data.success) {
           setMessages(data.messages); // Lưu trực tiếp `messages` từ API
         }
@@ -190,6 +137,17 @@ const Chat = () => {
     };
   }, []);
 
+  const handlePickMedia = async () => {
+    const media = await pickMedia();
+    setCurrentContentType("file");
+    setSelectedMedia((prev) => [...prev, ...media]);
+  };
+
+  const handleTextInput = (text: any) => {
+    setValue(text);
+    setCurrentContentType("text");
+  };
+
   const resetContent = () => {
     setValue("");
     setAudioBlob(null);
@@ -203,10 +161,10 @@ const Chat = () => {
         await handleSendTextMessage();
         break;
       case "voice":
-        await handleSendVoiceMessage();
+        // await handleSendVoiceMessage();
         break;
       case "file":
-        await handleSendMultipleFiles(selectedFiles);
+        await handleSendMultipleFiles(selectedMedia);
         break;
       default:
         console.log("No content to send");
@@ -215,129 +173,79 @@ const Chat = () => {
     resetContent();
   };
 
-  // const handleMarkAsRead = async () => {
-  //   try {
-  //     const userId = await AsyncStorage.getItem("userId");
-
-  //     const mark = await MarkMessageAsRead(
-  //       chatItem?.id || "",
-  //       userId?.toString() || ""
-  //     );
-  //     console.log(mark, "this is mark");
-  //   } catch (error) {
-  //     console.error("Error marking message as read:", error);
-  //   }
-  // };
-
-  const handleSendMultipleFiles = async (files: File[]) => {
-    if (!files.length || !id) return;
-
-    const storedToken = localStorage.getItem("token");
-    if (!storedToken) return;
-
+  const prepareFileForUpload = async (fileUri: string, fileName: string) => {
     try {
-      // Gửi từng file lên server
-      for (const file of files) {
-        const fileContent: FileContent = {
-          fileName: file.name,
-          url: "",
-          publicId: "", // Cloudinary Public ID
-          bytes: file.size.toString(),
-          width: "0",
-          height: "0",
-          format: getFileFormat(file.type, file.name),
-          type: file.type.split("/")[0],
-        };
+      const newUri = `${FileSystem.cacheDirectory}${fileName}`;
+      await FileSystem.copyAsync({
+        from: fileUri,
+        to: newUri,
+      });
+      return newUri;
+    } catch (error) {
+      console.error("Error preparing file:", error);
+      throw error;
+    }
+  };
 
-        const formData = new FormData();
-        formData.append("boxId", id.toString());
-        formData.append("content", JSON.stringify(fileContent));
-        formData.append("file", file);
+  const handleSendMultipleFiles = async (
+    files: { uri: string; type: string; name: string | undefined | null }[]
+  ) => {
+    const storedToken = await AsyncStorage.getItem("token");
+    if (!storedToken) return;
+    try {
+      console.log("files: ", files);
+      if (files.length != 0) {
+        for (const file of files) {
+          const formData = new FormData();
+          const fileContent: any = {
+            fileName: file.name,
+            url: "",
+            publicId: "",
+            bytes: "",
+            width: "0",
+            height: "0",
+            format: file.name?.split(".").pop(),
+            type: file.type,
+          };
+          let newFile = null;
+          if (
+            file.type === "image" ||
+            file.type === "video" ||
+            file.type === "audio"
+          ) {
+            newFile = {
+              uri: file.uri,
+              type: "image/jpeg",
+              name: file.name,
+            };
+          } else {
+            console.log("type: ", file.name?.split(".").pop());
+            const tempUri = await prepareFileForUpload(file.uri, file.name!);
+            console.log("prepare uri: ", tempUri);
+            newFile = {
+              uri: tempUri,
+              type: file.name?.split(".").pop(),
+              name: file.name,
+            };
+          }
+          formData.append("boxId", id.toString());
+          formData.append("content", JSON.stringify(fileContent));
+          formData.append("file", newFile as any);
 
-        await sendMessage(formData);
+          try {
+            const storedToken = await AsyncStorage.getItem("token");
+            if (!storedToken) return;
+
+            const response = await sendMessage(formData);
+            console.log("Message sent successfully:", response);
+          } catch (error) {
+            console.error("Error sending message: ", error);
+          }
+        }
       }
     } catch (error) {
-      console.error("Error sending files:", error);
-    }
-  };
-
-  const startRecording = () => {
-    setIsRecording(true);
-    setCurrentContentType("voice");
-    console.log("Recording started...");
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then((stream) => {
-        const mediaRecorder = new MediaRecorder(stream);
-        mediaRecorderRef.current = mediaRecorder;
-
-        const audioChunks: Blob[] = [];
-
-        mediaRecorder.ondataavailable = (event) => {
-          audioChunks.push(event.data);
-        };
-
-        mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          setAudioUrl(audioUrl); // Lưu URL của file audio
-        };
-
-        mediaRecorder.start();
-        setIsRecording(true); // Đánh dấu trạng thái ghi âm
-      })
-      .catch((err) => {
-        console.error("Error accessing audio: ", err);
-      });
-  };
-
-  const stopRecording = () => {
-    setIsRecording(false);
-    // Giả lập audioBlob (thay bằng logic thực)
-    const mockBlob = new Blob(["audio data"], { type: "audio/wav" });
-    setAudioBlob(mockBlob);
-    console.log("Recording stopped");
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false); // Đánh dấu ghi âm đã dừng
-    }
-  };
-
-  const handleSendVoiceMessage = async () => {
-    if (!audioBlob) return;
-    console.log("Sending voice message:", audioBlob);
-    if (!audioUrl || !id) return;
-
-    const storedToken = await AsyncStorage.getItem("token");
-
-    if (!storedToken) return;
-
-    try {
-      const formData = new FormData();
-      formData.append("boxId", id.toString());
-
-      // Đọc file từ audio URL và gửi lên server
-      const response = await fetch(audioUrl);
-      const audioBlob = await response.blob();
-
-      const fileContent: FileContent = {
-        fileName: "voice-message.wav",
-        url: "",
-        publicId: "", // Cloudinary Public ID
-        bytes: audioBlob.size.toString(),
-        width: "0",
-        height: "0",
-        format: "wav",
-        type: "audio",
-      };
-
-      formData.append("content", JSON.stringify(fileContent));
-      formData.append("file", audioBlob, "voice-message.wav");
-
-      const messageResponse = await sendMessage(formData);
-      console.log("Voice message sent successfully:", messageResponse);
-    } catch (error) {
-      console.error("Error sending voice message: ", error);
+      console.error("Error sending message:", error);
+      throw error;
     }
   };
 
@@ -381,132 +289,58 @@ const Chat = () => {
     }
   };
 
-  const handleNewMessage = async (data: ResponseMessageDTO) => {
-    // if (chatItem?.id !== data.boxId) return;
-    const userId = await AsyncStorage.getItem("userId");
-
-    try {
-      const mark = await MarkMessageAsRead(
-        data.boxId,
-        userId?.toString() || ""
-      );
-      console.log(mark, "this is mark");
-    } catch (error) {
-      console.error("Error marking message as read:", error);
+  useEffect(() => {
+    if (!id) {
+      console.error("boxId is missing or invalid");
+      return;
     }
 
-    setMessages((prevMessages: any) => {
-      const updatedMessages = [...prevMessages, data];
-      return updatedMessages;
-    });
+    // console.log(messages, "this is message");
+    const handleNewMessage = (data: ResponseMessageDTO) => {
+      console.log("Successfully received message: ", data);
+      if (id !== data.boxId) return; // Kiểm tra đúng kênh
+      setMessages((prevMessages) => {
+        return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
+      });
+    };
 
-    // Đánh dấu tin nhắn là đã đọc nếu người dùng là receiver
-  };
+    const handleDeleteMessage = ({ id: messageId }: PusherDelete) => {
+      console.log("Successfully deleted message: ", messageId);
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== messageId)
+      );
+    };
 
-  useEffect(() => {
-    // const handleNewMessage = (data: ResponseMessageDTO) => {
-    //   console.log("Successfully received message: ", data);
-    //   if (chatItem?.id !== data.boxId) return; // Kiểm tra đúng kênh
-    //   setMessages((prevMessages) => {
-    //     return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
-    //   });
-    // };
+    const handleRevokeMessage = ({ id: messageId }: PusherRevoke) => {
+      console.log("Successfully revoked message: ", messageId);
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === messageId ? { ...msg, flag: false } : msg
+        )
+      );
+    };
 
     pusherClient.subscribe(`private-${id}`);
     pusherClient.bind("new-message", handleNewMessage);
-    // pusherClient.bind("delete-message", handleDeleteMessage);
-    // pusherClient.bind("revoke-message", handleRevokeMessage);
+    pusherClient.bind("delete-message", handleDeleteMessage);
+    pusherClient.bind("revoke-message", handleRevokeMessage);
     pusherClient.bind("pusher:subscription_error", (error: any) => {
       console.log("Subscription error:", error);
     });
 
     return () => {
       pusherClient.unbind("new-message", handleNewMessage);
-      pusherClient.unsubscribe(`private-${id}`);
-      // pusherClient.bind("delete-message", handleDeleteMessage);
-      // pusherClient.bind("revoke-message", handleRevokeMessage);
+      pusherClient.unbind("delete-message", handleDeleteMessage);
+      pusherClient.unbind("revoke-message", handleRevokeMessage);
       console.log(`Unsubscribed from private-${id} channel`);
     };
-  }, [setMessages]); // Re-run if boxId or setMessages changes
+  }, []); // Re-run if boxId or setMessages changes
 
   const handleIconClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setSelectedFiles(files);
-      setCurrentContentType("file");
-    }
-  };
-
-  const handleDelete = async (messageId: string) => {
-    try {
-      await removeMessage(messageId);
-      setMessages((prevMessages) =>
-        prevMessages.filter((msg) => msg.id !== messageId)
-      );
-    } catch (error) {
-      alert("Xóa chat thất bại. Vui lòng thử lại.");
-    }
-  };
-
-  const handleRevoke = async (messageId: string) => {
-    // Cập nhật giao diện trước để tạo phản hồi nhanh cho người dùng
-    setMessages((prevMessages) =>
-      prevMessages.map((msg) =>
-        msg.id === messageId ? { ...msg, flag: false } : msg
-      )
-    );
-
-    try {
-      // Gửi yêu cầu lên server để cập nhật trạng thái thu hồi
-      await revokeMessage(messageId);
-    } catch (error) {
-      alert("Khôi phục thất bại. Vui lòng thử lại.");
-    }
-  };
-
-  // useEffect(() => {
-  //   if (!chatItem?.id) {
-  //     console.error("boxId is missing or invalid");
-  //     return;
-  //   }
-
-  //   const handleDeleteMessage = ({ id: messageId }: PusherDelete) => {
-  //     console.log("Successfully deleted message: ", messageId);
-  //     setMessages((prevMessages) =>
-  //       prevMessages.filter((msg) => msg.id !== messageId)
-  //     );
-  //   };
-
-  //   const handleRevokeMessage = ({ id: messageId }: PusherRevoke) => {
-  //     console.log("Successfully revoked message: ", messageId);
-  //     setMessages((prevMessages) =>
-  //       prevMessages.map((msg) =>
-  //         msg.id === messageId ? { ...msg, flag: false } : msg
-  //       )
-  //     );
-  //   };
-
-  //   const channels: any[] = allChat.map((chat) => {
-  //     const channel = pusherClient.subscribe(`private-${chat.id.toString()}`);
-  //     channel.bind("delete-message", handleDeleteMessage);
-  //     channel.bind("revoke-message", handleRevokeMessage);
-  //     return channel;
-  //   });
-
-  //   // Hủy đăng ký khi component unmount hoặc khi allChat thay đổi
-  //   return () => {
-  //     channels.forEach((channel: any) => {
-  //       channel.bind("delete-message", handleDeleteMessage);
-  //       channel.bind("revoke-message", handleRevokeMessage);
-  //     });
-  //   };
-  // }, [chatItem?.id, setMessages]);
 
   // if (isLoading) {
   //   return (
@@ -516,6 +350,12 @@ const Chat = () => {
   //     </View>
   //   );
   // }
+
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages]); // Cuộn khi `messages` thay đổi
 
   return (
     <View
@@ -578,6 +418,7 @@ const Chat = () => {
 
       <ScrollView
         className="flex-1 p-4"
+        ref={scrollViewRef}
         contentContainerStyle={{ flexGrow: 1 }}
         style={{
           backgroundColor:
@@ -595,223 +436,16 @@ const Chat = () => {
             currentMessageDate.toDateString() !==
               previousMessageDate.toDateString();
 
-          const hasFiles =
-            message.contentId && message.contentId.url ? true : false;
-          const hasText =
-            message.text && message.text.length > 0 ? true : false;
-
           return (
-            <View
+            <MessageCard
               key={index}
-              className={`mb-4 flex ${
-                isCurrentUser
-                  ? "justify-end items-end"
-                  : "justify-start items-start"
-              }`}
-            >
-              {isFirstMessageOfDay && (
-                <View className="mx-auto">
-                  <Text className="text-center text-light-600 mb-2">
-                    {currentMessageDate.toLocaleDateString()}
-                  </Text>
-                </View>
-              )}
-              <View className="flex flex-row gap-2">
-                {!isCurrentUser && (
-                  <Image
-                    source={
-                      chatItem?.avatarUrl
-                        ? { uri: chatItem.avatarUrl }
-                        : require("../../assets/images/0dd7ef2b0c1abd4c1783b1878c4ae633.jpg") // Đảm bảo bạn có ảnh mặc định
-                    }
-                    style={{ width: 40, height: 40, borderRadius: 50 }}
-                  />
-                )}
-                <View
-                  className={`max-w-[75%] p-3 ${
-                    hasFiles && hasFiles && message.contentId.type === "Image"
-                      ? "bg-white p-0" // Không áp dụng nền nếu là hình ảnh
-                      : isCurrentUser
-                      ? "bg-primary-100 text-white"
-                      : colorScheme === "dark"
-                      ? "bg-dark-400 text-white"
-                      : "bg-light-800 text-black"
-                  }`}
-                  style={{
-                    borderRadius: 20,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 1.41,
-                    elevation: 2,
-                  }}
-                >
-                  <Text
-                    className={`font-regular text-[15px] ${
-                      isCurrentUser
-                        ? "text-white"
-                        : colorScheme === "dark"
-                        ? "text-dark-100"
-                        : "text-light-500"
-                    }`}
-                  >
-                    {!message.flag ? (
-                      <p
-                        className={` ${
-                          isCurrentUser ? "text-white" : "text-gray-500"
-                        } text-sm italic   `}
-                      >
-                        Tin nhắn đã được thu hồi
-                      </p>
-                    ) : (
-                      <>
-                        {/* Hiển thị text nếu không có file */}
-                        {!hasFiles && (
-                          <Text className="text-sm">{message.text}</Text>
-                        )}
-
-                        {/* Hiển thị file nếu contentId có dữ liệu */}
-                        {hasFiles && (
-                          <View className="">
-                            {message.contentId.type === "Image" ? (
-                              <Image
-                                source={
-                                  message.contentId?.url
-                                    ? { uri: message.contentId.url }
-                                    : require("../../assets/images/0dd7ef2b0c1abd4c1783b1878c4ae633.jpg")
-                                }
-                                style={{
-                                  width: screenWidth * 0.5, // Chiều rộng bằng 90% màn hình
-                                  height:
-                                    screenWidth *
-                                      0.5 *
-                                      (parseInt(message.contentId.height) /
-                                        parseInt(message.contentId.width)) ||
-                                    200, // Giữ tỷ lệ ảnh
-                                  borderRadius: 12,
-                                }}
-                                resizeMode="contain" // Hoặc "cover" nếu bạn muốn ảnh phủ đầy
-                              />
-                            ) : (
-                              <Text
-                                style={{
-                                  color: "#007bff",
-                                  textDecorationLine: "underline",
-                                  fontSize: 14,
-                                }}
-                                onPress={async () => {
-                                  const downloadUrl = message.contentId.url;
-                                  const fileName =
-                                    message.contentId.fileName ||
-                                    "downloaded_file";
-                                  const fileUri = `${FileSystem.documentDirectory}${fileName}`;
-
-                                  try {
-                                    const downloadResumable =
-                                      FileSystem.createDownloadResumable(
-                                        downloadUrl,
-                                        fileUri,
-                                        {},
-                                        (downloadProgress) => {
-                                          const progress =
-                                            downloadProgress.totalBytesWritten /
-                                            downloadProgress.totalBytesExpectedToWrite;
-                                          console.log(
-                                            `Progress: ${Math.round(
-                                              progress * 100
-                                            )}%`
-                                          );
-                                        }
-                                      );
-
-                                    const { uri } =
-                                      await downloadResumable.downloadAsync();
-                                    console.log("File downloaded to:", uri);
-
-                                    if (Platform.OS === "android") {
-                                      Alert.alert(
-                                        "Download Complete",
-                                        "File has been downloaded. What would you like to do?",
-                                        [
-                                          {
-                                            text: "Open",
-                                            onPress: () => shareAsync(uri),
-                                          },
-                                          {
-                                            text: "Save",
-                                            onPress: async () => {
-                                              const permissions =
-                                                await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-                                              if (permissions.granted) {
-                                                const base64 =
-                                                  await FileSystem.readAsStringAsync(
-                                                    uri,
-                                                    {
-                                                      encoding:
-                                                        FileSystem.EncodingType
-                                                          .Base64,
-                                                    }
-                                                  );
-                                                await FileSystem.StorageAccessFramework.createFileAsync(
-                                                  permissions.directoryUri,
-                                                  fileName,
-                                                  message.contentId.format ||
-                                                    "application/octet-stream"
-                                                )
-                                                  .then(async (fileUri) => {
-                                                    await FileSystem.writeAsStringAsync(
-                                                      fileUri,
-                                                      base64,
-                                                      {
-                                                        encoding:
-                                                          FileSystem
-                                                            .EncodingType
-                                                            .Base64,
-                                                      }
-                                                    );
-                                                    Alert.alert(
-                                                      "File Saved Successfully!"
-                                                    );
-                                                  })
-                                                  .catch((e) =>
-                                                    console.error(e)
-                                                  );
-                                              } else {
-                                                Alert.alert(
-                                                  "Permission denied to save file."
-                                                );
-                                              }
-                                            },
-                                          },
-                                          { text: "Cancel", style: "cancel" },
-                                        ]
-                                      );
-                                    } else {
-                                      shareAsync(uri);
-                                    }
-                                  } catch (e) {
-                                    console.error(
-                                      "Error during file download:",
-                                      e
-                                    );
-                                    Alert.alert(
-                                      "Download Error",
-                                      "Failed to download the file. Please try again."
-                                    );
-                                  }
-                                }}
-                              >
-                                {message.contentId.fileName || "Download File"}
-                              </Text>
-                            )}
-                          </View>
-                        )}
-                      </>
-                    )}
-                  </Text>
-                </View>
-              </View>
-            </View>
+              message={message}
+              isCurrentUser={isCurrentUser}
+              isFirstMessageOfDay={isFirstMessageOfDay}
+              chatItem={chatItem}
+              colorScheme={colorScheme}
+              screenWidth={screenWidth}
+            />
           );
         })}
       </ScrollView>
@@ -829,24 +463,38 @@ const Chat = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
-        <View style={styles.inputContainer}>
+        <View style={styles.inputContainer} className="gap-2 flex">
           <TouchableOpacity>
-            <PlusIcon size={35} color={iconColor} />
+            <PlusIcon size={27} color={iconColor} onClick={handleIconClick} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <CameraIcon size={27} color={iconColor} onClick={handlePickMedia} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <ImageIcon size={25} color={iconColor} onClick={handlePickMedia} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <MicroIcon
+              size={25}
+              color={iconColor}
+              // onClick={recording ? stopRecording : startRecording}
+            />
           </TouchableOpacity>
           <TextInput
             placeholder="Nhập tin nhắn..."
             className={`flex-1 text-sm border rounded-full px-4`}
-            onChangeText={setValue}
+            onChangeText={handleTextInput}
             value={value}
           />
 
           <TouchableOpacity>
-            <SendIcon
-              size={28}
-              color={iconColor}
-              onClick={handleSendTextMessage}
-            />
+            <SendIcon size={28} color={iconColor} onClick={handleSend} />
           </TouchableOpacity>
+          <View>
+            {selectedFiles.map((file, index) => (
+              <Text key={index}>{file.name}</Text>
+            ))}
+          </View>
         </View>
       </KeyboardAvoidingView>
     </View>

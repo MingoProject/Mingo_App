@@ -14,7 +14,7 @@ import {
   MarkMessageAsRead,
 } from "../../../lib/service/message.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FileContent, ItemChat, ResponseMessageDTO } from "@/dtos/MessageDTO";
+import { FileContent, ResponseMessageDTO } from "@/dtos/MessageDTO";
 import { pusherClient } from "@/lib/pusher";
 import { colors } from "@/styles/colors";
 import { useTheme } from "@/context/ThemeContext";
@@ -88,15 +88,15 @@ const RenderMessageItem = ({ item }: { item: any }) => {
   const handleDeleteMessage = (data: any) => {
     if (data.boxId !== item.id) return;
 
-    setMessages((prevMessages: any) => {
+    setMessages((prevMessages) => {
       // Lọc ra các tin nhắn thuộc box chat hiện tại
       const boxChatMessages = prevMessages.filter(
-        (msg: any) => msg.boxId === item.id
+        (msg) => msg.boxId === item.id
       );
 
       // Loại bỏ tin nhắn bị xóa
       const updatedMessages = boxChatMessages.filter(
-        (chat: any) => chat.id !== data.id
+        (chat) => chat.id !== data.id
       );
 
       // Khởi tạo giá trị mặc định cho fileContent
@@ -115,7 +115,7 @@ const RenderMessageItem = ({ item }: { item: any }) => {
       if (updatedMessages.length > 0) {
         // Lấy tin nhắn mới nhất từ updatedMessages
         const latestMessage = updatedMessages.sort(
-          (a: any, b: any) =>
+          (a, b) =>
             new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
         )[0];
 
@@ -130,7 +130,7 @@ const RenderMessageItem = ({ item }: { item: any }) => {
       } else if (boxChatMessages.length > 0) {
         // Nếu không còn tin nhắn trong updatedMessages, lấy từ prevMessages
         const latestMessage = boxChatMessages.sort(
-          (a: any, b: any) =>
+          (a, b) =>
             new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
         )[0];
 
@@ -157,18 +157,16 @@ const RenderMessageItem = ({ item }: { item: any }) => {
       }
 
       return prevMessages
-        .filter((msg: any) => msg.boxId !== item.id)
+        .filter((msg) => msg.boxId !== item.id)
         .concat(updatedMessages);
     });
   };
 
   const handleRevokeMessage = (data: any) => {
-    if (data.boxId !== item.id) return;
-
-    setMessages((prevMessages: any) => {
+    setMessages((prevMessages) => {
       // Filter out the deleted message
       const updatedMessages = prevMessages.filter(
-        (chat: any) => chat.id !== data.id
+        (chat) => chat.id !== data.id
       );
       const fileContent: FileContent = {
         fileName: "",
@@ -186,7 +184,7 @@ const RenderMessageItem = ({ item }: { item: any }) => {
       // If the deleted message was the last one, update the lastMessage
       if (updatedMessages.length >= 0) {
         const latestMessage = updatedMessages.sort(
-          (a: any, b: any) =>
+          (a, b) =>
             new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
         )[0]; // Get the latest message from the updated list
 
@@ -220,17 +218,17 @@ const RenderMessageItem = ({ item }: { item: any }) => {
       console.error("ID is missing or invalid");
       return;
     }
-    //const pusherChannel = `private-${item.id}`;
+    // const pusherChannel = `private-${item.id}`;
     //pusherClient.subscribe(pusherChannel);
     pusherClient.bind("new-message", handleNewMessage);
     pusherClient.bind("delete-message", handleDeleteMessage);
-    pusherClient.bind("revoke-message", handleRevokeMessage);
+    // pusherClient.bind("revoke-message", handleRevokeMessage);
 
     // Dọn dẹp khi component bị unmount
     return () => {
       pusherClient.unbind("new-message", handleNewMessage);
       pusherClient.unbind("delete-message", handleDeleteMessage);
-      pusherClient.unbind("revoke-message", handleRevokeMessage);
+      // pusherClient.unbind("revoke-message", handleRevokeMessage);
     };
   }, [item.id, setMessages]);
 

@@ -90,3 +90,23 @@ export async function deleteNotification(
     throw error;
   }
 }
+
+export async function getNotification(
+  senderId: string | null,
+  receiverId: string | null,
+  type: string
+) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/notification/get-notification?senderId=${senderId}&receiverId=${receiverId}&type=${type}`
+    );
+    if (!response.ok) {
+      throw new Error("Error fetching notification ");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch notification:", error);
+    throw error;
+  }
+}

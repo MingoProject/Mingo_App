@@ -187,8 +187,14 @@ const InfoIcon = ({ size = 24, color = "currentColor" }) => (
   </Svg>
 );
 
-const CameraIcon = ({ size = 50, color = "currentColor" }) => (
-  <Svg width={size} height={size} viewBox="0 0 50 50" fill="none">
+const CameraIcon = ({ size = 50, color = "currentColor", onClick }) => (
+  <Svg
+    width={size}
+    height={size}
+    viewBox="0 0 50 50"
+    fill="none"
+    onPress={onClick}
+  >
     <Path
       fill={color}
       d="M39 38H11c-1.7 0-3-1.3-3-3V17c0-1.7 1.3-3 3-3h6c.2 0 .5-.2.6-.3l1.1-2.2c.4-.8 1.4-1.4 2.3-1.4h8c.9 0 1.9.6 2.3 1.4l1.1 2.2c.1.2.4.3.6.3h6c1.7 0 3 1.3 3 3v18c0 1.7-1.3 3-3 3M11 16c-.6 0-1 .4-1 1v18c0 .6.4 1 1 1h28c.6 0 1-.4 1-1V17c0-.6-.4-1-1-1h-6c-.9 0-1.9-.6-2.3-1.4l-1.1-2.2c-.1-.2-.4-.4-.6-.4h-8c-.2 0-.5.2-.6.3l-1.1 2.2c-.4.9-1.4 1.5-2.3 1.5z"
@@ -205,8 +211,14 @@ const CameraIcon = ({ size = 50, color = "currentColor" }) => (
   </Svg>
 );
 
-const ImageIcon = ({ size = 24, color = "currentColor" }) => (
-  <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+const ImageIcon = ({ size = 24, color = "currentColor", onClick }) => (
+  <Svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    onPress={onClick}
+  >
     <Path
       fill="none"
       stroke={color}
@@ -234,8 +246,14 @@ const ImageIcon = ({ size = 24, color = "currentColor" }) => (
   </Svg>
 );
 
-const PlusIcon = ({ size = 50, color = "currentColor" }) => (
-  <Svg width={size} height={size} viewBox="0 0 50 50" fill="none">
+const PlusIcon = ({ size = 50, color = "currentColor", onClick }) => (
+  <Svg
+    width={size}
+    height={size}
+    viewBox="0 0 50 50"
+    fill="none"
+    onPress={onClick}
+  >
     <Path
       fill={color}
       d="M25 42c-9.4 0-17-7.6-17-17S15.6 8 25 8s17 7.6 17 17s-7.6 17-17 17m0-32c-8.3 0-15 6.7-15 15s6.7 15 15 15s15-6.7 15-15s-6.7-15-15-15"
@@ -857,6 +875,21 @@ const CancelIcon = ({ size = 24, color = "currentColor" }) => (
   </Svg>
 );
 
+const ThreeDotsIcon = ({ size = 16, color = "currentColor" }) => (
+  <Svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+  >
+    <Path
+      fill={color}
+      d="M9.5 13a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0"
+    />
+  </Svg>
+);
+
 export {
   SearchIcon,
   MessageIcon,
@@ -914,4 +947,5 @@ export {
   ChessIcon,
   MicrophoneIcon,
   CancelIcon,
+  ThreeDotsIcon,
 };

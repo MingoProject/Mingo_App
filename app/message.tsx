@@ -7,7 +7,7 @@ import {
   TextInput,
 } from "react-native";
 import { ArrowIcon } from "../components/icons/Icons";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { useTheme } from "../context/ThemeContext";
 import { colors } from "../styles/colors"; // import màu sắc từ file colors.js
@@ -17,6 +17,9 @@ import { useChatContext } from "../context/ChatContext";
 import { ItemChat } from "@/dtos/MessageDTO";
 import RenderMessageItem from "@/components/forms/chat/RenderMessageItem";
 import { useChatItemContext } from "@/context/ChatItemContext";
+import { pusherClient } from "@/lib/pusher";
+import profile from "./(tabs)/profile";
+import { useAuth } from "@/context/AuthContext";
 
 const Message = () => {
   const { colorScheme } = useTheme();
@@ -24,9 +27,8 @@ const Message = () => {
   const router = useRouter(); // Khởi tạo router
   const [selectedItem, setSelectedItem] = useState(null);
   const { allChat, setAllChat } = useChatItemContext();
-  const [filteredChat, setFilteredChat] = useState<ItemChat[]>([]); // State lưu trữ các cuộc trò chuyện đã lọc
   const [searchTerm, setSearchTerm] = useState("");
-
+  const { profile } = useAuth();
   const fetchChats = useCallback(async () => {
     try {
       const [normalChats, groupChats] = await Promise.all([
@@ -44,11 +46,12 @@ const Message = () => {
       });
 
       setAllChat(combinedChats);
-      setFilteredChat(combinedChats);
     } catch (error) {
       console.error("Error loading chats:", error);
     }
-  }, [setAllChat, setFilteredChat]);
+  }, [setAllChat]);
+  const { filteredChat, setFilteredChat } = useChatItemContext();
+  const channelRefs = useRef<any[]>([]);
 
   useEffect(() => {
     fetchChats();
@@ -79,8 +82,138 @@ const Message = () => {
       return timestampB - timestampA; // Sorting in descending order
     });
 
-    setFilteredChat(sortedFilteredChats);
+    setAllChat(sortedFilteredChats);
   };
+
+  useEffect(() => {
+    const handleNewMessage = (data: any) => {
+      setAllChat((prevChats: any) => {
+        const updatedChats = prevChats.map((chat: any) => {
+          if (chat.id === data.boxId) {
+            return {
+              ...chat,
+              lastMessage: {
+                ...chat.lastMessage,
+                text: data.text || "Đã gửi 1 file",
+                timestamp: new Date(data.createAt),
+              },
+            };
+          }
+          return chat;
+        });
+
+        const isNewChat = !updatedChats.find(
+          (chat: any) => chat.id === data.boxId
+        );
+        if (isNewChat) {
+          updatedChats.unshift({
+            id: data.boxId,
+            userName: data.userName || "Người dùng mới",
+            avatarUrl: data.avatarUrl || "/assets/images/default-avatar.png",
+            lastMessage: {
+              id: "unique-id",
+              createBy: "system",
+              text: "Bắt đầu đoạn chat",
+              timestamp: new Date(data.createAt),
+              status: false,
+              contentId: {
+                fileName: "",
+                bytes: "",
+                format: "",
+                height: "",
+                publicId: "",
+                type: "",
+                url: "",
+                width: "",
+              },
+            },
+            status: "active",
+            isRead: false,
+            senderId: profile._id,
+            receiverId: data.receiverIds,
+          });
+        }
+
+        return updatedChats.sort(
+          (a: any, b: any) => b.lastMessage.timestamp - a.lastMessage.timestamp
+        );
+      });
+
+      setFilteredChat((prevFiltered) => {
+        const updatedChats = prevFiltered.map((chat) => {
+          if (chat.id === data.boxId) {
+            return {
+              ...chat,
+              lastMessage: {
+                ...chat.lastMessage,
+                text: data.text || "Đã gửi 1 file",
+                timestamp: new Date(data.createAt),
+              },
+            };
+          }
+          return chat;
+        });
+
+        const isNewChat = !updatedChats.find((chat) => chat.id === data.boxId);
+        if (isNewChat) {
+          updatedChats.unshift({
+            id: data.boxId,
+            userName: data.userName || "Người dùng mới",
+            avatarUrl: data.avatarUrl || "/assets/images/default-avatar.png",
+            lastMessage: {
+              id: "unique-id",
+              createBy: "system",
+              text: "Bắt đầu đoạn chat",
+              timestamp: new Date(data.createAt),
+              status: false,
+              contentId: {
+                fileName: "",
+                bytes: "",
+                format: "",
+                height: "",
+                publicId: "",
+                type: "",
+                url: "",
+                width: "",
+              },
+            },
+            status: "active",
+            isRead: false,
+            senderId: profile._id,
+            receiverId: data.receiverIds,
+          });
+        }
+
+        return updatedChats.sort(
+          (a: any, b: any) => b.lastMessage.timestamp - a.lastMessage.timestamp
+        );
+      });
+    };
+
+    // Đảm bảo hủy đăng ký kênh cũ
+    channelRefs.current.forEach((channel) => {
+      channel.unbind("new-message", handleNewMessage);
+      pusherClient.unsubscribe(channel.name);
+    });
+
+    // Đăng ký kênh mới
+    const channels: any[] = allChat.map((chat) => {
+      const channel = pusherClient.subscribe(`private-${chat.id.toString()}`);
+      channel.bind("new-message", handleNewMessage); // Đảm bảo lại bind sự kiện
+      return channel;
+    });
+
+    // Lưu lại các kênh đã đăng ký
+    channelRefs.current = channels;
+
+    // Hủy đăng ký khi component unmount hoặc khi allChat thay đổi
+    return () => {
+      channels.forEach((channel: any) => {
+        channel.unbind("new-message", handleNewMessage);
+        pusherClient.unsubscribe(channel.name); // Hủy đăng ký kênh
+      });
+    };
+  }, [allChat]);
 
   return (
     <ScrollView
@@ -119,7 +252,7 @@ const Message = () => {
         />
       </View>
       <View className="mt-4">
-        {filteredChat.map((item) => (
+        {allChat.map((item) => (
           <RenderMessageItem item={item} key={item.id} />
         ))}
       </View>
