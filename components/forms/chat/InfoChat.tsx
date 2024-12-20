@@ -6,6 +6,9 @@ import {
   Image,
   Modal,
   FlatList,
+  Alert,
+  Dimensions,
+  ScrollView,
 } from "react-native";
 import {
   ArrowIcon,
@@ -18,44 +21,82 @@ import {
   ReportIcon,
   BlockIcon,
   TrashIcon,
+  DocTypeIcon,
+  PdfTypeIcon,
+  PptTypeIcon,
 } from "../../icons/Icons"; // Đảm bảo đường dẫn đúng
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { FileContent, ItemChat } from "@/dtos/MessageDTO";
 import {
   getImageList,
+  getListChat,
+  getListGroupChat,
   getOrtherList,
   getVideoList,
+  removeChatBox,
 } from "@/lib/service/message.service";
+import { useChatItemContext } from "@/context/ChatItemContext";
+import { FriendRequestDTO } from "@/dtos/FriendDTO";
+import { block } from "@/lib/service/friend.service";
+import ReportCard from "@/components/card/report/ReportCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { openWebFile } from "@/lib/untils/File";
+import message from "@/app/message";
+import VideoPlayer from "../media/VideoPlayer";
+const screenWidth = Dimensions.get("window").width;
 
-const getAllImagesFromChat = (chatMessages: FileContent[]) => {
-  return chatMessages.filter((message) => message.type === "Image");
+const getAllImagesFromChat = (chatimageList: FileContent[]) => {
+  return chatimageList.filter((message) => message.type === "Image");
 };
 
-const getAllVideosFromChat = (chatMessages: FileContent[]) => {
-  return chatMessages.filter((message) => message.type === "Video");
+const getAllVideosFromChat = (chatimageList: FileContent[]) => {
+  return chatimageList.filter((message) => message.type === "Video");
+};
+
+const getAllFileFromChat = (chatimageList: FileContent[]) => {
+  return chatimageList.filter((message) => message.type === "Other");
 };
 
 const InfoChat = ({
   item,
   setModalVisible,
+  setRelation,
+  relation,
 }: {
-  item: ItemChat;
+  item: any;
   setModalVisible: (visible: boolean) => void;
+  setRelation: any;
+  relation: string;
 }) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [notification, setNotification] = useState(true);
   const [showAllImages, setShowAllImages] = useState(false);
   const [showAllFiles, setShowAllFiles] = useState(false);
+  const { allChat, setAllChat } = useChatItemContext();
+  const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
+  const { id } = useLocalSearchParams();
   const toggleNotification = () => {
     setNotification((prev) => !prev);
   };
-
-  const [messages, setMessages] = useState<FileContent[]>([]);
+  const router = useRouter(); // Khởi tạo router
+  const [imageList, setImageList] = useState<FileContent[]>([]);
   const [videoList, setVideoList] = useState<FileContent[]>([]);
   const [files, setFiles] = useState<FileContent[]>([]);
+  const [isReport, setIsReport] = useState(false);
+  const numColumns = 4;
+  const mediaSize = screenWidth / numColumns - 10;
+  const containerWidth = screenWidth * 0.5; // 50% màn hình
+
+  const handleIsReport = () => {
+    setIsReport(true);
+  };
+
+  const closeReport = () => {
+    setIsReport(false);
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -63,8 +104,12 @@ const InfoChat = ({
     const fetchFiles = async () => {
       try {
         const data = await getOrtherList(item.id.toString()); // Gọi API
+        const videodata = await getVideoList(item.id.toString()); // Gọi API
+        const imagedata = await getImageList(item.id.toString()); // Gọi API
         if (isMounted && data) {
           setFiles(data); // Lưu dữ liệu file từ API
+          setVideoList(videodata); // Lưu trực tiếp `imageList` từ API
+          setImageList(imagedata); // Lưu trực tiếp `imageList` từ API
         }
       } catch (error) {
         console.error("Error loading files:", error);
@@ -76,44 +121,151 @@ const InfoChat = ({
     return () => {
       isMounted = false; // Cleanup khi component unmount
     };
-  }, [item.id.toString()]);
-  useEffect(() => {
-    let isMounted = true;
+  }, []);
 
-    const myChat = async () => {
-      try {
-        const data = await getImageList(item.id.toString()); // Gọi API
-        if (isMounted && data) {
-          setMessages(data); // Lưu trực tiếp `messages` từ API
-        }
-      } catch (error) {
-        console.error("Error loading chat:", error);
-      }
-
-      try {
-        const data = await getVideoList(item.id.toString()); // Gọi API
-        if (isMounted && data) {
-          setVideoList(data); // Lưu trực tiếp `messages` từ API
-        }
-      } catch (error) {
-        console.error("Error loading chat:", error);
-      }
-    };
-
-    myChat();
-
-    return () => {
-      isMounted = false; // Cleanup khi component unmount
-    };
-  }, [item.id.toString()]);
-
-  const imagesInChat = getAllImagesFromChat(messages);
+  const imagesInChat = getAllImagesFromChat(imageList);
   const videosInChat = getAllVideosFromChat(videoList);
+  const fileInChat = getAllFileFromChat(files);
+
+  console.log(videosInChat, "videosInChat");
+
+  const handleDeleteChat = async () => {
+    try {
+      Alert.alert(
+        "Delete Message", // Tiêu đề
+        "Are you sure you want to delete this message?", // Nội dung
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Yes",
+            onPress: async () => {
+              await removeChatBox(id?.toString() || "");
+
+              // Lấy danh sách chat sau khi xóa
+              const normalChats = await getListChat();
+              const groupChats = await getListGroupChat();
+              const combinedChats = [...normalChats, ...groupChats];
+
+              // Cập nhật danh sách chat
+              setAllChat(combinedChats);
+              setFilteredChat(combinedChats);
+              Alert.alert("Xóa đoạn chat thành công");
+
+              if (combinedChats.length >= 0) {
+                const firstChat = combinedChats[0];
+                router.push(`./message/${firstChat.id}`); // Điều hướng sang chat đầu tiên
+              } else {
+                router.push("/message"); // Nếu không còn chat, điều hướng về trang tin nhắn chính
+              }
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    } catch (error) {
+      alert("Xóa chat thất bại. Vui lòng thử lại.");
+    }
+  };
+
+  const handleBlockChat = async (relation: string) => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      Alert.alert(
+        "Block Message", // Tiêu đề
+        "Are you sure you want to block this message?", // Nội dung
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Yes",
+            onPress: async () => {
+              const token = await AsyncStorage.getItem("token");
+
+              // Tạo đối tượng params theo kiểu FriendRequestDTO
+              const params = {
+                sender: userId, // Nếu senderId là undefined, sử dụng null
+                receiver: item.receiverId, // Nếu receiverId là undefined, sử dụng null
+              };
+
+              console.log(relation, "relation");
+
+              if (relation !== "block") {
+                console.log(relation, "đã vô đây");
+
+                await block(params, token); // Gọi API block
+                setRelation("blocked"); // Hoặc bạn có thể thay thế với giá trị mới mà bạn muốn
+                Alert.alert("Block thành công!");
+              } else {
+                Alert.alert("User đã bị  block!");
+              }
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    } catch (error) {
+      alert("Block chat thất bại. Vui lòng thử lại.");
+    }
+  };
+
+  const handleProfileClick = () => {
+    router.push(`/user/${item.receiverId}`); // Điều hướng sang chat đầu tiên
+  };
+
+  const renderFileIcon = (fileType: string) => {
+    switch (fileType.toLowerCase()) {
+      case "doc":
+      case "docx":
+        return <DocTypeIcon size={30} />;
+      case "ppt":
+      case "pptx":
+        return <PptTypeIcon size={30} />;
+      case "pdf":
+        return <PdfTypeIcon size={30} />;
+      default:
+        return <DocTypeIcon size={30} />; // Fallback to a default icon
+    }
+  };
+
+  const RenderFileItem = ({ item }: { item: FileContent }) => (
+    <TouchableOpacity
+      className={`flex items-center justify-center`}
+      style={{
+        width: mediaSize,
+        margin: 5,
+        borderRadius: 8,
+        rowGap: 4,
+      }}
+      onPress={async () => await openWebFile(item.url!)}
+    >
+      <View
+        className="bg-light-300 dark:bg-dark-20 flex rounded-2xl items-center justify-center"
+        style={{ width: mediaSize, height: mediaSize }}
+      >
+        {renderFileIcon(item.url?.split(".").pop()!)}
+      </View>
+      <View className="w-full flex justify-center">
+        <View>
+          <Text
+            className={`text-[10px] ml-4 font-helvetica-bold`}
+            numberOfLines={2}
+          >
+            {`${item.fileName}`}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <>
-      <View
-        className="flex-1 mt-10"
+      <ScrollView
+        className="flex-1 pb-10"
         style={{
           backgroundColor:
             colorScheme === "dark" ? colors.dark[300] : colors.light[700],
@@ -141,7 +293,7 @@ const InfoChat = ({
             source={
               item.avatarUrl
                 ? { uri: item.avatarUrl }
-                : require("../../../assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg")
+                : require("../../../assets/images/default-user.png")
             }
             style={{ width: 70, height: 70, borderRadius: 50 }}
           />
@@ -167,6 +319,7 @@ const InfoChat = ({
                 backgroundColor:
                   colorScheme === "dark" ? colors.dark[200] : colors.light[800],
               }}
+              onPress={handleProfileClick}
             >
               <UserIcon size={28} color={iconColor} />
             </TouchableOpacity>
@@ -253,6 +406,7 @@ const InfoChat = ({
         </View>
 
         <View className="flex flex-row mt-3 mx-10">
+          {/* Hiển thị ảnh */}
           {imagesInChat.slice(0, 4).map((url, index) => (
             <Image
               key={index}
@@ -261,6 +415,33 @@ const InfoChat = ({
             />
           ))}
         </View>
+        <View className="flex flex-row mt-3 mx-10">
+          {videosInChat.slice(0, 4).map((url, index) => {
+            // Giả sử bạn đã có thông tin chiều rộng và chiều cao của video trong url.width và url.height
+            const aspectRatio = parseInt(url.width) / parseInt(url.height); // Sử dụng url.width và url.height thay cho message.contentId
+
+            const videoHeight = Math.min(containerWidth / aspectRatio, 200); // Giới hạn chiều cao tối đa là 200px
+            const videoWidth = videoHeight * aspectRatio; // Tính lại chiều rộng theo tỷ lệ
+
+            return (
+              <View
+                key={index}
+                style={{
+                  width: videoWidth, // Sử dụng videoWidth thay vì containerWidth để đảm bảo tỷ lệ đúng
+                  height: videoHeight,
+                  borderRadius: 12,
+                  overflow: "hidden", // Giới hạn nội dung bên trong View
+                  alignItems: "center", // Căn giữa nội dung
+                  justifyContent: "center", // Căn giữa nội dung
+                }}
+                className="mb-6 mr-2"
+              >
+                <VideoPlayer videoSource={url.url} />
+              </View>
+            );
+          })}
+        </View>
+
         <View className="ml-5 mt-5">
           <View className="flex flex-row">
             <FileIcon size={28} color={iconColor} />
@@ -283,38 +464,16 @@ const InfoChat = ({
             </TouchableOpacity>
           </View>
         </View>
-        <View className="flex flex-1 mt-3 max-h-24">
-          {files.slice(0, 2).map((file, index) => (
-            <View
-              className={`flex-1 flex-row h-[32px] mb-2 items-center font-mregular px-4 mx-8 rounded-lg text-sm border border-[#D9D9D9] ${
-                colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
-              }`}
-              key={index}
-              style={{
-                backgroundColor:
-                  colorScheme === "dark" ? colors.dark[200] : colors.light[800], // Sử dụng giá trị màu từ file colors.js
-                flex: 1,
-              }}
-            >
-              <FileIcon size={28} color={iconColor} />
-              <Text
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                  flex: 1,
-                }}
-                className={`text-[14px] ml-1 font-mmedium `}
-              >
-                {file.fileName}
-              </Text>
+        <View className="flex flex-row mt-3 mx-10">
+          {fileInChat.slice(0, 2).map((file, index) => (
+            <View key={index}>
+              <RenderFileItem item={file} />
             </View>
           ))}
         </View>
 
         <View className="ml-5 mt-5">
-          <View className="flex flex-row">
+          <TouchableOpacity className="flex flex-row" onPress={handleIsReport}>
             <ReportIcon size={30} color={iconColor} />
             <Text
               style={{
@@ -325,10 +484,13 @@ const InfoChat = ({
             >
               Báo cáo
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View className="ml-5 mt-5">
-          <View className="flex flex-row">
+          <TouchableOpacity
+            className="flex flex-row"
+            onPress={() => handleBlockChat(relation)}
+          >
             <BlockIcon size={28} color={iconColor} />
             <Text
               style={{
@@ -339,10 +501,13 @@ const InfoChat = ({
             >
               Chặn
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
-        <View className="ml-5 mt-5">
-          <View className="flex flex-row">
+        <View className="ml-5 mt-5 pb-10">
+          <TouchableOpacity
+            className="flex flex-row"
+            onPress={handleDeleteChat}
+          >
             <TrashIcon size={28} color={iconColor} />
             <Text
               style={{
@@ -353,9 +518,9 @@ const InfoChat = ({
             >
               Xóa đoạn chat
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
 
       <Modal
         transparent={true}
@@ -425,6 +590,7 @@ const InfoChat = ({
           </View>
         </View>
       </Modal>
+
       <Modal
         transparent={true}
         animationType="slide"
@@ -477,22 +643,22 @@ const InfoChat = ({
             }}
           >
             <FlatList
-              data={files}
+              data={fileInChat}
               className="h-[700px]"
               renderItem={({ item }) => (
                 <View
-                  className={`flex-1 flex-row h-[50px] mb-2 items-center font-mregular px-4  rounded-lg text-sm border border-[#D9D9D9] ${
-                    colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
-                  }`}
-                  style={{
-                    backgroundColor:
-                      colorScheme === "dark"
-                        ? colors.dark[200]
-                        : colors.light[800], // Sử dụng giá trị màu từ file colors.js
-                    flex: 1,
-                  }}
+                // className={`flex-1 flex-row h-[50px] mb-2 items-center font-mregular px-4  rounded-lg text-sm border border-[#D9D9D9] ${
+                //   colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
+                // }`}
+                // style={{
+                //   backgroundColor:
+                //     colorScheme === "dark"
+                //       ? colors.dark[200]
+                //       : colors.light[800], // Sử dụng giá trị màu từ file colors.js
+                //   flex: 1,
+                // }}
                 >
-                  <FileIcon size={28} color={iconColor} />
+                  {/* <FileIcon size={28} color={iconColor} />
                   <Text
                     style={{
                       color:
@@ -504,10 +670,13 @@ const InfoChat = ({
                     className={`text-[14px] ml-1 font-mmedium `}
                   >
                     {item.fileName}
-                  </Text>
+                  </Text> */}
+                  <RenderFileItem item={item} />
                 </View>
               )}
-              keyExtractor={(item) => item.publicId}
+              numColumns={3} // Hiển thị 3 hình trong 1 hàng
+              columnWrapperStyle={{ justifyContent: "space-between" }} // Căn chỉnh các cột
+              keyExtractor={(item, index) => index.toString()}
             />
             <View className="justify-end mt-auto ">
               <TouchableOpacity
@@ -522,6 +691,15 @@ const InfoChat = ({
           </View>
         </View>
       </Modal>
+
+      {isReport && (
+        <ReportCard
+          onClose={closeReport}
+          type="message"
+          entityId={id.toString()}
+          reportedId={item?.receiverId || ""}
+        />
+      )}
     </>
   );
 };

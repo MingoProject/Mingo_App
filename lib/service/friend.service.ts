@@ -1,4 +1,5 @@
 import { FriendRequestDTO } from "@/dtos/FriendDTO";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
@@ -197,6 +198,8 @@ export async function unfriend(params: FriendRequestDTO, token: string | null) {
 
 export async function block(params: FriendRequestDTO, token: string | null) {
   try {
+    const userId = await AsyncStorage.getItem("userId");
+    console.log(params, userId, "checkblockaaaa");
     const response = await fetch(`${BASE_URL}/friend/block`, {
       method: "POST",
       headers: {
@@ -247,6 +250,8 @@ export async function unBFF(params: FriendRequestDTO, token: string | null) {
 
 export async function unblock(params: FriendRequestDTO, token: string | null) {
   try {
+    const userId = await AsyncStorage.getItem("userId");
+    console.log(params, userId, "checkblock");
     const response = await fetch(`${BASE_URL}/friend/unblock`, {
       method: "POST",
       headers: {

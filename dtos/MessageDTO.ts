@@ -9,6 +9,17 @@ export interface FileContent {
   type: string;
 }
 
+export interface FileProps {
+  _id?: string;
+  fileName?: string;
+  url?: string;
+  bytes?: number;
+  width?: number;
+  height?: number;
+  format?: string;
+  type?: string;
+}
+
 export interface RequestSendMessageDTO {
   boxId: string;
   content: string | FileContent;
@@ -56,18 +67,6 @@ export interface ResponseMessageBoxDTO {
   adminId: string;
 }
 
-export interface ResponseMessageDTO {
-  id: string;
-  flag: boolean;
-  readedId: string[];
-  text: string[];
-  contentId: FileContent[];
-  boxId: string;
-  createAt: string;
-  createBy: string;
-  isReact: boolean;
-}
-
 export interface DetailMessageBoxDTO {
   _id: string;
   senderId: UserInfoBox;
@@ -82,20 +81,25 @@ export interface DetailMessageBoxDTO {
   readStatus: boolean;
 }
 
-export interface PusherDeleteAndRevoke {
-  id: string;
-  flag: boolean;
-  isReact: boolean;
-  text: string;
-  boxId: string;
-  action: string;
-}
-
 export interface Text {
   id: string;
   text: string;
+  contentId: FileContent;
   timestamp: Date;
   createBy: string;
+  status: boolean;
+}
+
+export interface ResponseMessageDTO {
+  id: string;
+  flag: boolean;
+  readedId: string[];
+  text: string;
+  contentId: FileContent;
+  boxId: string;
+  createAt: string;
+  createBy: string;
+  isReact: boolean;
 }
 
 export interface ItemChat {
@@ -105,6 +109,8 @@ export interface ItemChat {
   status: string;
   lastMessage: Text;
   isRead: boolean;
+  receiverId: string | undefined;
+  senderId: string | undefined;
 }
 
 export interface ItemHeader {
@@ -124,4 +130,34 @@ export interface ChatResponse {
 export interface FindMessageResponse {
   success: boolean;
   messages: ResponseMessageDTO[];
+}
+
+export interface GroupCreateDTO {
+  membersIds: string[];
+  leaderId: string;
+  groupName: string;
+  groupAva: string | null;
+}
+
+export interface PusherRevoke {
+  id: string;
+  flag: boolean;
+  isReact: boolean;
+  text: string;
+  boxId: string;
+  action: string;
+  createAt: string;
+  createBy: string;
+}
+
+export interface PusherDelete {
+  id: string;
+  flag: boolean;
+  visibility: boolean;
+  isReact: boolean;
+  text: string;
+  boxId: string;
+  action: string;
+  createAt: string;
+  createBy: string;
 }
