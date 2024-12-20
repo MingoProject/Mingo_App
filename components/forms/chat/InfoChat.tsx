@@ -50,10 +50,12 @@ const InfoChat = ({
   item,
   setModalVisible,
   setRelation,
+  relation,
 }: {
   item: any;
   setModalVisible: (visible: boolean) => void;
   setRelation: any;
+  relation: string;
 }) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
@@ -86,8 +88,10 @@ const InfoChat = ({
     const fetchFiles = async () => {
       try {
         const data = await getOrtherList(item.id.toString()); // Gọi API
+        const videodata = await getVideoList(item.id.toString()); // Gọi API
         if (isMounted && data) {
-          setFiles(data); // Lưu dữ liệu file từ API
+          // setFiles(data); // Lưu dữ liệu file từ API
+          setVideoList(videodata); // Lưu trực tiếp `messages` từ API
         }
       } catch (error) {
         console.error("Error loading files:", error);
@@ -99,37 +103,7 @@ const InfoChat = ({
     return () => {
       isMounted = false; // Cleanup khi component unmount
     };
-  }, [item.id.toString()]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const myChat = async () => {
-      try {
-        const data = await getImageList(item.id.toString()); // Gọi API
-        if (isMounted && data) {
-          setMessages(data); // Lưu trực tiếp `messages` từ API
-        }
-      } catch (error) {
-        console.error("Error loading chat:", error);
-      }
-
-      try {
-        const data = await getVideoList(item.id.toString()); // Gọi API
-        if (isMounted && data) {
-          setVideoList(data); // Lưu trực tiếp `messages` từ API
-        }
-      } catch (error) {
-        console.error("Error loading chat:", error);
-      }
-    };
-
-    myChat();
-
-    return () => {
-      isMounted = false; // Cleanup khi component unmount
-    };
-  }, [item.id.toString()]);
+  }, []);
 
   const imagesInChat = getAllImagesFromChat(messages);
   const videosInChat = getAllVideosFromChat(videoList);
@@ -175,11 +149,9 @@ const InfoChat = ({
     }
   };
 
-  const handleBlockChat = async () => {
-    const userId = await AsyncStorage.getItem("userId");
-
-    if (!item && !userId) return;
+  const handleBlockChat = async (relation: string) => {
     try {
+      const userId = await AsyncStorage.getItem("userId");
       Alert.alert(
         "Block Message", // Tiêu đề
         "Are you sure you want to block this message?", // Nội dung
@@ -192,22 +164,24 @@ const InfoChat = ({
             text: "Yes",
             onPress: async () => {
               const token = await AsyncStorage.getItem("token");
-              // Kiểm tra xem receiverId và senderId có tồn tại hay không
-              if (!item?.receiverId || !item?.senderId) {
-                alert("Lỗi: Không có ID người nhận hoặc người gửi.");
-                return;
-              }
 
               // Tạo đối tượng params theo kiểu FriendRequestDTO
-              const params: FriendRequestDTO = {
-                sender: item.senderId || null, // Nếu senderId là undefined, sử dụng null
-                receiver: item.receiverId || null, // Nếu receiverId là undefined, sử dụng null
+              const params = {
+                sender: userId, // Nếu senderId là undefined, sử dụng null
+                receiver: item.receiverId, // Nếu receiverId là undefined, sử dụng null
               };
 
-              await block(params, token); // Gọi API block
-              setRelation("blocked"); // Hoặc bạn có thể thay thế với giá trị mới mà bạn muốn
+              console.log(relation, "relation");
 
-              Alert.alert("Block thành công!");
+              if (relation !== "block") {
+                console.log(relation, "đã vô đây");
+
+                await block(params, token); // Gọi API block
+                setRelation("blocked"); // Hoặc bạn có thể thay thế với giá trị mới mà bạn muốn
+                Alert.alert("Block thành công!");
+              } else {
+                Alert.alert("User đã bị  block!");
+              }
             },
           },
         ],
@@ -253,7 +227,7 @@ const InfoChat = ({
             source={
               item.avatarUrl
                 ? { uri: item.avatarUrl }
-                : require("../../../assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg")
+                : require("../../../assets/images/default-user.png")
             }
             style={{ width: 70, height: 70, borderRadius: 50 }}
           />
@@ -442,7 +416,10 @@ const InfoChat = ({
           </TouchableOpacity>
         </View>
         <View className="ml-5 mt-5">
-          <TouchableOpacity className="flex flex-row" onPress={handleBlockChat}>
+          <TouchableOpacity
+            className="flex flex-row"
+            onPress={() => handleBlockChat(relation)}
+          >
             <BlockIcon size={28} color={iconColor} />
             <Text
               style={{

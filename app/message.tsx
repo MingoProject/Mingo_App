@@ -101,7 +101,7 @@ const Message = () => {
           updatedChats.unshift({
             id: data.boxId,
             userName: data.userName || "Người dùng mới",
-            avatarUrl: data.avatarUrl || "/assets/images/default-avatar.png",
+            avatarUrl: data.avatarUrl || "/assets/images/default-user.png",
             lastMessage: {
               id: "unique-id",
               createBy: "system",
@@ -151,7 +151,7 @@ const Message = () => {
           updatedChats.unshift({
             id: data.boxId,
             userName: data.userName || "Người dùng mới",
-            avatarUrl: data.avatarUrl || "/assets/images/default-avatar.png",
+            avatarUrl: data.avatarUrl || "/assets/images/default-user.png",
             lastMessage: {
               id: "unique-id",
               createBy: "system",

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Switch } from "react-native";
+import { View, Text, TouchableOpacity, Switch, Modal } from "react-native";
 import {
   ArrowIcon,
   SaveIcon,
@@ -12,10 +12,27 @@ import {
 } from "../../icons/Icons"; // Đảm bảo đường dẫn đúng
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
+import SavedPosts from "./SavedPosts";
+import LikedPosts from "./LikedPosts";
+import ChangePassword from "./ChangePassword";
 
-const Setting = ({ setSetting }) => {
+const Setting = ({ setSetting }: any) => {
   const { colorScheme, toggleColorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const [isSavedPostModalVisible, setSavedPostModalVisible] = useState(false);
+  const [isLikedPostModalVisible, setLikedPostModalVisible] = useState(false);
+  const [isChangePasswordModalVisible, setChangePasswordModalVisible] =
+    useState(false);
+
+  const toggleSavedPostModal = () =>
+    setSavedPostModalVisible(!isSavedPostModalVisible);
+
+  const toggleLikedPostModal = () =>
+    setLikedPostModalVisible(!isLikedPostModalVisible);
+
+  const toggleChangePasswordModal = () =>
+    setChangePasswordModalVisible(!isChangePasswordModalVisible);
+
   return (
     <>
       <View
@@ -88,7 +105,10 @@ const Setting = ({ setSetting }) => {
                 Activities
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity className="rounded p-3 flex flex-row items-center">
+            <TouchableOpacity
+              className="rounded p-3 flex flex-row items-center"
+              onPress={toggleSavedPostModal}
+            >
               <SaveIcon size={28} color={iconColor} />
 
               <Text
@@ -103,7 +123,10 @@ const Setting = ({ setSetting }) => {
                 Saved post
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity className="rounded p-3 flex flex-row items-center">
+            <TouchableOpacity
+              className="rounded p-3 flex flex-row items-center"
+              onPress={toggleLikedPostModal}
+            >
               <HistoryIcon size={28} color={iconColor} />
 
               <Text
@@ -133,7 +156,10 @@ const Setting = ({ setSetting }) => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className=" rounded p-3 flex flex-row items-center">
+            <TouchableOpacity
+              className=" rounded p-3 flex flex-row items-center"
+              onPress={toggleChangePasswordModal}
+            >
               <KeyIcon size={28} color={iconColor} />
 
               <Text
@@ -157,6 +183,129 @@ const Setting = ({ setSetting }) => {
           </TouchableOpacity>
         </View>
       </View>
+      <Modal
+        visible={isSavedPostModalVisible}
+        onRequestClose={toggleSavedPostModal}
+        animationType="slide"
+      >
+        <View
+          className="flex-1"
+          style={{
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+          }}
+        >
+          <View className="flex-row mt-16">
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+              className="font-msemibold text-lg ml-3"
+            >
+              Saved Posts
+            </Text>
+            <TouchableOpacity
+              onPress={toggleSavedPostModal}
+              className="ml-auto pr-5"
+            >
+              <Text
+                style={{
+                  color: colorScheme === "dark" ? colors.dark[100] : "#D9D9D9",
+                }}
+                className="font-msemibold mt-2"
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <SavedPosts />
+        </View>
+      </Modal>
+
+      <Modal
+        visible={isLikedPostModalVisible}
+        onRequestClose={toggleLikedPostModal}
+        animationType="slide"
+      >
+        <View
+          className="flex-1 "
+          style={{
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+          }}
+        >
+          <View className="flex-row mt-16">
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+              className="font-msemibold text-lg ml-3"
+            >
+              Liked Posts
+            </Text>
+            <TouchableOpacity
+              onPress={toggleLikedPostModal}
+              className="ml-auto pr-5"
+            >
+              <Text
+                style={{
+                  color: colorScheme === "dark" ? colors.dark[100] : "#D9D9D9",
+                }}
+                className="font-msemibold mt-2"
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <LikedPosts />
+        </View>
+      </Modal>
+
+      <Modal
+        visible={isChangePasswordModalVisible}
+        onRequestClose={toggleChangePasswordModal}
+        animationType="slide"
+      >
+        <View
+          className="flex-1"
+          style={{
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+          }}
+        >
+          <View className="flex-row  mt-16">
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+              className="font-msemibold text-lg ml-3"
+            >
+              Change password
+            </Text>
+            <TouchableOpacity
+              onPress={toggleChangePasswordModal}
+              className="ml-auto pr-5"
+            >
+              <Text
+                style={{
+                  color: colorScheme === "dark" ? colors.dark[100] : "#D9D9D9",
+                }}
+                className="font-msemibold mt-2"
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <ChangePassword
+            toggleChangePasswordModal={toggleChangePasswordModal}
+          />
+        </View>
+      </Modal>
     </>
   );
 };

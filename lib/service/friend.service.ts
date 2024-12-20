@@ -199,7 +199,7 @@ export async function unfriend(params: FriendRequestDTO, token: string | null) {
 export async function block(params: FriendRequestDTO, token: string | null) {
   try {
     const userId = await AsyncStorage.getItem("userId");
-    console.log(params, userId, "checkblock");
+    console.log(params, userId, "checkblockaaaa");
     const response = await fetch(`${BASE_URL}/friend/block`, {
       method: "POST",
       headers: {

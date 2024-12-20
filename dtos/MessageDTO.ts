@@ -9,6 +9,17 @@ export interface FileContent {
   type: string;
 }
 
+export interface FileProps {
+  _id?: string;
+  fileName?: string;
+  url?: string;
+  bytes?: number;
+  width?: number;
+  height?: number;
+  format?: string;
+  type?: string;
+}
+
 export interface RequestSendMessageDTO {
   boxId: string;
   content: string | FileContent;

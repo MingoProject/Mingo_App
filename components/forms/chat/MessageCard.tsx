@@ -8,10 +8,15 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Modal,
+  Button,
+  StyleSheet,
+  Dimensions,
+  FlatList,
 } from "react-native";
 import * as FileSystem from "expo-file-system";
 import { shareAsync } from "expo-sharing";
 import {
+  FileContent,
   ItemChat,
   PusherDelete,
   PusherRevoke,
@@ -22,7 +27,21 @@ import { pusherClient } from "@/lib/pusher";
 import { isLoading } from "expo-font";
 import { useChatContext } from "@/context/ChatContext";
 import { removeMessage, revokeMessage } from "@/lib/service/message.service";
-import { PlusIcon, ThreeDotsIcon } from "@/components/icons/Icons";
+import {
+  DocTypeIcon,
+  PdfTypeIcon,
+  PlusIcon,
+  PptTypeIcon,
+  ThreeDotsIcon,
+} from "@/components/icons/Icons";
+// import { Video, ResizeMode } from "expo-av";
+import { Video, ResizeMode } from "react-native-video";
+import VideoPlayer from "../media/VideoPlayer";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { useEvent } from "expo";
+import AudioPlayer from "../media/AudioPlayer";
+import { openWebFile } from "@/lib/untils/File";
+const screenWidth = Dimensions.get("window").width;
 
 const MessageCard = ({
   message,
@@ -45,6 +64,9 @@ const MessageCard = ({
   const hasText = message.text && message.text.length > 0 ? true : false;
   const { messages, setMessages } = useChatContext();
   const [isModalVisible, setModalVisible] = useState(false); // Điều khiển việc hiển thị modal
+
+  const numColumns = 4;
+  const mediaSize = screenWidth / numColumns - 10;
 
   const toggleModal = () => setModalVisible(!isModalVisible);
 
@@ -78,7 +100,6 @@ const MessageCard = ({
 
   const handleRevoke = async () => {
     // Cập nhật giao diện trước để tạo phản hồi nhanh cho người dùng
-    console.log("da co revoke");
     setMessages((prevMessages) =>
       prevMessages.map((msg) =>
         msg.id === message.id ? { ...msg, flag: false } : msg
@@ -97,6 +118,51 @@ const MessageCard = ({
     // Cập nhật giao diện trước để tạo phản hồi nhanh cho người dùng
     console.log("da co revoke");
   };
+
+  const renderFileIcon = (fileType: string) => {
+    switch (fileType.toLowerCase()) {
+      case "doc":
+      case "docx":
+        return <DocTypeIcon />;
+      case "ppt":
+      case "pptx":
+        return <PptTypeIcon />;
+      case "pdf":
+        return <PdfTypeIcon />;
+      default:
+        return <DocTypeIcon />; // Fallback to a default icon
+    }
+  };
+
+  const RenderFileItem = ({ item }: { item: FileContent }) => (
+    <TouchableOpacity
+      className={`flex items-center justify-center`}
+      style={{
+        width: mediaSize,
+        margin: 5,
+        borderRadius: 8,
+        rowGap: 4,
+      }}
+      onPress={async () => await openWebFile(item.url!)}
+    >
+      <View
+        className="bg-light-300 dark:bg-dark-20 flex rounded-2xl items-center justify-center"
+        style={{ width: mediaSize, height: mediaSize }}
+      >
+        {renderFileIcon(item.url?.split(".").pop()!)}
+      </View>
+      <View className="w-full flex justify-center">
+        <View>
+          <Text
+            className={`text-[10px] ml-4 font-helvetica-bold`}
+            numberOfLines={2}
+          >
+            {`${item.fileName}`}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View
@@ -128,7 +194,7 @@ const MessageCard = ({
             source={
               chatItem?.avatarUrl
                 ? { uri: chatItem.avatarUrl }
-                : require("../../../assets/images/0dd7ef2b0c1abd4c1783b1878c4ae633.jpg")
+                : require("../../../assets/images/default-user.png")
             }
             style={{ width: 40, height: 40, borderRadius: 50 }}
           />
@@ -136,8 +202,8 @@ const MessageCard = ({
 
         <View
           className={`max-w-[75%] p-3  ${
-            hasFiles && message.contentId.type === "Image"
-              ? "bg-white p-0"
+            hasFiles
+              ? " p-0"
               : isCurrentUser
               ? "bg-primary-100 text-white"
               : colorScheme === "dark"
@@ -150,7 +216,7 @@ const MessageCard = ({
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.2,
             shadowRadius: 1.41,
-            elevation: 2,
+            // elevation: 2,
           }}
         >
           {/* Hiển thị modal với các hành động nếu isAction là true và người dùng là current user */}
@@ -205,7 +271,7 @@ const MessageCard = ({
                     }}
                   >
                     <Text className="font-helvetica-light text-14 text-center">
-                      Revoke message
+                      Thu hồi
                     </Text>
                   </TouchableOpacity>
 
@@ -217,7 +283,7 @@ const MessageCard = ({
                     }}
                   >
                     <Text className="font-helvetica-light text-14 text-center">
-                      Delete message
+                      Xóa
                     </Text>
                   </TouchableOpacity>
 
@@ -231,7 +297,7 @@ const MessageCard = ({
                       }}
                     >
                       <Text className="font-helvetica-light text-14 text-center">
-                        Edit message
+                        Sửa
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -259,7 +325,6 @@ const MessageCard = ({
               >
                 {message.text}
               </Text>
-
               {/* Display files */}
               {hasFiles && (
                 <View>
@@ -281,16 +346,59 @@ const MessageCard = ({
                       }}
                       resizeMode="contain"
                     />
+                  ) : message.contentId.type === "Video" ? (
+                    (() => {
+                      const containerWidth = screenWidth * 0.5; // 50% màn hình
+                      const aspectRatio =
+                        parseInt(message.contentId.width) /
+                        parseInt(message.contentId.height);
+
+                      const videoHeight = Math.min(
+                        containerWidth / aspectRatio,
+                        200
+                      ); // Giới hạn chiều cao tối đa là 200px
+                      const videoWidth = videoHeight * aspectRatio; // Tính lại chiều rộng theo tỷ lệ
+
+                      return (
+                        <View
+                          style={{
+                            width: containerWidth,
+                            height: videoHeight,
+                            borderRadius: 12,
+                            overflow: "hidden", // Giới hạn nội dung bên trong View
+                            alignItems: "center", // Căn giữa nội dung
+                            justifyContent: "center", // Căn giữa nội dung
+                          }}
+                          className="mb-6"
+                        >
+                          <VideoPlayer videoSource={message.contentId.url} />
+                        </View>
+                      );
+                    })()
+                  ) : message.contentId.type === "Audio" ? (
+                    (() => {
+                      return (
+                        <View
+                          style={{}}
+                          className="w-fi flex justify-center pb-6"
+                        >
+                          <AudioPlayer
+                            audioUri={message.contentId.url}
+                            isSender={isCurrentUser}
+                          />
+                        </View>
+                      );
+                    })()
+                  ) : message.contentId.type === "Other" ? (
+                    <RenderFileItem item={message.contentId} />
                   ) : (
                     <Text
                       style={{
-                        color: "#007bff",
-                        textDecorationLine: "underline",
                         fontSize: 14,
+                        color: "#6c757d",
                       }}
-                      // onPress={handleFileDownload}
                     >
-                      {message.contentId.fileName || "Download File"}
+                      Không hỗ trợ định dạng này
                     </Text>
                   )}
                 </View>
@@ -302,4 +410,5 @@ const MessageCard = ({
     </View>
   );
 };
+
 export default MessageCard;

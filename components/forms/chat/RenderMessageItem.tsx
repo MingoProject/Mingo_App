@@ -27,7 +27,7 @@ const RenderMessageItem = ({ item }: { item: any }) => {
   const router = useRouter(); // Khởi tạo router
   const { colorScheme } = useTheme();
   const { messages, setMessages } = useChatContext();
-
+  console.log(item, "this is item");
   const handleNewMessage = async (data: ResponseMessageDTO) => {
     if (data.boxId !== item.id) return;
     const userId = await AsyncStorage.getItem("userId");
@@ -77,7 +77,6 @@ const RenderMessageItem = ({ item }: { item: any }) => {
         timestamp: new Date(latestMessage.createAt),
         status: isRead, // Cập nhật trạng thái dựa vào `readedId`
       });
-      console.log(updatedMessages, "updatedMessages");
 
       return updatedMessages;
     });
@@ -250,7 +249,7 @@ const RenderMessageItem = ({ item }: { item: any }) => {
         source={
           item.avatarUrl
             ? { uri: item.avatarUrl }
-            : require("../../../assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg")
+            : require("../../../assets/images/default-user.png")
         }
         style={{ width: 70, height: 70, borderRadius: 50 }}
       />
@@ -276,7 +275,7 @@ const RenderMessageItem = ({ item }: { item: any }) => {
           ellipsizeMode="tail"
         >
           {isReceiver ? (
-            <View className="flex gap-1">
+            <View className="flex flex-row gap-1">
               <Text
                 className={`${
                   lastMessage.status || !isReceiver
@@ -287,6 +286,7 @@ const RenderMessageItem = ({ item }: { item: any }) => {
                 {item.userName.trim().split(" ").pop()}:{" "}
               </Text>
               {(() => {
+                console.log(lastMessage.contentId?.type?.toLowerCase());
                 const type = lastMessage.contentId?.type?.toLowerCase() || "";
                 const messageStatusClass = lastMessage.status
                   ? "font-normal"
@@ -300,21 +300,27 @@ const RenderMessageItem = ({ item }: { item: any }) => {
                   );
                 }
 
-                switch (type) {
-                  case "image":
-                    return (
-                      <Text className={messageStatusClass}>Gửi 1 ảnh</Text>
-                    );
-                  case "video":
-                    return (
-                      <Text className={messageStatusClass}>Gửi 1 video</Text>
-                    );
-                  case "other":
-                    return (
-                      <Text className={messageStatusClass}>Gửi 1 file</Text>
-                    );
-                  default:
-                    return <Text className={messageStatusClass}></Text>;
+                if (type !== "") {
+                  switch (type) {
+                    case "image":
+                      return (
+                        <Text className={messageStatusClass}>Gửi 1 ảnh</Text>
+                      );
+                    case "video || mp4":
+                      return (
+                        <Text className={messageStatusClass}>Gửi 1 video</Text>
+                      );
+                    case "other":
+                      return (
+                        <Text className={messageStatusClass}>Gửi 1 file</Text>
+                      );
+                    default:
+                      return (
+                        <Text className={messageStatusClass}>
+                          Bắt đầu đoạn chat
+                        </Text>
+                      );
+                  }
                 }
               })()}
             </View>

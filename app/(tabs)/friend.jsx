@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, Alert, Button, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  Alert,
+  Button,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
@@ -8,9 +15,9 @@ import Following from "../../components/friend/Following";
 import Block from "../../components/friend/Block";
 import BestFriend from "../../components/friend/BestFriend";
 import MyFriend from "../../components/friend/MyFriend";
-// import { set } from "date-fns";
 import SearchFriend from "../../components/friend/SearchFriend";
 import Follower from "@/components/friend/Follower";
+import { PlusIcon } from "@/components/icons/Icons";
 
 const SearchIcon = ({ size = 24, color = "black", onPress }) => {
   return (
@@ -61,6 +68,8 @@ const Friend = () => {
         return <BestFriend />;
       case "block":
         return <Block />;
+      case "follower":
+        return <Follower />;
       default:
         return <Following />; // Default case for rendering content
     }
@@ -103,12 +112,15 @@ const Friend = () => {
                 </Text>
               </View>
 
-              <View>
+              <View className="flex-row">
                 <SearchIcon
                   size={28}
                   color={iconColor}
                   onPress={handleIsSearch}
                 />
+                <TouchableOpacity className="ml-2" onPress={handleIsSearch}>
+                  <AddIcon size={27} color={iconColor} />
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -163,8 +175,8 @@ const Friend = () => {
                   isActiveTab === "loimoi"
                     ? colors.primary[100]
                     : colorScheme === "dark"
-                    ? colors.dark[200]
-                    : colors.light[600]
+                    ? colors.dark[400]
+                    : colors.light[800]
                 }
                 titleStyle={{
                   color:
@@ -190,8 +202,8 @@ const Friend = () => {
                   isActiveTab === "banbe"
                     ? colors.primary[100]
                     : colorScheme === "dark"
-                    ? colors.dark[200]
-                    : colors.light[600]
+                    ? colors.dark[400]
+                    : colors.light[800]
                 }
                 titleStyle={{
                   color:
@@ -217,12 +229,40 @@ const Friend = () => {
                   isActiveTab === "banthan"
                     ? colors.primary[100]
                     : colorScheme === "dark"
-                    ? colors.dark[200]
-                    : colors.light[600]
+                    ? colors.dark[400]
+                    : colors.light[800]
                 }
                 titleStyle={{
                   color:
                     isActiveTab === "banthan"
+                      ? colors.light[100]
+                      : colorScheme === "dark"
+                      ? colors.light[300]
+                      : colors.dark[700],
+                }}
+              />
+
+              <MyButton
+                title="Followers"
+                onPress={() => setIsActiveTab("follower")}
+                paddingLeft={20}
+                paddingRight={20}
+                width={130}
+                height={40}
+                borderRadius={30}
+                fontSize={16}
+                isShadow={true}
+                isActive={isActiveTab === "follower"}
+                backgroundColor={
+                  isActiveTab === "follower"
+                    ? colors.primary[100]
+                    : colorScheme === "dark"
+                    ? colors.dark[400]
+                    : colors.light[800]
+                }
+                titleStyle={{
+                  color:
+                    isActiveTab === "follower"
                       ? colors.light[100]
                       : colorScheme === "dark"
                       ? colors.light[300]
@@ -245,8 +285,8 @@ const Friend = () => {
                   isActiveTab === "block"
                     ? colors.primary[100]
                     : colorScheme === "dark"
-                    ? colors.dark[200]
-                    : colors.light[600]
+                    ? colors.dark[400]
+                    : colors.light[800]
                 }
                 titleStyle={{
                   color:

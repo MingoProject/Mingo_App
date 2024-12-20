@@ -41,7 +41,6 @@ import {
 import InfoChat from "../../components/forms/chat/InfoChat";
 import { useAuth } from "../../context/AuthContext";
 import {
-  FileContent,
   PusherDelete,
   PusherRevoke,
   ResponseMessageDTO,
@@ -75,20 +74,26 @@ const Chat = () => {
     { tempUrl: string; cloudinaryUrl: string }[]
   >([]);
   const scrollViewRef = useRef<ScrollView | null>(null);
+  // const [isRecording, setIsRecording] = useState(false); // Để theo dõi trạng thái ghi âm
+  const [audioUrl, setAudioUrl] = useState<string | null>(null); // URL của file audio
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null); // Để lưu MediaRecorder instance
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [currentContentType, setCurrentContentType] = useState<
     "text" | "voice" | "file" | null
   >(null);
+  // const [isLoading, setIsLoading] = useState(true);
   const [relation, setRelation] = useState<string>("");
+
+  // const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedMedia, setSelectedMedia] = useState<
     { uri: string; type: string; name: string | null | undefined }[]
   >([]);
   const [isReport, setIsReport] = useState(false);
   const [isMicroOpen, setIsMicroOpen] = useState(false);
-
   const ref = useClickOutside<View>(() => {
     setIsMicroOpen(false);
   });
-
   const handleIsReport = () => {
     setIsReport(true);
   };
@@ -203,6 +208,7 @@ const Chat = () => {
 
   const handlePickMedia = async () => {
     const media = await pickMedia();
+    setCurrentContentType("file");
     setSelectedMedia((prev) => [...prev, ...media]);
   };
 
@@ -213,15 +219,27 @@ const Chat = () => {
 
   const resetContent = () => {
     setValue("");
-    setSelectedMedia([]);
+    setAudioBlob(null);
+    setSelectedFiles([]);
+    setCurrentContentType(null);
   };
 
   const handleSend = async () => {
-    if (currentContentType === "text") {
-      await handleSendTextMessage();
-    } else {
-      await handleSendMultipleFiles(selectedMedia);
+    switch (currentContentType) {
+      case "text":
+        await handleSendTextMessage();
+        break;
+      case "voice":
+        // await handleSendVoiceMessage();
+        await handleSendMultipleFiles(selectedMedia);
+        break;
+      case "file":
+        await handleSendMultipleFiles(selectedMedia);
+        break;
+      default:
+        console.log("No content to send");
     }
+    // Reset trạng thái sau khi gửi
     resetContent();
   };
 
@@ -250,173 +268,66 @@ const Chat = () => {
           type: item.type ?? "defaultType",
         })),
       ]);
+
+      console.log(document, "document");
     }
+    setCurrentContentType("file");
   };
-
-  // const handleSendMultipleFiles = async (
-  //   files: { uri: string; type: string; name: string | undefined | null }[]
-  // ) => {
-  //   const storedToken = await AsyncStorage.getItem("token");
-  //   if (!storedToken) return;
-  //   try {
-  //     if (files.length != 0) {
-  //       for (const file of files) {
-  //         const formData = new FormData();
-  //         const fileContent: any = {
-  //           fileName: file.name,
-  //           url: "",
-  //           publicId: "",
-  //           bytes: "",
-  //           width: "0",
-  //           height: "0",
-  //           format: file.name?.split(".").pop(),
-  //           type: file.type,
-  //         };
-  //         let newFile = null;
-  //         if (
-  //           file.type === "image" ||
-  //           file.type === "video" ||
-  //           file.type === "audio"
-  //         ) {
-  //           newFile = {
-  //             uri: file.uri,
-  //             type: "image/jpeg",
-  //             name: file.name,
-  //           };
-  //         } else {
-  //           const formData = new FormData();
-  //           const fileType = file.name?.match(/\.([a-zA-Z0-9]+)$/)?.[1];
-  //           const mimeType =
-  //             fileType === "txt"
-  //               ? "text/plain"
-  //               : fileType?.startsWith("image")
-  //               ? `image/${fileType.split("/")[1]}` // For images, e.g., "image/png"
-  //               : fileType?.startsWith("video")
-  //               ? `video/${fileType.split("/")[1]}` // For videos, e.g., "video/mp4"
-  //               : `application/${fileType || "octet-stream"}`;
-  //           console.log(mimeType, "mimeType");
-  //           console.log(selectedMedia);
-  //           console.log("type: ", mimeType);
-  //           const tempUri = await prepareFileForUpload(file.uri, file.name!);
-  //           console.log("prepare uri: ", tempUri);
-  //           newFile = {
-  //             uri: tempUri,
-  //             type: mimeType,
-  //             name: file.name,
-  //           };
-  //         }
-  //         formData.append("boxId", id.toString());
-  //         formData.append("content", JSON.stringify(fileContent));
-  //         formData.append("file", newFile as any);
-
-  //         try {
-  //           const storedToken = await AsyncStorage.getItem("token");
-  //           if (!storedToken) return;
-
-  //           const response = await sendMessage(formData);
-  //           console.log(response, "response");
-  //         } catch (error) {
-  //           console.error("Error sending message: ", error);
-  //         }
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error sending message:", error);
-  //     throw error;
-  //   }
-  // };
 
   const handleSendMultipleFiles = async (
     files: { uri: string; type: string; name: string | undefined | null }[]
   ) => {
     const storedToken = await AsyncStorage.getItem("token");
     if (!storedToken) return;
-
-    if (files.length === 0) return;
-
     try {
-      for (const file of files) {
-        const formData = new FormData();
-
-        // File content object
-        const fileContent = {
-          fileName: file.name,
-          url: "",
-          publicId: "",
-          bytes: "",
-          width: "0",
-          height: "0",
-          format: file.name?.split(".").pop(),
-          type: file.type,
-        };
-
-        const fileType = file.name?.match(/\.([a-zA-Z0-9]+)$/)?.[1];
-        let mimeType = "application/octet-stream"; // Default MIME type
-
-        if (fileType === "txt") {
-          mimeType = "text/plain";
-        } else if (
-          // Check for image types
-          fileType?.match(/(jpeg|png|jpg|svg)/)
-        ) {
-          mimeType = `image/${fileType}`;
-        } else if (fileType?.startsWith("mp4")) {
-          mimeType = `video/mp4`; // Handle MP4 video files
-        } else if (fileType?.startsWith("avi")) {
-          mimeType = `video/avi`; // Handle AVI video files
-        } else if (fileType?.startsWith("mkv")) {
-          mimeType = `video/mkv`; // Handle MKV video files
-        } else if (fileType?.startsWith("mp3")) {
-          mimeType = `audio/mp3`; // Handle MP3 audio files
-        } else if (fileType?.startsWith("wav")) {
-          mimeType = `audio/wav`; // Handle WAV audio files
-        } else if (fileType?.startsWith("ogg")) {
-          mimeType = `audio/ogg`; // Handle OGG audio files
-        }
-
-        console.log(mimeType); // Output the determined MIME type
-
-        console.log("file.name:", file.name);
-        console.log("fileType", fileType);
-
-        let newFile = null;
-
-        // Prepare file based on type
-        if (
-          file.type === "image" ||
-          file.type === "video" ||
-          file.type === "audio"
-        ) {
-          newFile = {
-            uri: file.uri,
-            type: mimeType,
-            name: file.name,
+      if (files.length != 0) {
+        for (const file of files) {
+          const formData = new FormData();
+          const fileContent: any = {
+            fileName: file.name,
+            url: "",
+            publicId: "",
+            bytes: "",
+            width: "0",
+            height: "0",
+            format: file.name?.split(".").pop(),
+            type: file.type,
           };
-        } else {
-          const tempUri = await prepareFileForUpload(file.uri, file.name!);
-          newFile = {
-            uri: tempUri,
-            type: mimeType,
-            name: file.name,
-          };
-        }
+          let newFile = null;
+          if (
+            file.type === "image" ||
+            file.type === "video" ||
+            file.type === "audio"
+          ) {
+            newFile = {
+              uri: file.uri,
+              type: "image/jpeg",
+              name: file.name,
+            };
+          } else {
+            const tempUri = await prepareFileForUpload(file.uri, file.name!);
+            newFile = {
+              uri: tempUri,
+              type: file.name?.split(".").pop(),
+              name: file.name,
+            };
+          }
+          formData.append("boxId", id.toString());
+          formData.append("content", JSON.stringify(fileContent));
+          formData.append("file", newFile as any);
 
-        // Append to FormData
-        formData.append("boxId", id.toString());
-        formData.append("content", JSON.stringify(fileContent));
-        formData.append("file", newFile as any);
+          try {
+            const storedToken = await AsyncStorage.getItem("token");
+            if (!storedToken) return;
 
-        try {
-          // Send the message
-          const response = await sendMessage(formData);
-          setSelectedMedia([]);
-          console.log("Response:", response);
-        } catch (error) {
-          console.error("Error sending message:", error);
+            const response = await sendMessage(formData);
+          } catch (error) {
+            console.error("Error sending message: ", error);
+          }
         }
       }
     } catch (error) {
-      console.error("Error processing files:", error);
+      console.error("Error sending message:", error);
       throw error;
     }
   };
@@ -504,7 +415,7 @@ const Chat = () => {
     };
   }, []); // Re-run if boxId or setMessages changes
 
-  const handleIconPress = () => {
+  const handleIconClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
@@ -549,6 +460,14 @@ const Chat = () => {
     </View>
   );
 
+  // Component khi đang tải
+  const LoadingView = () => (
+    <View className="flex flex-col items-center justify-center w-full h-full">
+      <View className="loader"></View>
+      <Text className="text-sm text-gray-500">Đang tải...</Text>
+    </View>
+  );
+
   // Component khi bị chặn bởi người dùng
   const BlockedByView = () => (
     <View className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
@@ -590,6 +509,8 @@ const Chat = () => {
     }
 
     switch (relation) {
+      case "":
+        return <LoadingView />;
       case "blockedBy":
         return <BlockedByView />;
       case "blocked":
@@ -710,32 +631,18 @@ const Chat = () => {
         />
       </Modal>
 
-      {/* <Modal
-        transparent
-        animationType="slide"
-        visible={isModalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <InfoChat
-          item={chatItem}
-          setModalVisible={setModalVisible}
-          setRelation={setRelation}
-         
-        />
-      </Modal> */}
-
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
-        <View style={styles.inputContainer}>
-          <TouchableOpacity onPress={handlePickDocument}>
+        <View style={styles.inputContainer} className="gap-2 flex">
+          <TouchableOpacity onPress={handleIconClick}>
             <PlusIcon size={27} color={iconColor} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handlePickMedia}>
             <CameraIcon size={27} color={iconColor} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handlePickMedia}>
+          <TouchableOpacity onLongPress={handlePickMedia}>
             <ImageIcon size={25} color={iconColor} />
           </TouchableOpacity>
           <TouchableOpacity>
@@ -755,6 +662,11 @@ const Chat = () => {
           <TouchableOpacity onPress={handleSend}>
             <SendIcon size={28} color={iconColor} />
           </TouchableOpacity>
+          <View>
+            {selectedFiles.map((file, index) => (
+              <Text key={index}>{file.name}</Text>
+            ))}
+          </View>
         </View>
       </KeyboardAvoidingView>
 
@@ -792,12 +704,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 20,
     paddingHorizontal: 10,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Màu nền mờ
   },
 
   message: {

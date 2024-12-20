@@ -4,6 +4,7 @@ import {
   UserLoginDTO,
   UpdateUserBioDTO,
   UpdateUserDTO,
+  FindUserDTO,
 } from "@/dtos/UserDTO";
 
 const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
@@ -306,6 +307,123 @@ export async function getMyVideos(id: string | null) {
     return data;
   } catch (error) {
     console.error("Failed to fetch videos:", error);
+    throw error;
+  }
+}
+
+export async function updateUserStatus(token: string | null) {
+  try {
+    const response = await fetch(`${BASE_URL}/user/update-status`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error update status");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to update status", err);
+  }
+}
+
+export async function getMySavedPosts(id: string | null) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/user/get-my-saved-posts?userId=${id}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Error fetching posts");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch posts:", error);
+    throw error;
+  }
+}
+
+export async function getMyLikedPosts(id: string | null) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/user/get-my-liked-posts?userId=${id}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Error fetching posts");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch posts:", error);
+    throw error;
+  }
+}
+
+export async function changePassword(
+  token: string,
+  currentPassword: string,
+  newPassword: string
+) {
+  try {
+    const response = await fetch(`${BASE_URL}/user/change-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${token}`,
+      },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error change password");
+    }
+    const newUser = await response.json();
+    return newUser;
+  } catch (error) {
+    console.error("Failed to change password:", error);
+    throw error;
+  }
+}
+
+export async function getMyFollowers(id: string | null) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/user/get-my-followers?userId=${id}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Error fetching followers");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch followers:", error);
+    throw error;
+  }
+}
+
+export async function findUserByPhoneNumber(phoneNumber: string) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/user/get-user-by-phone-number?phoneNumber=${phoneNumber}`
+    );
+    if (!response.ok) {
+      throw new Error("Error fetching user");
+    }
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch user:", error);
     throw error;
   }
 }

@@ -89,7 +89,7 @@ export async function editPost(
   params: PostCreateDTO,
   postId: string,
   token: string
-): Promise<PostResponseDTO> {
+) {
   try {
     const response = await fetch(`${BASE_URL}/post/update?postId=${postId}`, {
       method: "PATCH",
@@ -105,7 +105,7 @@ export async function editPost(
       throw new Error(errorData.message || "Error creating media");
     }
 
-    const data: PostResponseDTO = await response.json();
+    const data = await response.json();
     return data;
   } catch (error) {
     console.error("Failed to create media:", error);
@@ -251,6 +251,66 @@ export async function getPostByPostId(postId: String) {
     return data;
   } catch (error) {
     console.error("Failed to fetch post by postId:", error);
+    throw error;
+  }
+}
+
+export async function savePost(postId: string, token: string) {
+  try {
+    if (!postId || !token) {
+      throw new Error("Post ID and token are required");
+    }
+
+    const response = await fetch(
+      `${BASE_URL}/post/save-post?postId=${postId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error save post");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to save post:", error);
+    throw error;
+  }
+}
+
+export async function unsavePost(postId: string, token: string) {
+  try {
+    if (!postId || !token) {
+      throw new Error("Post ID and token are required");
+    }
+
+    const response = await fetch(
+      `${BASE_URL}/post/unsave-post?postId=${postId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error unsave post");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to unsave post:", error);
     throw error;
   }
 }

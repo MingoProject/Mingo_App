@@ -54,7 +54,12 @@ const Block = () => {
         keyExtractor={(item: any) => item._id}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <Card item={item} actionButton="Nhắn tin" isLoiMoi={false} />
+          <Card
+            item={item}
+            actionButton="block"
+            isLoiMoi={false}
+            setData={setFriendList}
+          />
         )}
       />
     </View>

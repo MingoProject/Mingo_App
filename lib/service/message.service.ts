@@ -30,8 +30,6 @@ export async function getAllChat(boxId: string): Promise<ChatResponse> {
     throw new Error("Authentication token is missing.");
   }
 
-  console.log(boxId, "thiss iss boxid erro");
-
   try {
     const response = await fetch(
       `${BASE_URL}/message/getAllChat?boxId=${boxId}&&userId=${userId}`,
@@ -66,8 +64,6 @@ export async function getListChat(): Promise<ItemChat[]> {
     console.error("Token or User ID is missing");
     throw new Error("Authentication token or User ID is missing.");
   }
-
-  console.log(userId, "log userId");
 
   try {
     const response = await fetch(`${BASE_URL}/message/getListChat`, {
@@ -133,8 +129,6 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId"); // Assuming userId is stored in AsyncStorage, adjust if necessary.
 
-  console.log(userId, "log userId");
-
   // Kiểm tra xem token và userId có tồn tại trong localStorage không
   if (!token || !userId) {
     console.error("Token or User ID is missing");
@@ -159,7 +153,6 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
 
     const rawData: ResponseMessageBoxDTO = await response.json();
     // console.log(rawData, "raw data");
-    console.log(rawData, "rawData");
 
     // Mapping the response to ItemChat
     const chat: ItemChat[] = rawData.box
@@ -215,6 +208,7 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
 
 export async function sendMessage(formData: any): Promise<void> {
   const token = await AsyncStorage.getItem("token");
+  console.log(formData, "formadatata");
   if (!token) {
     console.error("No token found");
     throw new Error("Authentication token is missing.");
@@ -224,8 +218,8 @@ export async function sendMessage(formData: any): Promise<void> {
     const response = await fetch(`${BASE_URL}/message/sendMessage`, {
       method: "POST",
       headers: {
-        Authorization: `${token}`, // Use 'Bearer' for token authorization
         "Content-Type": "multipart/form-data",
+        Authorization: `${token}`, // Use 'Bearer' for token authorization
       },
       body: formData, // FormData should be sent directly as the body
     });
@@ -420,8 +414,6 @@ export async function createGroup(data: any): Promise<any> {
     throw new Error("Authentication token is missing.");
   }
 
-  console.log(data, "this is form data");
-
   try {
     // Gửi yêu cầu API
     const response = await fetch(`${BASE_URL}/message/createGroup`, {
@@ -520,8 +512,6 @@ export async function MarkMessageAsRead(boxId: string, userId: string) {
   }
 
   try {
-    console.log(boxId, userId, "THIS IS MarkMessageAsRead");
-
     const response = await fetch(
       `${BASE_URL}/message/markMessageAsRead?boxId=${boxId}&&userId=${userId}`,
       {
@@ -542,7 +532,6 @@ export async function MarkMessageAsRead(boxId: string, userId: string) {
     }
 
     const data = await response.json();
-    console.log(data, "MarkMessageAsRead");
 
     return data;
   } catch (error) {

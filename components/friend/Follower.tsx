@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
-import { getMyFollower, getMyFollowings } from "@/lib/service/user.service";
+import { getMyFollowers, getMyFollowings } from "@/lib/service/user.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View, Text, FlatList } from "react-native";
 import { useTheme } from "../../context/ThemeContext"; // Make sure this is correctly imported
@@ -9,19 +9,17 @@ import Card from "./Card";
 
 const Follower = () => {
   const { colorScheme } = useTheme(); // Get the color scheme from context
-  const [addFriendRequest, setAddFriendRequets] = useState([]);
+  const [followersData, setFollowersData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
-  const fetchAddFriendRequestData = async () => {
+  const fetchFollowersData = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
       const userId = await AsyncStorage.getItem("userId");
       if (!token) throw new Error("Token không tồn tại");
-
-      // Giải mã token
-      const data = await getMyFollower(userId);
-      setAddFriendRequets(data);
+      const data = await getMyFollowers(userId);
+      setFollowersData(data);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching friend request:", error);
@@ -31,7 +29,7 @@ const Follower = () => {
   };
 
   useEffect(() => {
-    fetchAddFriendRequestData();
+    fetchFollowersData();
   }, []);
 
   if (isLoading) {
@@ -54,11 +52,16 @@ const Follower = () => {
   return (
     <View className={`w-full h-5/6`}>
       <FlatList
-        data={addFriendRequest} // Use the fake data here
+        data={followersData}
         keyExtractor={(item: any) => item._id}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <Card item={item} actionButton="Chấp nhận" isLoiMoi={true} />
+          <Card
+            item={item}
+            actionButton="follower"
+            isLoiMoi={true}
+            setData={setFollowersData}
+          />
         )}
       />
     </View>

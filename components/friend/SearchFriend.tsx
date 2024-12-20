@@ -5,7 +5,8 @@ import { View, Text, FlatList, Image, TextInput } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors";
 import MyInput from "../share/MyInput";
-
+import { findUserByPhoneNumber } from "@/lib/service/user.service";
+import { useRouter } from "expo-router";
 const BackIcon = ({ size = 24, color = "black", onPress }) => {
   return (
     <Svg
@@ -40,46 +41,29 @@ const RightArrow = ({ size = 24, color = "white", onPress }) => {
   );
 };
 
-const SearchFriend = ({ onClose }) => {
+const SearchFriend = ({ onClose }: any) => {
+  const router = useRouter();
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
 
-  // Dữ liệu giả
-  const friendsData = [
-    { name: "Nguyễn Văn A", phone: "0123456789" },
-    { name: "Trần Thị B", phone: "0987654321" },
-    { name: "Lê Văn C", phone: "0912345678" },
-    { name: "Nguyễn Thị D", phone: "0123456790" },
-    { name: "Trần Văn E", phone: "0987654312" },
-  ];
-
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
   const [isClickSearch, setIsClickSearch] = useState(false);
-  const [noResults, setNoResults] = useState(false); // Thêm state để kiểm tra không có kết quả
+  const [noResults, setNoResults] = useState(false);
 
-  const handleSearch = () => {
-    const results = friendsData.filter((friend) =>
-      friend.phone.includes(phoneNumber)
-    );
-    setSearchResults(results);
-    setSuggestions([]); // Xóa gợi ý khi tìm kiếm
+  const handleSearch = async () => {
+    const user = await findUserByPhoneNumber(phoneNumber);
+    if (user) {
+      router.push(`/user/${user._id}`);
+    } else {
+      setNoResults(true);
+    }
+
     setIsClickSearch(true);
-    setNoResults(results.length === 0); // Kiểm tra xem có kết quả hay không
   };
 
   const handleInputChange = (text) => {
     setPhoneNumber(text);
-    if (text) {
-      const filteredSuggestions = friendsData.filter((friend) =>
-        friend.phone.includes(text)
-      );
-      setSuggestions(filteredSuggestions); // Cập nhật gợi ý
-    } else {
-      setSuggestions([]); // Nếu input trống, xóa gợi ý
-    }
-    setNoResults(false); // Đặt lại trạng thái không có kết quả
+    setNoResults(false);
   };
 
   return (
@@ -116,9 +100,13 @@ const SearchFriend = ({ onClose }) => {
           <View className={`flex-1 pr-4`}>
             <TextInput
               placeholder={"Nhập số điện thoại"}
-              className={`ml-3 flex-1 h-[40px] text-[#D9D9D9] font-mregular px-4 rounded-full text-sm ${
-                colorScheme === "dark" ? "bg-dark-200" : "bg-light-600"
-              }`}
+              className={`ml-3 flex-1 h-[40px]  font-mregular px-4 rounded-full text-sm `}
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+              }}
               value={phoneNumber}
               onChangeText={handleInputChange} // Cập nhật giá trị khi người dùng nhập
             />
@@ -126,43 +114,28 @@ const SearchFriend = ({ onClose }) => {
           <View>
             <MyButton
               borderRadius={50}
-              title={<RightArrow size={24} color={"white"} />}
+              title={
+                <RightArrow size={24} color={"white"} onPress={undefined} />
+              }
               width={40}
               height={40}
               backgroundColor="#FFAABB"
               borderColor="#92898A"
               onPress={handleSearch} // Thực hiện tìm kiếm khi nhấn nút
+              padding={undefined}
+              paddingTop={undefined}
+              paddingBottom={undefined}
+              paddingLeft={undefined}
+              paddingRight={undefined}
+              fontWeight={undefined}
+              fontFamily={undefined}
+              isActive={undefined}
             />
           </View>
         </View>
       </View>
-      {suggestions.length > 0 && (
-        <View className={`mt-4 bg-gray-200 rounded-lg p-2`}>
-          <FlatList
-            data={suggestions}
-            keyExtractor={(item) => item.phone}
-            renderItem={({ item }) => (
-              <Text
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors["title-pink"],
-                }}
-                className={`py-2 px-4 hover:bg-gray-300`} // Thêm hover effect nếu cần
-                onPress={() => {
-                  setPhoneNumber(item.phone); // Đặt số điện thoại khi nhấn vào gợi ý
-                  setSuggestions([]); // Xóa gợi ý
-                  setNoResults(false); // Đặt lại trạng thái không có kết quả
-                }}
-              >
-                {item.name} - {item.phone}
-              </Text>
-            )}
-          />
-        </View>
-      )}
-      {isClickSearch && noResults ? ( // Chỉ hiển thị nếu đã tìm kiếm và không có kết quả
+
+      {isClickSearch && noResults && (
         <View className={`mt-4 w-full `}>
           <View className="flex items-center justify-center pt-10">
             <Image
@@ -188,24 +161,6 @@ const SearchFriend = ({ onClose }) => {
             </Text>
           </View>
         </View>
-      ) : (
-        searchResults.length > 0 && (
-          <View className={`mt-4 w-full `}>
-            {searchResults.map((friend, index) => (
-              <Text
-                key={index}
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors["title-pink"],
-                }}
-              >
-                {friend.name} - {friend.phone}
-              </Text>
-            ))}
-          </View>
-        )
       )}
     </View>
   );

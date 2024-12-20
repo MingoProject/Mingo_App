@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Link } from "expo-router";
-
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
 import SearchHome from "../../components/home-component/SearchHome";
@@ -127,7 +126,9 @@ const Home = () => {
                 <OpenAddPost handleAddPost={handleAddPost} />
               </>
             }
-            renderItem={({ item }) => <PostCard item={item} />}
+            renderItem={({ item }) => (
+              <PostCard item={item} setPostsData={setPostsData} />
+            )}
           />
         );
     }
