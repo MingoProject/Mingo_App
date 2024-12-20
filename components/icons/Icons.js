@@ -940,7 +940,7 @@ export const DocTypeIcon = ({ size = 70, color = "#1f64ad" }) => {
   );
 };
 
-export const PptTypeIcon = ({ size = 40, color = "#e50000" }) => {
+export const PptTypeIcon = ({ size = 70, color = "#e50000" }) => {
   // Red for PowerPoint
   return (
     <Svg
@@ -960,7 +960,7 @@ export const PptTypeIcon = ({ size = 40, color = "#e50000" }) => {
   );
 };
 
-export const PdfTypeIcon = ({ size = 40, color = "#e50000" }) => {
+export const PdfTypeIcon = ({ size = 70, color = "#e50000" }) => {
   // Red for PDF
   return (
     <Svg

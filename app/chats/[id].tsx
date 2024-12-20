@@ -710,20 +710,6 @@ const Chat = () => {
         />
       </Modal>
 
-      {/* <Modal
-        transparent
-        animationType="slide"
-        visible={isModalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <InfoChat
-          item={chatItem}
-          setModalVisible={setModalVisible}
-          setRelation={setRelation}
-         
-        />
-      </Modal> */}
-
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}

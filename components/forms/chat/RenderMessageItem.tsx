@@ -20,18 +20,25 @@ import { colors } from "@/styles/colors";
 import { useTheme } from "@/context/ThemeContext";
 import { useChatContext } from "@/context/ChatContext";
 
-const RenderMessageItem = ({ item }: { item: any }) => {
+const RenderMessageItem = ({
+  item,
+  itemUserId,
+}: {
+  item: any;
+  itemUserId: any;
+}) => {
   const timeString = `${item.lastMessage.timestamp.getHours()}:${item.lastMessage.timestamp.getMinutes()}`;
-  const isReceiver = item.lastMessage.createBy !== item.id;
   const [lastMessage, setLastMessage] = useState(item.lastMessage);
   const router = useRouter(); // Khởi tạo router
   const { colorScheme } = useTheme();
   const { messages, setMessages } = useChatContext();
   console.log(item, "this is item");
+  const [userId, setUserId] = useState("");
+
   const handleNewMessage = async (data: ResponseMessageDTO) => {
     if (data.boxId !== item.id) return;
     const userId = await AsyncStorage.getItem("userId");
-
+    setUserId(userId?.toString() || "");
     try {
       const mark = await MarkMessageAsRead(
         data.boxId,
@@ -232,12 +239,15 @@ const RenderMessageItem = ({ item }: { item: any }) => {
   }, [item.id, setMessages]);
 
   const handleMessagePress = (item: any) => {
-    // Cập nhật người dùng được chọn
-    // setSelectedItem(item);
-    // Điều hướng đến trang chat với thông tin người dùng được chọn
-    // router.push(`/chat?boxId=${item.id}`); // Đường dẫn tới chat.jsx
     router.push(`./chats/${item.id}`);
   };
+
+  const isReceiver = item.lastMessage.createBy !== itemUserId;
+
+  console.log(isReceiver, "isReceiver");
+  console.log(item.lastMessage.createBy, "item.lastMessage.createBy");
+  console.log(userId, "userId");
+  console.log(itemUserId, "itemUserId");
 
   return (
     <TouchableOpacity
@@ -300,13 +310,13 @@ const RenderMessageItem = ({ item }: { item: any }) => {
                   );
                 }
 
-                if (type !== "") {
+                if (type) {
                   switch (type) {
                     case "image":
                       return (
                         <Text className={messageStatusClass}>Gửi 1 ảnh</Text>
                       );
-                    case "video || mp4":
+                    case "video":
                       return (
                         <Text className={messageStatusClass}>Gửi 1 video</Text>
                       );
@@ -325,8 +335,8 @@ const RenderMessageItem = ({ item }: { item: any }) => {
               })()}
             </View>
           ) : (
-            <View className="flex items-center gap-1">
-              <p className={`"font-normal"`}>Bạn: </p>
+            <View className="flex flex-row items-center gap-1">
+              <Text className={`"font-normal"`}>Bạn: </Text>
               {(() => {
                 const type = lastMessage.contentId?.type?.toLowerCase() || "";
                 const messageStatusClass = lastMessage.status

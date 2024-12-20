@@ -20,6 +20,8 @@ import { useChatItemContext } from "@/context/ChatItemContext";
 import { pusherClient } from "@/lib/pusher";
 import profile from "./(tabs)/profile";
 import { useAuth } from "@/context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSearchParams } from "expo-router/build/hooks";
 
 const Message = () => {
   const { colorScheme } = useTheme();
@@ -29,7 +31,14 @@ const Message = () => {
   const { allChat, setAllChat } = useChatItemContext();
   const [searchTerm, setSearchTerm] = useState("");
   const { profile } = useAuth();
+  const [userId, setUserId] = useState<string>(profile._id);
+  const id = useSearchParams();
+  const { filteredChat, setFilteredChat } = useChatItemContext();
+  const channelRefs = useRef<any[]>([]);
+
   const fetchChats = useCallback(async () => {
+    const userId = await AsyncStorage.getItem("userId");
+    setUserId(userId || "");
     try {
       const [normalChats, groupChats] = await Promise.all([
         getListChat(),
@@ -46,12 +55,11 @@ const Message = () => {
       });
 
       setAllChat(combinedChats);
+      setFilteredChat(combinedChats);
     } catch (error) {
       console.error("Error loading chats:", error);
     }
-  }, [setAllChat]);
-  const { filteredChat, setFilteredChat } = useChatItemContext();
-  const channelRefs = useRef<any[]>([]);
+  }, [setAllChat, setFilteredChat]);
 
   useEffect(() => {
     fetchChats();
@@ -74,7 +82,7 @@ const Message = () => {
       return timestampB - timestampA; // Sorting in descending order
     });
 
-    setAllChat(sortedFilteredChats);
+    setFilteredChat(sortedFilteredChats);
   };
 
   useEffect(() => {
@@ -205,7 +213,12 @@ const Message = () => {
         pusherClient.unsubscribe(channel.name); // Hủy đăng ký kênh
       });
     };
-  }, [allChat]);
+  }, [id, allChat]);
+
+  console.log(
+    filteredChat.map((it) => it),
+    "filterchat"
+  );
 
   return (
     <ScrollView
@@ -244,8 +257,8 @@ const Message = () => {
         />
       </View>
       <View className="mt-4">
-        {allChat.map((item) => (
-          <RenderMessageItem item={item} key={item.id} />
+        {filteredChat.map((item) => (
+          <RenderMessageItem item={item} key={item.id} itemUserId={userId} />
         ))}
       </View>
     </ScrollView>
