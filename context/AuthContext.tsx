@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 interface AuthContextProps {
   profile: any;
@@ -14,11 +15,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<any>(null);
   const [userId, setUserId] = useState<any>(null);
   const [token, setToken] = useState<any>(null);
+  const router = useRouter();
 
   const logout = () => {
     AsyncStorage.removeItem("userId");
     AsyncStorage.removeItem("token");
     setProfile(null);
+    router.push("/signin");
   };
 
   return (

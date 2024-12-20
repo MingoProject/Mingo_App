@@ -218,7 +218,7 @@ const AddPost = ({ onClose }: any) => {
       }}
     >
       {/* Header */}
-      <View className="flex flex-row justify-between items-center pb-4">
+      <View className="flex flex-row pt-12 justify-between items-center pb-4">
         <Text
           style={{
             color:

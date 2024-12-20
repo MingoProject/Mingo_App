@@ -49,11 +49,25 @@ const Bio = ({ profileUser, setProfile }: any) => {
   }, [profileUser._id]);
   return (
     <View className="p-3 w-[266px]">
+      {profileUser.nickName && (
+        <Text
+          style={{
+            color:
+              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+          }}
+          className="font-mbold text-[16px] "
+        >
+          {"("}
+          {profileUser.nickName || "No bio"}
+          {")"}
+        </Text>
+      )}
+
       <Text
         style={{
           color: colorScheme === "dark" ? colors.dark[100] : colors.light[500],
         }}
-        className="font-mregular text-[14px] "
+        className="font-mregular text-[14px] mt-3"
       >
         {profileUser.bio || "No bio"}
       </Text>
