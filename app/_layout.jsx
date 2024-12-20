@@ -35,16 +35,18 @@ const RootLayout = () => {
     <AuthProvider>
       <ThemeProvider>
         <ChatProvider>
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            {/* <Stack.Screen name="user" options={{ headerShown: false }} /> */}
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="user" options={{ headerShown: false }} />
-            <Stack.Screen name="chats" options={{ headerShown: false }} />
-            <Stack.Screen name="search" options={{ headerShown: false }} />
-            <Stack.Screen name="message" options={{ headerShown: false }} />
-          </Stack>
+          <ChatItemProvider>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              {/* <Stack.Screen name="user" options={{ headerShown: false }} /> */}
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="user" options={{ headerShown: false }} />
+              <Stack.Screen name="chats" options={{ headerShown: false }} />
+              <Stack.Screen name="search" options={{ headerShown: false }} />
+              <Stack.Screen name="message" options={{ headerShown: false }} />
+            </Stack>
+          </ChatItemProvider>
         </ChatProvider>
       </ThemeProvider>
     </AuthProvider>

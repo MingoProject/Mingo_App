@@ -219,8 +219,10 @@ const Chat = () => {
   const handleSend = async () => {
     if (currentContentType === "text") {
       await handleSendTextMessage();
+      console.log("da gui");
     } else {
       await handleSendMultipleFiles(selectedMedia);
+      console.log("da gui2");
     }
     resetContent();
   };
@@ -611,7 +613,7 @@ const Chat = () => {
           colorScheme === "dark" ? colors.dark[300] : colors.light[700],
       }}
     >
-      <View className="flex flex-row items-center px-3 pt-3 pb-1 shadow-md">
+      <View className="flex  flex-row items-center justify-between px-3 pt-3 pb-1 shadow-md">
         <View className="flex flex-row">
           <Link href="./message" className="pt-2 flex flex-row">
             <View className="pt-3">
@@ -639,28 +641,34 @@ const Chat = () => {
             </Text>
           </View>
         </View>
-      </View>
-      <View className="absolute flex flex-row right-2 top-5">
-        <TouchableOpacity>
-          <CallIcon size={28} color={iconColor} />
-        </TouchableOpacity>
-        <TouchableOpacity className="ml-2">
-          <VideoCallIcon size={30} color={iconColor} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="ml-2"
-          onPress={() => setModalVisible(true)}
+        <View className="flex flex-row right-2 ">
+          <TouchableOpacity>
+            <CallIcon size={28} color={iconColor} />
+          </TouchableOpacity>
+          <TouchableOpacity className="ml-2">
+            <VideoCallIcon size={30} color={iconColor} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="ml-2"
+            onPress={() => setModalVisible(true)}
+          >
+            <InfoIcon size={30} color={iconColor} />
+          </TouchableOpacity>
+        </View>
+        <Modal
+          transparent
+          animationType="slide"
+          visible={isModalVisible}
+          onRequestClose={() => setModalVisible(false)}
         >
-          <InfoIcon size={30} color={iconColor} />
-        </TouchableOpacity>
+          <InfoChat
+            item={chatItem}
+            setModalVisible={setModalVisible}
+            setRelation={setRelation}
+            relation={relation}
+          />
+        </Modal>
       </View>
-      <View
-        style={{
-          height: 1,
-          backgroundColor: "#D9D9D9",
-          width: "100%",
-        }}
-      />
 
       <ScrollView
         className="flex-1 p-4"
@@ -695,20 +703,6 @@ const Chat = () => {
           );
         })}
       </ScrollView>
-
-      <Modal
-        transparent
-        animationType="slide"
-        visible={isModalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <InfoChat
-          item={chatItem}
-          setModalVisible={setModalVisible}
-          setRelation={setRelation}
-          relation={relation}
-        />
-      </Modal>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}

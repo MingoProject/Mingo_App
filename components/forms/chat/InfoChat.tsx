@@ -265,7 +265,7 @@ const InfoChat = ({
   return (
     <>
       <ScrollView
-        className="flex-1 mt-10 pb-10"
+        className="flex-1 pb-10"
         style={{
           backgroundColor:
             colorScheme === "dark" ? colors.dark[300] : colors.light[700],
