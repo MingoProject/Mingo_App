@@ -48,7 +48,7 @@ const OpenAddPost = ({ handleAddPost }: any) => {
             placeholder="Share something..."
             placeholderTextColor="#D9D9D9"
             className={`ml-3 flex-1 h-[40px] text-[#D9D9D9] font-mregular px-4 rounded-full text-sm ${
-              colorScheme === "dark" ? "bg-dark-200" : "bg-light-600"
+              colorScheme === "dark" ? "bg-dark-400" : "bg-light-800"
             }`}
             onPress={handleAddPost}
           />

@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
-import { timeSinceMessage } from "@/lib/utils";
+import { getTimestamp } from "@/lib/utils";
 import DetailsPost from "@/components/forms/post/DetailsPost";
 import PostAction from "@/components/forms/post/PostAction";
 import { useRouter } from "expo-router";
@@ -39,7 +39,7 @@ const PostCard = ({ item, setPostsData }: any) => {
   };
 
   return (
-    <View className="p-4 bg-transparent mb-4">
+    <View className="p-4 bg-transparent">
       <View className="flex-row items-center mb-2">
         <TouchableOpacity
           onPress={() => navigateToUserProfile(item.author._id)}
@@ -133,7 +133,7 @@ const PostCard = ({ item, setPostsData }: any) => {
           )}
 
           <Text className="text-[#D9D9D9] font-mregular text-sm">
-            {timeSinceMessage(item.createAt)}
+            {getTimestamp(item.createAt)}
           </Text>
         </View>
         <TagModal

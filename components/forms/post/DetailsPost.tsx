@@ -229,7 +229,7 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
             />
             <TouchableOpacity
               onPress={handleSendComment}
-              className="ml-3 bg-blue-500 p-3 rounded-lg"
+              className="ml-3 bg-primary-100 p-3 rounded-lg"
             >
               <Text className="text-white font-msemibold">Send</Text>
             </TouchableOpacity>

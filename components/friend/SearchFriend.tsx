@@ -99,13 +99,13 @@ const SearchFriend = ({ onClose }: any) => {
         <View className={`w-full flex flex-row items-center justify-between`}>
           <View className={`flex-1 pr-4`}>
             <TextInput
-              placeholder={"Nhập số điện thoại"}
+              placeholder={"Entry phone number"}
               className={`ml-3 flex-1 h-[40px]  font-mregular px-4 rounded-full text-sm `}
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
                 backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+                  colorScheme === "dark" ? colors.dark[400] : colors.light[800],
               }}
               value={phoneNumber}
               onChangeText={handleInputChange} // Cập nhật giá trị khi người dùng nhập
@@ -156,7 +156,7 @@ const SearchFriend = ({ onClose }: any) => {
                 color: colorScheme === "dark" ? colors.dark[100] : "#92898A",
               }}
             >
-              Không tìm thấy người dùng có số điện thoại{" "}
+              No user found with phone number{" "}
               <Text className={`font-msemibold `}>{phoneNumber}</Text>
             </Text>
           </View>

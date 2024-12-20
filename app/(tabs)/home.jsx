@@ -41,7 +41,11 @@ const Home = () => {
     try {
       const data = await fetchPosts();
       const postsData = await fetchDetailedPosts(data);
-      setPostsData(postsData);
+      const sortedPosts = postsData.sort(
+        (a, b) =>
+          new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+      );
+      setPostsData(sortedPosts);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -91,7 +95,7 @@ const Home = () => {
             ListHeaderComponent={
               <>
                 <View
-                  className={`flex flex-row items-center ${
+                  className={`flex flex-row items-center mt-12 ${
                     colorScheme === "dark" ? "dark:bg-dark-300" : "bg-light-700"
                   }`}
                 >
