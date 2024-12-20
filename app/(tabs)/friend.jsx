@@ -89,7 +89,7 @@ const Friend = () => {
         <SearchFriend onClose={handleOnClose} />
       ) : (
         <View
-          className="w-full p-4 h-full "
+          className="w-full p-4 h-full pt-12"
           style={{
             backgroundColor:
               colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Use color from colors.js
@@ -113,11 +113,11 @@ const Friend = () => {
               </View>
 
               <View className="flex-row">
-                <SearchIcon
+                {/* <SearchIcon
                   size={28}
                   color={iconColor}
                   onPress={handleIsSearch}
-                />
+                /> */}
                 <TouchableOpacity className="ml-2" onPress={handleIsSearch}>
                   <AddIcon size={27} color={iconColor} />
                 </TouchableOpacity>

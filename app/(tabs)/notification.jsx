@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
@@ -69,6 +69,7 @@ const Notification = () => {
 
   return (
     <View
+      className="pt-12"
       style={{
         flex: 1,
         backgroundColor:
@@ -96,9 +97,16 @@ const Notification = () => {
         </Text>
         <SearchIcon size={28} color={iconColor} onPress={() => {}} />
       </View>
+      <ScrollView className="h-80">
+        <Notifications
+          // notification={item}
+          notifications={notifications}
+          setNotifications={setNotifications}
+        />
+      </ScrollView>
 
       {/* List */}
-      <FlatList
+      {/* <FlatList
         data={notifications}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
@@ -111,7 +119,7 @@ const Notification = () => {
         contentContainerStyle={{
           paddingBottom: 16,
         }}
-      />
+      /> */}
     </View>
   );
 };

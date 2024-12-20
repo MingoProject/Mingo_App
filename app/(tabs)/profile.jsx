@@ -41,7 +41,11 @@ const Profile = () => {
     try {
       const data = await getMyPosts(profile._id);
       const postsData = await fetchDetailedPosts(data.userPosts);
-      setPostsData(postsData);
+      const sortedPosts = postsData.sort(
+        (a, b) =>
+          new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+      );
+      setPostsData(sortedPosts);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -117,7 +121,7 @@ const Profile = () => {
       default:
         return (
           <ScrollView
-            className="p-3"
+            className="p-3 pt-12"
             style={{
               backgroundColor:
                 colorScheme === "dark" ? colors.dark[300] : colors.light[700],

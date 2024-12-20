@@ -90,7 +90,9 @@ const TabsLayout = () => {
   const { colorScheme } = useTheme();
   return (
     <Tabs
+      options={{ headerShown: false }}
       screenOptions={{
+        headerShown: false,
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#FFAABB",
         tabBarInactiveTintColor: "#92898A",

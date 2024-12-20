@@ -25,6 +25,7 @@ import { getMediaByMediaId } from "@/lib/service/media.service";
 import { Link } from "expo-router";
 import DetailsPost from "../forms/post/DetailsPost";
 import DetailImage from "../forms/media/DetailImage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const calculateTimeDifference = (date: any) => {
   const now = new Date();
@@ -89,9 +90,9 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
-      const token = localStorage.getItem("token");
+      const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
-        alert("Bạn cần đăng nhập để thực hiện hành động này.");
+        console.error("User is not authenticated");
         return;
       }
       await unrequestBffOrRefuseBffRequest(
@@ -116,9 +117,9 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
-      const token = localStorage.getItem("token");
+      const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
-        alert("Bạn cần đăng nhập để thực hiện hành động này.");
+        console.error("User is not authenticated");
         return;
       }
 
@@ -144,9 +145,9 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
-      const token = localStorage.getItem("token");
+      const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
-        alert("Bạn cần đăng nhập để thực hiện hành động này.");
+        console.error("User is not authenticated");
         return;
       }
 
@@ -180,9 +181,9 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
-      const token = localStorage.getItem("token");
+      const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
-        alert("Bạn cần đăng nhập để thực hiện hành động này.");
+        console.error("User is not authenticated");
         return;
       }
       await acceptAddBff(
@@ -316,10 +317,26 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     }
   };
 
+  const filteredNotifications = notifications
+    .filter(
+      (notification: any) =>
+        ![
+          "report_post",
+          "report_user",
+          "report_comment",
+          "report_message",
+        ].includes(notification.type)
+    )
+    .sort((a, b) => {
+      const dateA = new Date(a.createAt);
+      const dateB = new Date(b.createAt);
+      return dateB - dateA; // Sắp xếp theo thời gian giảm dần (mới nhất trước)
+    });
+
   return (
     <View className="flex flex-row w-full ">
       <View className="w-full">
-        {notifications.map((notification: any) => (
+        {filteredNotifications.map((notification: any) => (
           <View
             key={notification?._id}
             className="flex flex-row items-start mb-4 p-2 mx-3 rounded-xl"
