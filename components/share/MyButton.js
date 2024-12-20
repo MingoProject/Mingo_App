@@ -70,9 +70,9 @@ const MyButton = ({
           shadowColor: "#000", // Màu bóng
           shadowOffset: {
             width: 0,
-            height: 4, // Độ cao bóng (chỉ ở dưới)
+            height: 2, // Độ cao bóng (chỉ ở dưới)
           },
-          shadowOpacity: 0.25, // Độ mờ của bóng
+          shadowOpacity: 0.15, // Độ mờ của bóng
           shadowRadius: 3.5, // Bán kính bóng
           // Bóng đổ cho Android
           elevation: 5, // Độ cao của bóng

@@ -605,7 +605,7 @@ const Chat = () => {
 
   return (
     <View
-      className="flex-1"
+      className="flex-1 pt-12"
       style={{
         backgroundColor:
           colorScheme === "dark" ? colors.dark[300] : colors.light[700],

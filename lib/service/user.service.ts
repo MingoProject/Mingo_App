@@ -16,7 +16,6 @@ export async function fetchUsers(): Promise<UserResponseDTO[]> {
       throw new Error("Error fetching users");
     }
     const data = await response.json();
-    console.log(data);
     return data;
   } catch (error) {
     console.error("Failed to fetch users:", error);
