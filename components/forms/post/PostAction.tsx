@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
-import { LikeIcon, CommentIcon, ShareIcon } from "@/components/icons/Icons";
+import { LikeIcon, CommentIcon, LinkIcon } from "@/components/icons/Icons";
 import {
   dislikePost,
   getLikesByPostId,
@@ -162,7 +162,7 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
       </TouchableOpacity>
 
       <TouchableOpacity className="flex-row items-center">
-        <ShareIcon size={25} color={iconColor} />
+        <LinkIcon size={25} color={iconColor} />
         <Text
           className="ml-1 text-gray-700"
           style={{

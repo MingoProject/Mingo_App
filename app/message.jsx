@@ -139,7 +139,7 @@ const Message = () => {
           colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
         flex: 1,
       }}
-      className="px-3"
+      className="px-3 pt-12"
     >
       <Link href="/home" style={{ color: "blue" }} className="flex flex-row">
         <View className="pt-3 ">
