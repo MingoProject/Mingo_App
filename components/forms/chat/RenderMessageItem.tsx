@@ -320,6 +320,12 @@ const RenderMessageItem = ({
                       return (
                         <Text className={messageStatusClass}>Gửi 1 video</Text>
                       );
+                    case "audio":
+                      return (
+                        <Text className={messageStatusClass}>
+                          Gửi 1 âm thanh
+                        </Text>
+                      );
                     case "other":
                       return (
                         <Text className={messageStatusClass}>Gửi 1 file</Text>

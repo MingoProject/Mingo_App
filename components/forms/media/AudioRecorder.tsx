@@ -14,6 +14,12 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { generateRandomNumberString } from "@/lib/utils";
+import {
+  CircleFillIcon,
+  PauseAuidoIcon,
+  PlayAudioIcon,
+} from "@/components/icons/Icons";
+import { useTheme } from "@/context/ThemeContext";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -28,6 +34,8 @@ const AudioRecorder = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [position, setPosition] = useState(0);
+  const { colorScheme } = useTheme();
+  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
 
   const progress = useSharedValue(0);
 
@@ -195,7 +203,7 @@ const AudioRecorder = ({
         className="p-4 bg-cardinal rounded-full"
       >
         {/* <Icon size={50} iconURL={IconURL.onthemic} /> */}
-        <Text>x</Text>
+        <CircleFillIcon color={iconColor} />
       </TouchableOpacity>
 
       {sound && (
@@ -217,11 +225,11 @@ const AudioRecorder = ({
 
           {isPlaying ? (
             <TouchableOpacity onPress={pauseSound}>
-              <Text>pasue</Text>
+              <PlayAudioIcon color={iconColor} />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity onPress={playSound}>
-              <Text>play</Text>
+              <PauseAuidoIcon color={iconColor} />
             </TouchableOpacity>
           )}
         </>
