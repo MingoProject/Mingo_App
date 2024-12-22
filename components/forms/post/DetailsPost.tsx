@@ -21,14 +21,30 @@ import { useAuth } from "@/context/AuthContext";
 import PostAction from "./PostAction";
 import CommentCard from "@/components/card/comment/CommentCard";
 import { ResizeMode, Video } from "expo-av";
+import { ThreeDot } from "@/components/icons/Icons";
+import TagModal from "./TagsModal";
+import PostMenu from "./PostMenu";
 
-const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
+const DetailsPost = ({
+  isModalVisible,
+  setModalVisible,
+  post,
+  setPostsData,
+}: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [comment, setComment] = useState("");
   const [commentsData, setCommentsData] = useState<any[]>([]);
   const { profile } = useAuth();
+  const menuRef = useRef<TouchableOpacity | null>(null);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
+  const [isMenuVisible, setMenuVisible] = useState(false);
+  const isAuthor = profile?._id === post.author._id;
 
+  const handleTagsModalToggle = () => {
+    setIsTagsModalOpen(!isTagsModalOpen);
+  };
   useEffect(() => {
     let isMounted = true;
     const getComments = async () => {
@@ -138,20 +154,141 @@ const DetailsPost = ({ isModalVisible, setModalVisible, post }: any) => {
             className="w-10 h-10 rounded-full"
           />
           <View className="ml-4">
-            <Text
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-              }}
-              className="font-msemibold text-[17px]"
+            <View
+              style={{ flexDirection: "row", alignItems: "center" }}
+              className="mb-2"
             >
-              {post.author.firstName} {post.author.lastName}
-            </Text>
-            <Text className="text-[#D9D9D9] font-mregular mt-1 text-sm">
+              <Text
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                  fontSize: 17,
+                  fontWeight: "600",
+                }}
+              >
+                {post.author?.firstName || ""} {post.author?.lastName || ""}{" "}
+              </Text>
+              {post.location && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignposts: "center",
+                  }}
+                >
+                  {/* <Icon name="mi:location" size={18} color={iconColor} /> */}
+                  <Text
+                    style={{
+                      color:
+                        colorScheme === "dark"
+                          ? colors.dark[100]
+                          : colors.light[500],
+                    }}
+                  >
+                    {"- "}
+                    {post.location}
+                  </Text>
+                </View>
+              )}
+            </View>
+            {post.tags?.length > 0 && (
+              <Text
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                  fontSize: 17,
+                  marginBottom: 5,
+                }}
+              >
+                {"with "}
+                {post.tags?.slice(0, 1).map((tag, index) => (
+                  <Text
+                    key={tag._id}
+                    style={{
+                      color: colors.primary[100],
+                      fontSize: 17,
+                      // fontWeight: "600",
+                    }}
+                  >
+                    {tag?.firstName}
+                    {index < post.tags?.slice(0, 1).length - 1 ? ", " : ""}
+                  </Text>
+                ))}
+                {post.tags?.length > 1 && (
+                  <TouchableOpacity
+                    onPress={handleTagsModalToggle}
+                    className="mt-[9px]"
+                  >
+                    <Text
+                      style={{
+                        color: colors.primary[100],
+                        fontSize: 17,
+                      }}
+                    >
+                      {` and ${post.tags.length - 1} others`}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </Text>
+            )}
+
+            <Text className="text-[#D9D9D9] font-mregular text-sm">
               {getTimestamp(post.createAt)}
             </Text>
           </View>
+          <TagModal
+            tags={post.tags}
+            isOpen={isTagsModalOpen}
+            onClose={handleTagsModalToggle}
+          />
+
+          <TouchableOpacity
+            ref={menuRef}
+            className="ml-auto mb-2"
+            onPress={() => {
+              menuRef.current?.measure((fx, fy, width, height, px, py) => {
+                setMenuPosition({ x: px, y: py + height }); // Lấy vị trí dưới dấu `...`
+              });
+              setMenuVisible(true);
+            }}
+          >
+            <ThreeDot size={20} color={iconColor} />
+          </TouchableOpacity>
         </View>
+
+        {isMenuVisible && (
+          <Modal
+            transparent={true}
+            animationType="fade"
+            visible={isMenuVisible}
+            onRequestClose={() => setMenuVisible(false)}
+          >
+            <View
+              style={{
+                position: "absolute",
+                top: menuPosition.y,
+                right: menuPosition.x - 250,
+                backgroundColor: "white",
+                borderRadius: 8,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+              }}
+            >
+              <PostMenu
+                isAuthor={isAuthor}
+                item={post}
+                setMenuVisible={setMenuVisible}
+                setPostsData={setPostsData}
+              />
+            </View>
+          </Modal>
+        )}
 
         {/* Post Content */}
         <Text

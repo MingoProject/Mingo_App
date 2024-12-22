@@ -160,7 +160,11 @@ const PostCard = ({ item, setPostsData }: any) => {
           visible={isModalVisible}
           onRequestClose={() => setModalVisible(false)}
         >
-          <DetailsPost setModalVisible={setModalVisible} post={item} />
+          <DetailsPost
+            setModalVisible={setModalVisible}
+            post={item}
+            setPostsData={setPostsData}
+          />
         </Modal>
         {isMenuVisible && (
           <Modal
