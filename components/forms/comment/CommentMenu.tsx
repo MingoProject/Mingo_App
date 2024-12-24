@@ -143,15 +143,15 @@ const CommentMenu = ({
             <View className="flex-row mt-4">
               <TouchableOpacity
                 onPress={() => handleEditComment(comment._id, newComment)}
-                className="bg-blue-500 rounded-lg px-3 py-2 mr-2"
+                className="bg-primary-100 rounded-lg px-3 py-2 mr-2"
               >
-                <Text className="text-white text-base">Lưu</Text>
+                <Text className="text-white text-base">Save</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setIsEditing(false)}
                 className="bg-gray-300 rounded-lg px-3 py-2"
               >
-                <Text className="text-black text-base">Hủy</Text>
+                <Text className="text-gray-600 text-base">Close</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -166,25 +166,25 @@ const CommentMenu = ({
                   }}
                   className="mb-4"
                 >
-                  <Text className="text-blue-500 text-base">Chỉnh sửa</Text>
+                  <Text className="text-blue-500 text-base">Edit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => handleDeleteComment(comment._id, postId)}
                   className="mb-4"
                 >
-                  <Text className="text-red-500 text-base">Xóa</Text>
+                  <Text className="text-red-500 text-base">Delete</Text>
                 </TouchableOpacity>
               </>
             ) : (
               <TouchableOpacity onPress={handleReportComment} className="mb-4">
-                <Text className="text-yellow-500 text-base">Báo cáo</Text>
+                <Text className="text-yellow-500 text-base">Report</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
               className="mt-2"
             >
-              <Text className="text-gray-500 text-base">Hủy</Text>
+              <Text className="text-gray-500 text-base">Close</Text>
             </TouchableOpacity>
           </>
         )}

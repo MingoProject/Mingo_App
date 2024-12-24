@@ -996,6 +996,24 @@ export const PdfTypeIcon = ({ size = 70, color = "#e50000" }) => {
   );
 };
 
+const LogoutIcon = ({ size = 24, color = "currentColor" }) => (
+  <Svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+  >
+    <Path
+      fill="none"
+      stroke={color}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2M9 12h12l-3-3m0 6l3-3"
+    />
+  </Svg>
+);
+
 export {
   SearchIcon,
   MessageIcon,
@@ -1057,4 +1075,5 @@ export {
   ThreeDotsIcon,
   CircleTickIcon,
   CircleFillIcon,
+  LogoutIcon,
 };

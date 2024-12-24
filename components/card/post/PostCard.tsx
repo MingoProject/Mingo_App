@@ -88,7 +88,11 @@ const PostCard = ({ item, setPostsData }: any) => {
     setIsTagsModalOpen(!isTagsModalOpen);
   };
   const navigateToUserProfile = (item: any) => {
-    router.push(`/user/${item}`);
+    if (item === profile._id) {
+      router.push(`/profile`);
+    } else {
+      router.push(`/user/${item}`);
+    }
   };
 
   // if (isLoading) {

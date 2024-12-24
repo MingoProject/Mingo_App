@@ -74,14 +74,17 @@ const Notification = () => {
 
     notificationChannel.bind("new-notification", (data) => {
       setNotifications((prev) => {
+        const newNotification = {
+          ...data.notification,
+          senderId: data.sender,
+        };
+
         if (
-          prev.some(
-            (notification) => notification._id === data.notification._id
-          )
+          prev.some((notification) => notification._id === newNotification._id)
         ) {
           return prev;
         }
-        return [data.notification, ...prev];
+        return [newNotification, ...prev];
       });
     });
 

@@ -82,6 +82,8 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
+      console.log("id", id);
+      console.log("userId", userId);
       const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
         console.error("User is not authenticated");
@@ -109,6 +111,8 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
+      console.log("id", id);
+      console.log("userId", userId);
       const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
         console.error("User is not authenticated");
@@ -137,6 +141,8 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
+      console.log("id", id);
+      console.log("userId", userId);
       const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
         console.error("User is not authenticated");
@@ -173,6 +179,8 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
+      console.log("id", id);
+      console.log("userId", userId);
       const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
         console.error("User is not authenticated");
