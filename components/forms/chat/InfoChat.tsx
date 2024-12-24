@@ -67,7 +67,7 @@ const InfoChat = ({
   relation,
   setGroupData,
 }: {
-  item: any;
+  item: ItemChat | null;
   setModalVisible: (visible: boolean) => void;
   setRelation: any;
   relation: string;
@@ -106,9 +106,13 @@ const InfoChat = ({
 
     const fetchFiles = async () => {
       try {
-        const data = await getOrtherList(item.id.toString()); // Gọi API
-        const videodata = await getVideoList(item.id.toString()); // Gọi API
-        const imagedata = await getImageList(item.id.toString()); // Gọi API
+        const data = await getOrtherList(item?.id.toString() || id.toString()); // Gọi API
+        const videodata = await getVideoList(
+          item?.id.toString() || id.toString()
+        ); // Gọi API
+        const imagedata = await getImageList(
+          item?.id.toString() || id.toString()
+        ); // Gọi API
         if (isMounted && data) {
           setFiles(data); // Lưu dữ liệu file từ API
           setVideoList(videodata); // Lưu trực tiếp `imageList` từ API
@@ -191,8 +195,13 @@ const InfoChat = ({
 
               // Tạo đối tượng params theo kiểu FriendRequestDTO
               const params = {
+                sender: userId || item?.senderId || "", // Nếu senderId là undefined, sử dụng null
+                receiver: item?.receiverId || "", // Nếu receiverId là undefined, sử dụng null
+              };
+
+              const defultParams = {
                 sender: userId, // Nếu senderId là undefined, sử dụng null
-                receiver: item.receiverId, // Nếu receiverId là undefined, sử dụng null
+                receiver: item?.receiverId, // Nếu receiverId là undefined, sử dụng null
               };
 
               console.log(relation, "relation");
@@ -217,7 +226,7 @@ const InfoChat = ({
   };
 
   const handleProfileClick = () => {
-    router.push(`/user/${item.receiverId}`); // Điều hướng sang chat đầu tiên
+    router.push(`/user/${item?.receiverId}`); // Điều hướng sang chat đầu tiên
   };
 
   const renderFileIcon = (fileType: string) => {
@@ -265,6 +274,8 @@ const InfoChat = ({
     </TouchableOpacity>
   );
 
+  console.log(item?.groupName === item?.userName);
+
   return (
     <>
       <ScrollView
@@ -292,17 +303,9 @@ const InfoChat = ({
         </View>
 
         <View className="justify-center mx-auto">
-          {/* <Image
-            source={
-              item.avatarUrl
-                ? { uri: item.avatarUrl }
-                : require("../../../assets/images/default-user.png")
-            }
-            style={{ width: 70, height: 70, borderRadius: 50 }}
-          /> */}
           {item && (
             <>
-              {item.groupName === item.userName ? (
+              {item?.groupName === item?.userName ? (
                 <Image
                   source={
                     item.avatarUrl
@@ -326,7 +329,7 @@ const InfoChat = ({
             }}
             className={`text-[18px] text-center font-mmedium mt-2`}
           >
-            {item.userName}
+            {item?.groupName}
           </Text>
         </View>
 

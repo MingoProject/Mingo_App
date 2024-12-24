@@ -58,156 +58,6 @@ export async function getAllChat(boxId: string): Promise<ChatResponse> {
   }
 }
 
-// export async function getListChat(): Promise<ItemChat[]> {
-//   const token = await AsyncStorage.getItem("token");
-//   const userId = await AsyncStorage.getItem("userId"); // Assuming userId is stored in AsyncStorage, adjust if necessary.
-
-//   if (!token || !userId) {
-//     console.error("Token or User ID is missing");
-//     throw new Error("Authentication token or User ID is missing.");
-//   }
-
-//   try {
-//     const response = await fetch(`${BASE_URL}/message/getListChat`, {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `${token}`, // Check authorization format
-//       },
-//     });
-
-//     if (!response.ok) {
-//       if (response.status === 403) {
-//         console.error("Access Denied: You do not have permission.");
-//       }
-//       throw new Error(`Error fetching list chat: ${response.status}`);
-//     }
-
-//     const rawData: ResponseMessageBoxDTO = await response.json();
-
-//     // Mapping the response to ItemChat
-//     const chat: ItemChat[] = rawData.box
-//       .map((box: any) => {
-//         // Filter out the current logged-in user from receiverIds
-//         const receiver = box.receiverIds.find(
-//           (receiver: any) => receiver._id !== userId
-//         );
-
-//         // Return null if no valid recipient is found (i.e., the logged-in user is the only one)
-//         if (!receiver) return null;
-
-//         const lastMessage = box.responseLastMessage
-//           ? {
-//               id: box.responseLastMessage.id,
-//               text: box.responseLastMessage.text
-//                 ? box.responseLastMessage.text
-//                 : box.responseLastMessage.text || "",
-//               timestamp: new Date(box.responseLastMessage.createAt),
-//               createBy: box.responseLastMessage.createBy,
-//             }
-//           : { id: "", text: "", timestamp: new Date(), createBy: "" };
-//         return {
-//           id: box._id,
-//           userName: `${receiver.firstName || ""} ${
-//             receiver.lastName || ""
-//           }`.trim(),
-//           avatarUrl: receiver.avatar || "", // Get the avatar URL of the recipient
-//           status: box.readStatus, // Adjust status according to the 'flag'
-//           lastMessage: lastMessage,
-//           isRead: box.readStatus,
-//           receiverId: receiver._id,
-//           senderId: box.senderId,
-//         };
-//       })
-//       .filter((item): item is ItemChat => item !== null); // Filter out null values and ensure the type is ItemChat
-
-//     return chat;
-//   } catch (error) {
-//     console.error("Failed to fetch list chat", error);
-//     throw error;
-//   }
-// }
-
-// export async function getListGroupChat(): Promise<ItemChat[]> {
-//   const token = await AsyncStorage.getItem("token");
-//   const userId = await AsyncStorage.getItem("userId"); // Assuming userId is stored in AsyncStorage, adjust if necessary.
-
-//   // Kiểm tra xem token và userId có tồn tại trong await AsyncStorage không
-//   if (!token || !userId) {
-//     console.error("Token or User ID is missing");
-//     throw new Error("Authentication token or User ID is missing.");
-//   }
-
-//   try {
-//     const response = await fetch(`${BASE_URL}/message/getListGroupChat`, {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `${token}`, // Đảm bảo định dạng Authorization là "Bearer <token>"
-//       },
-//     });
-
-//     // Kiểm tra trạng thái phản hồi
-//     if (!response.ok) {
-//       if (response.status === 403) {
-//         console.error("Access Denied: You do not have permission.");
-//       }
-//       throw new Error(`Error fetching list chat: ${response.status}`);
-//     }
-
-//     const rawData: ResponseMessageBoxDTO = await response.json();
-//     // console.log(rawData, "raw data");
-
-//     // Mapping the response to ItemChat
-//     const chat: ItemChat[] = rawData.box
-//       .map((box: any) => {
-//         // Lọc ra người nhận hợp lệ (không phải người dùng hiện tại)
-//         const receiver = box.receiverIds.find(
-//           (receiver: any) => receiver._id !== userId
-//         );
-
-//         // Nếu không tìm thấy người nhận hợp lệ và không có groupName, trả về null
-//         if (!receiver && !box.groupName) return null;
-
-//         // Xử lý trường hợp lastMessage là null
-//         const lastMessage = box.lastMessage
-//           ? {
-//               id: box.lastMessage.id,
-//               text: box.lastMessage.text
-//                 ? box.lastMessage.text
-//                 : box.lastMessage.text || "Bắt đầu đoạn chat",
-//               contentId: box.lastMessage.contentId || fileContent,
-//               timestamp: new Date(box.lastMessage.createAt),
-//               createBy: box.lastMessage.createBy,
-//             }
-//           : {
-//               id: "",
-//               text: "Bắt đầu đoạn chat",
-//               timestamp: new Date(),
-//               createBy: "",
-//               contentId: fileContent,
-//             };
-
-//         return {
-//           id: box._id,
-//           userName:
-//             box.groupName ||
-//             `${receiver?.firstName || ""} ${receiver?.lastName || ""}`.trim(),
-//           avatarUrl: box.groupAva || receiver?.avatar || "", // Lấy avatar của người nhận hoặc nhóm
-//           status: box.readStatus, // Trạng thái đọc
-//           lastMessage, // Tin nhắn cuối
-//           isRead: box.readStatus, // Trạng thái đã đọc
-//           receiverId: receiver._id,
-//           senderId: box.senderId,
-//         };
-//       })
-//       .filter((item): item is ItemChat => item !== null); // Lọc bỏ các phần tử null
-
-//     return chat;
-//   } catch (error) {
-//     console.error("Failed to fetch list chat", error);
-//     throw error;
-//   }
-// }
-
 export async function getListChat(): Promise<ItemChat[]> {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId"); // Assuming userId is stored in await AsyncStorage, adjust if necessary.
@@ -253,8 +103,8 @@ export async function getListChat(): Promise<ItemChat[]> {
         // Return null if no valid recipient is found (i.e., the logged-in user is the only one)
         if (!receiver) return null;
 
-        console.log(receiver, "box.receiver");
-        console.log(senderId, "box.sender");
+        // console.log(receiver, "box.receiver");
+        // console.log(senderId, "box.sender");
 
         const lastMessage = box.responseLastMessage
           ? {
@@ -815,6 +665,76 @@ export async function getGroupAllChat(
     return data;
   } catch (error) {
     console.error("Failed to fetch box chat by boxId:", error);
+    throw error;
+  }
+}
+
+export async function IsOnline(userId: string) {
+  const token = await AsyncStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/isOnlineStatus?userId=${userId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `${token}`, // Kiểm tra format Authorization
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(`Error update staus is online: ${response.status}`);
+    }
+
+    const data = await response.json();
+    // console.log(data, "is online");
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch mark as read list by boxId:", error);
+    throw error;
+  }
+}
+
+export async function IsOffline(userId: string) {
+  const token = await AsyncStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/IsOffline?userId=${userId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `${token}`, // Kiểm tra format Authorization
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(`Error update staus is IsOffline: ${response.status}`);
+    }
+
+    const data = await response.json();
+    // console.log(data, "is IsOffline");
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch mark as read list by boxId:", error);
     throw error;
   }
 }

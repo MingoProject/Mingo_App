@@ -9,8 +9,7 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import {
-  getAllChat,
-  getListChat,
+  getGroupAllChat,
   MarkMessageAsRead,
 } from "../../../lib/service/message.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -25,6 +24,7 @@ import { pusherClient } from "@/lib/pusher";
 import { colors } from "@/styles/colors";
 import { useTheme } from "@/context/ThemeContext";
 import { useChatContext } from "@/context/ChatContext";
+import { getMyProfile } from "@/lib/service/user.service";
 
 const RenderMessageItem = ({
   item,
@@ -38,14 +38,73 @@ const RenderMessageItem = ({
   const router = useRouter(); // Khởi tạo router
   const { colorScheme } = useTheme();
   const { messages, setMessages } = useChatContext();
-  console.log(item, "this is item");
   const [userId, setUserId] = useState("");
+  const [isRead, setIsRead] = useState(false);
+  const { isOnlineChat, setIsOnlineChat } = useChatContext();
+
+  // const markMessagesAsRead = async (chatId: string) => {
+  //   try {
+  //     const userId = await AsyncStorage.getItem("userId");
+  //     await MarkMessageAsRead(chatId.toString(), userId?.toString() || "");
+  //     setIsRead(true);
+  //   } catch (error) {
+  //     console.error("Error marking messages as read:", error);
+  //   }
+  // };
+
+  const myChat = async () => {
+    try {
+      const data = await getGroupAllChat(item.id.toString()); // Gọi API
+
+      if (data.success) {
+        setMessages(data.messages); // Lưu trực tiếp `messages` từ API
+        if (data.messages.length > 0) {
+          // Cập nhật `lastMessage`
+          const latestMessage = data.messages.sort(
+            (a, b) =>
+              new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+          )[0];
+
+          setLastMessage({
+            id: latestMessage.boxId,
+            text: latestMessage.text || "",
+            contentId: latestMessage.contentId || null,
+            createBy: latestMessage.createBy,
+            timestamp: new Date(latestMessage.createAt),
+            status: false,
+          });
+        } else {
+          const fileContent = {
+            fileName: "",
+            bytes: "",
+            format: "",
+            height: "",
+            publicId: "",
+            type: "",
+            url: "",
+            width: "",
+          };
+          // Nếu không có tin nhắn, đặt giá trị mặc định cho `lastMessage`
+          setLastMessage({
+            id: item.id,
+            text: "",
+            contentId: fileContent,
+            createBy: "",
+            timestamp: new Date(),
+            status: true,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error loading chat:", error);
+    }
+  };
 
   const handleNewMessage = async (data: ResponseGroupMessageDTO) => {
-    if (data.boxId !== itemChat.id) return;
-
+    if (data.boxId !== item.id) return;
+    const userId = await AsyncStorage.getItem("userId");
     try {
-      if (data.boxId === id) {
+      if (data.boxId === item.id) {
       }
     } catch (error) {
       console.error("Error marking message as read:", error);
@@ -61,11 +120,11 @@ const RenderMessageItem = ({
       )[0];
 
       // Kiểm tra xem userId có trong mảng readedId không
-      const userId = localStorage.getItem("userId");
 
       const isReadNow = updatedMessages.some(
         (msg) =>
-          msg.readedId.includes(userId?.toString() || "") || data.boxId === id
+          msg.readedId.includes(userId?.toString() || "") ||
+          data.boxId === item.id
       );
 
       const fileContent: FileContent = {
@@ -90,25 +149,25 @@ const RenderMessageItem = ({
       });
 
       // console.log(isRead, "updatedMessages");
-      if (data.boxId === id) {
-        markMessagesAsRead(data.boxId); // Gọi API đánh dấu tin nhắn đã đọc
-      }
+      // if (data.boxId === item.id) {
+      //   markMessagesAsRead(data.boxId); // Gọi API đánh dấu tin nhắn đã đọc
+      // }
       return updatedMessages;
     });
 
     // Đánh dấu tin nhắn là đã đọc nếu người dùng là receiver
   };
 
-  const handleDeleteMessage = (data: PusherDelete) => {
+  const handleDeleteMessage = async (data: PusherDelete) => {
     // Kiểm tra nếu không phải tin nhắn trong box hiện tại
-    if (data.boxId !== itemChat.id) return;
+    if (data.boxId !== item.id) return;
 
-    const currentUserId = localStorage.getItem("userId");
+    const currentUserId = await AsyncStorage.getItem("userId");
 
     setMessages((prevMessages) => {
       // Lọc tin nhắn trong box chat hiện tại
       const boxChatMessages = prevMessages.filter(
-        (msg) => msg.boxId === itemChat.id
+        (msg) => msg.boxId === item.id
       );
 
       console.log("Box chat messages before delete: ", boxChatMessages);
@@ -163,7 +222,7 @@ const RenderMessageItem = ({
           } else {
             // Không còn tin nhắn nào, đặt giá trị mặc định cho `lastMessage`
             setLastMessage({
-              id: itemChat.id,
+              id: item.id,
               text: "",
               contentId: fileContent,
               createBy: "",
@@ -244,17 +303,14 @@ const RenderMessageItem = ({
       console.error("ID is missing or invalid");
       return;
     }
-    // const pusherChannel = `private-${item.id}`;
-    //pusherClient.subscribe(pusherChannel);
     pusherClient.bind("new-message", handleNewMessage);
     pusherClient.bind("delete-message", handleDeleteMessage);
-    // pusherClient.bind("revoke-message", handleRevokeMessage);
+    pusherClient.bind("revoke-message", handleRevokeMessage);
 
     // Dọn dẹp khi component bị unmount
     return () => {
       pusherClient.unbind("new-message", handleNewMessage);
       pusherClient.unbind("delete-message", handleDeleteMessage);
-      // pusherClient.unbind("revoke-message", handleRevokeMessage);
     };
   }, [item.id, setMessages]);
 
@@ -264,10 +320,22 @@ const RenderMessageItem = ({
 
   const isReceiver = lastMessage.createBy !== itemUserId;
 
-  console.log(isReceiver, "isReceiver");
-  console.log(item.lastMessage.createBy, "item.lastMessage.createBy");
-  console.log(userId, "userId");
-  console.log(itemUserId, "itemUserId");
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        if (item) {
+          const data = await getMyProfile(item?.receiverId?.toString() || "");
+          setIsOnlineChat((prevState) => ({
+            ...prevState,
+            [item?.receiverId?.toString() || ""]: data.userProfile.status,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+    fetchProfile();
+  }, [item, item?.receiverId]);
 
   return (
     <TouchableOpacity
@@ -422,7 +490,7 @@ const RenderMessageItem = ({
       </View>
       <View className="flex-col items-end">
         <Text className="text-gray-500">{timeString}</Text>
-        {item.status && (
+        {isOnlineChat[item.receiverId || ""] && (
           <View className="w-3 h-3 bg-green-500 rounded-full mt-1" />
         )}
       </View>

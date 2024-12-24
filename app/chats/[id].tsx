@@ -19,13 +19,7 @@ import { colors } from "../../styles/colors";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { useChatContext } from "../../context/ChatContext";
 import {
-  getAllChat,
   getGroupAllChat,
-  getListChat,
-  getListGroupChat,
-  MarkMessageAsRead,
-  removeMessage,
-  revokeMessage,
   sendMessage,
 } from "../../lib/service/message.service";
 import {
@@ -42,12 +36,10 @@ import {
 import InfoChat from "../../components/forms/chat/InfoChat";
 import { useAuth } from "../../context/AuthContext";
 import {
-  FileContent,
   ItemChat,
   PusherDelete,
   PusherRevoke,
   ResponseGroupMessageDTO,
-  ResponseMessageDTO,
 } from "@/dtos/MessageDTO";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { pusherClient } from "@/lib/pusher";
@@ -56,10 +48,8 @@ import { useChatItemContext } from "@/context/ChatItemContext";
 import { pickMedia } from "@/lib/untils/GalleryPicker";
 import MessageCard from "@/components/forms/chat/MessageCard";
 import { checkRelation } from "@/lib/service/relation.service";
-import { FriendRequestDTO } from "@/dtos/FriendDTO";
 import { unblock } from "@/lib/service/friend.service";
 import ReportCard from "@/components/card/report/ReportCard";
-import MyInput from "@/components/share/MyInput";
 import { pickDocument } from "@/lib/untils/DoucmentPicker";
 import AudioRecorder from "@/components/forms/media/AudioRecorder";
 import { useClickOutside } from "react-native-click-outside";
@@ -652,7 +642,7 @@ const Chat = () => {
               }}
               className="text-[16px] font-medium"
             >
-              {chatItem?.userName}
+              {chatItem?.groupName}
             </Text>
           </View>
         </View>
@@ -677,7 +667,7 @@ const Chat = () => {
           onRequestClose={() => setModalVisible(false)}
         >
           <InfoChat
-            item={chatItem}
+            item={chatItem || null}
             setModalVisible={setModalVisible}
             setRelation={setRelation}
             relation={relation}

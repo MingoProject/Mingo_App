@@ -23,7 +23,6 @@ const ChangeAvatar = ({
   groupData: ItemChat;
   setGroupData: any;
 }) => {
-  const [isMe, setIsMe] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const { colorScheme, toggleColorScheme } = useTheme();
 
@@ -44,7 +43,7 @@ const ChangeAvatar = ({
         console.log(response?.result.secure_url);
         setGroupData((prevProfile: any) => ({
           ...prevProfile,
-          avatar: response?.result.secure_url,
+          avatarUrl: response?.result.secure_url,
         }));
       }
     } catch (err) {
@@ -72,14 +71,20 @@ const ChangeAvatar = ({
     }
   };
 
+  console.log(groupData.avatarUrl, "groupData.avatarUrl");
+
+  console.log(showModal, "showModal");
+
   return (
     <View>
-      <TouchableOpacity onPress={() => isMe && setShowModal(true)}>
+      <TouchableOpacity onPress={() => setShowModal(true)}>
         <View className="h-[105px] w-[105px] overflow-hidden rounded-full">
           <Image
-            source={{
-              uri: groupData.avatarUrl || "/assets/images/default-user.png",
-            }}
+            source={
+              groupData.avatarUrl
+                ? { uri: groupData.avatarUrl }
+                : require("../../../assets/images/default-user.png")
+            }
             style={{ width: 105, height: 105, borderRadius: 20 }}
           />
         </View>

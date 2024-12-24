@@ -181,3 +181,9 @@ export interface ResponseGroupMessageDTO {
   createName: string;
   createAvatar: string;
 }
+
+export interface OnlineEvent {
+  userId: string;
+  online: boolean;
+  updateTime: Date;
+}
