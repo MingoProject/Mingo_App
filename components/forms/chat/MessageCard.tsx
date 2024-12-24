@@ -54,7 +54,7 @@ const MessageCard = ({
   message: ResponseMessageDTO;
   isCurrentUser: boolean;
   isFirstMessageOfDay: boolean;
-  chatItem?: ItemChat;
+  chatItem?: ItemChat | null;
   colorScheme: any;
   screenWidth: any;
 }) => {

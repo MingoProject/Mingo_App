@@ -9,17 +9,6 @@ export interface FileContent {
   type: string;
 }
 
-export interface FileProps {
-  _id?: string;
-  fileName?: string;
-  url?: string;
-  bytes?: number;
-  width?: number;
-  height?: number;
-  format?: string;
-  type?: string;
-}
-
 export interface RequestSendMessageDTO {
   boxId: string;
   content: string | FileContent;
@@ -105,6 +94,7 @@ export interface ResponseMessageDTO {
 export interface ItemChat {
   id: string;
   userName: string;
+  groupName: string;
   avatarUrl: string;
   status: string;
   lastMessage: Text;
@@ -127,9 +117,14 @@ export interface ChatResponse {
   messages: ResponseMessageDTO[];
 }
 
+export interface GroupChatResponse {
+  success: boolean;
+  messages: ResponseGroupMessageDTO[];
+}
+
 export interface FindMessageResponse {
   success: boolean;
-  messages: ResponseMessageDTO[];
+  messages: ResponseGroupMessageDTO[];
 }
 
 export interface GroupCreateDTO {
@@ -160,4 +155,29 @@ export interface PusherDelete {
   action: string;
   createAt: string;
   createBy: string;
+}
+
+export interface StatusResponse {
+  userId: string;
+  status: boolean;
+  createAt: Date;
+}
+
+export interface RequestCreateGroup {
+  membersIds: string[];
+  groupName: string;
+}
+
+export interface ResponseGroupMessageDTO {
+  id: string;
+  flag: boolean;
+  readedId: string[];
+  contentId: FileContent;
+  text: string;
+  boxId: string;
+  createAt: string;
+  createBy: string;
+  isReact: boolean;
+  createName: string;
+  createAvatar: string;
 }

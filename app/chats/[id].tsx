@@ -20,6 +20,7 @@ import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { useChatContext } from "../../context/ChatContext";
 import {
   getAllChat,
+  getGroupAllChat,
   getListChat,
   getListGroupChat,
   MarkMessageAsRead,
@@ -42,8 +43,10 @@ import InfoChat from "../../components/forms/chat/InfoChat";
 import { useAuth } from "../../context/AuthContext";
 import {
   FileContent,
+  ItemChat,
   PusherDelete,
   PusherRevoke,
+  ResponseGroupMessageDTO,
   ResponseMessageDTO,
 } from "@/dtos/MessageDTO";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -61,7 +64,7 @@ import { pickDocument } from "@/lib/untils/DoucmentPicker";
 import AudioRecorder from "@/components/forms/media/AudioRecorder";
 import { useClickOutside } from "react-native-click-outside";
 const Chat = () => {
-  const [messages, setMessages] = useState<ResponseMessageDTO[]>([]); // Mảng tin nhắn
+  const [messages, setMessages] = useState<ResponseGroupMessageDTO[]>([]); // Mảng tin nhắn
   const { profile } = useAuth();
   const { colorScheme } = useTheme();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -84,6 +87,8 @@ const Chat = () => {
   >([]);
   const [isReport, setIsReport] = useState(false);
   const [isMicroOpen, setIsMicroOpen] = useState(false);
+  const router = useRouter();
+  const [chatItem, setChatItem] = useState<ItemChat | null>(null); // State lưu trữ itemChat
 
   const ref = useClickOutside<View>(() => {
     setIsMicroOpen(false);
@@ -118,14 +123,12 @@ const Chat = () => {
     setTemporaryToCloudinaryMap([]);
   }, [temporaryToCloudinaryMap]);
 
-  const chatItem = allChat.find((chat) => chat.id === id);
-
   useEffect(() => {
     let isMounted = true;
 
     const myChat = async () => {
       try {
-        const data = await getAllChat(chatItem?.id.toString() || ""); // Gọi API
+        const data = await getGroupAllChat(id.toString() || ""); // Gọi API
         // console.log(data, "this is data of body");
         if (isMounted && data.success) {
           setMessages(data.messages); // Lưu trực tiếp `messages` từ API
@@ -143,7 +146,18 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
+    const chatItem = allChat.find((chat) => chat.id === id);
+    if (chatItem) {
+      setChatItem(chatItem); // Cập nhật itemChat khi tìm thấy cuộc trò chuyện
+    }
+  }, [id, allChat]);
+
+  useEffect(() => {
+    if (!chatItem) {
+      return; // Nếu chưa có chatItem, không thực hiện gì
+    }
     let isMounted = true;
+    const userId = AsyncStorage.getItem("userId");
 
     const check = async () => {
       try {
@@ -199,7 +213,7 @@ const Chat = () => {
     return () => {
       isMounted = false; // Cleanup khi component unmount
     };
-  }, [chatItem?.receiverId]);
+  }, [chatItem]);
 
   const handlePickMedia = async () => {
     const media = await pickMedia();
@@ -469,7 +483,7 @@ const Chat = () => {
     }
 
     // console.log(messages, "this is message");
-    const handleNewMessage = (data: ResponseMessageDTO) => {
+    const handleNewMessage = (data: ResponseGroupMessageDTO) => {
       if (id !== data.boxId) return; // Kiểm tra đúng kênh
       setMessages((prevMessages) => {
         return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
@@ -615,11 +629,12 @@ const Chat = () => {
     >
       <View className="flex  flex-row items-center justify-between px-3 pt-3 pb-1 shadow-md">
         <View className="flex flex-row">
-          <Link href="./message" className="pt-2 flex flex-row">
-            <View className="pt-3">
-              <ArrowIcon size={30} color={iconColor} />
-            </View>
-          </Link>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="pt-2 flex flex-row"
+          >
+            <ArrowIcon size={30} color={iconColor} />
+          </TouchableOpacity>
           <View className="flex-row items-center pb-2 gap-2">
             <Image
               source={
@@ -666,6 +681,7 @@ const Chat = () => {
             setModalVisible={setModalVisible}
             setRelation={setRelation}
             relation={relation}
+            setGroupData={setChatItem}
           />
         </Modal>
       </View>
@@ -696,7 +712,7 @@ const Chat = () => {
               message={message}
               isCurrentUser={isCurrentUser}
               isFirstMessageOfDay={isFirstMessageOfDay}
-              chatItem={chatItem}
+              chatItem={chatItem || null}
               colorScheme={colorScheme}
               screenWidth={screenWidth}
             />
@@ -726,7 +742,7 @@ const Chat = () => {
             />
           </TouchableOpacity>
           <TextInput
-            placeholder="Nhập tin nhắn..."
+            placeholder="Aa..."
             className={`flex-1 text-sm border rounded-full px-4`}
             onChangeText={handleTextInput}
             value={value}

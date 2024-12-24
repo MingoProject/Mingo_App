@@ -45,6 +45,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { openWebFile } from "@/lib/untils/File";
 import message from "@/app/message";
 import VideoPlayer from "../media/VideoPlayer";
+import ChangeAvatar from "./ChangeAvatar";
 const screenWidth = Dimensions.get("window").width;
 
 const getAllImagesFromChat = (chatimageList: FileContent[]) => {
@@ -64,11 +65,13 @@ const InfoChat = ({
   setModalVisible,
   setRelation,
   relation,
+  setGroupData,
 }: {
   item: any;
   setModalVisible: (visible: boolean) => void;
   setRelation: any;
   relation: string;
+  setGroupData: any;
 }) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
@@ -289,14 +292,30 @@ const InfoChat = ({
         </View>
 
         <View className="justify-center mx-auto">
-          <Image
+          {/* <Image
             source={
               item.avatarUrl
                 ? { uri: item.avatarUrl }
                 : require("../../../assets/images/default-user.png")
             }
             style={{ width: 70, height: 70, borderRadius: 50 }}
-          />
+          /> */}
+          {item && (
+            <>
+              {item.groupName === item.userName ? (
+                <Image
+                  source={
+                    item.avatarUrl
+                      ? { uri: item.avatarUrl }
+                      : require("../../../assets/images/default-user.png")
+                  }
+                  style={{ width: 70, height: 70, borderRadius: 50 }}
+                />
+              ) : (
+                <ChangeAvatar groupData={item} setGroupData={setGroupData} />
+              )}
+            </>
+          )}
         </View>
 
         <View className="flex justify-center h-12">
