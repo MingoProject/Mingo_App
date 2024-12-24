@@ -53,6 +53,8 @@ import ReportCard from "@/components/card/report/ReportCard";
 import { pickDocument } from "@/lib/untils/DoucmentPicker";
 import AudioRecorder from "@/components/forms/media/AudioRecorder";
 import { useClickOutside } from "react-native-click-outside";
+import { useCamera } from "@/context/CameraContext";
+import ExpoCamera from "@/components/forms/media/ExpoCamera";
 const Chat = () => {
   const [messages, setMessages] = useState<ResponseGroupMessageDTO[]>([]); // Mảng tin nhắn
   const { profile } = useAuth();
@@ -79,6 +81,7 @@ const Chat = () => {
   const [isMicroOpen, setIsMicroOpen] = useState(false);
   const router = useRouter();
   const [chatItem, setChatItem] = useState<ItemChat | null>(null); // State lưu trữ itemChat
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   const ref = useClickOutside<View>(() => {
     setIsMicroOpen(false);
@@ -261,6 +264,8 @@ const Chat = () => {
     files: { uri: string; type: string; name: string | undefined | null }[]
   ) => {
     const storedToken = await AsyncStorage.getItem("token");
+    console.log(selectedMedia, "selectedMedia for checkcheck");
+
     if (!storedToken) return;
 
     if (files.length === 0) return;
@@ -311,6 +316,8 @@ const Chat = () => {
         console.log("fileType", fileType);
 
         let newFile = null;
+
+        console.log(file.uri, "this is uri in id");
 
         // Prepare file based on type
         if (
@@ -534,12 +541,22 @@ const Chat = () => {
 
   return (
     <View
-      className="flex-1 pt-12"
+      className="flex-1 pt-8"
       style={{
         backgroundColor:
           colorScheme === "dark" ? colors.dark[300] : colors.light[700],
       }}
     >
+      {isCameraOpen ? (
+        <ExpoCamera
+          onClose={() => setIsCameraOpen(false)}
+          onSend={handleSend}
+          setSelectedMedia={(uri: string, type: string, name: string) =>
+            setSelectedMedia([{ uri: uri, type: type, name: name }])
+          }
+          isSendNow={true}
+        />
+      ) : null}
       <View className="flex  flex-row items-center justify-between px-3 pt-3 pb-1 shadow-md">
         <View className="flex flex-row">
           <TouchableOpacity
@@ -641,7 +658,7 @@ const Chat = () => {
           <TouchableOpacity onPress={handlePickDocument}>
             <PlusIcon size={27} color={iconColor} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handlePickMedia}>
+          <TouchableOpacity onPress={() => setIsCameraOpen(true)}>
             <CameraIcon size={27} color={iconColor} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handlePickMedia}>
@@ -660,7 +677,6 @@ const Chat = () => {
             onChangeText={handleTextInput}
             value={value}
           />
-
           <TouchableOpacity onPress={handleSend}>
             <SendIcon size={28} color={iconColor} />
           </TouchableOpacity>
