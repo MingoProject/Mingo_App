@@ -15,9 +15,8 @@ import { colors } from "../../styles/colors";
 import MyButton from "../../components/share/MyButton";
 import { useRouter } from "expo-router";
 import { register } from "@/lib/service/user.service";
-import { sendOTP } from "@/lib/service/auth.service";
+import { sendOTP, verifyOTP } from "@/lib/service/auth.service";
 import { Picker } from "@react-native-picker/picker";
-import DateTimePicker from "@react-native-community/datetimepicker";
 
 const PlusIcon = ({ color = "#dc0404", width = 8, height = 8 }) => (
   <Svg
@@ -58,46 +57,51 @@ const SignUp = () => {
 
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
-
-    if (otp !== generatedOtp.toString()) {
-      setErrorMessage("Invalid OTP!");
-      return;
-    }
-    const selectedDate = new Date(selectedYear, selectedMonth - 1, selectedDay);
-
     setErrorMessage("");
-
-    const userData = {
-      firstName,
-      lastName,
-      nickName: "",
-      phoneNumber,
-      email,
-      password,
-      rePassword: confirmPassword,
-      gender: gender === "male",
-      birthDay: new Date(selectedDate),
-    };
-
+    setSuccessMessage("");
     try {
-      const newUser = await register(userData);
+      const verifyResult = await verifyOTP(phoneNumber, otp); // Hàm verifyOTP thực hiện xác thực OTP
 
-      if (newUser) {
-        setSuccessMessage("Registration successful! Please log in.");
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        setPhoneNumber("");
-        setGender("");
-        setPassword("");
-        setConfirmPassword("");
-        setIsOtpStep(false);
-        router.push("signin");
-      } else {
-        setErrorMessage("Registration failed!");
+      if (!verifyResult.success) {
+        setErrorMessage("Invalid or expired OTP.");
+        return;
+      }
+      const userData = {
+        firstName,
+        lastName,
+        nickName: "",
+        phoneNumber,
+        email,
+        password,
+        rePassword: confirmPassword,
+        gender: gender === "male",
+        birthDay: new Date(birthday),
+      };
+
+      try {
+        const newUser = await register(userData);
+
+        if (newUser) {
+          setSuccessMessage("Registration successful! Please log in.");
+          setFirstName("");
+          setLastName("");
+          setEmail("");
+          setPhoneNumber("");
+          setBirthday("");
+          setGender("");
+          setPassword("");
+          setConfirmPassword("");
+          setIsOtpStep(false);
+          router.push("signin");
+        } else {
+          setErrorMessage("Registration failed!");
+        }
+      } catch (error) {
+        console.error("Error during registration:", error);
+        setErrorMessage(error.message || "An unexpected error occurred.");
       }
     } catch (error) {
-      console.error("Error during registration:", error);
+      console.error("Error during OTP verification or registration:", error);
       setErrorMessage(error.message || "An unexpected error occurred.");
     }
   };

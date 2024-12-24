@@ -12,7 +12,7 @@ import { colors } from "@/styles/colors";
 import { useRouter } from "expo-router";
 
 interface TagModalProps {
-  tags: { _id: string; firstName: string; avatar?: string }[];
+  tags: { _id: string; firstName: string; lastName: string; avatar?: string }[];
   isOpen: boolean;
   onClose: () => void;
 }
@@ -71,7 +71,7 @@ const TagModal: React.FC<TagModalProps> = ({ tags, isOpen, onClose }) => {
                   style={styles.avatar}
                 />
                 <Text style={styles.tagText}>
-                  {tag.firstName} {tag.firstName}
+                  {tag.firstName} {tag.lastName}
                 </Text>
               </TouchableOpacity>
             ))}

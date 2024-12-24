@@ -26,11 +26,14 @@ import CommentMenu from "@/components/forms/comment/CommentMenu";
 
 const ReplyCard = ({
   reply,
+  repliesData,
   setRepliesData,
   commentId,
   author,
   postId,
   mediaId,
+  setNumberOfComments,
+  numberOfComments,
 }: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
@@ -92,7 +95,11 @@ const ReplyCard = ({
       setReplyingTo(null);
       if (postId) {
         const newCommentData = await createReplyCommentPost(
-          { content: newComment, parentId: detailsComment._id },
+          {
+            content: newComment,
+            parentId: detailsComment._id,
+            originalCommentId: commentId,
+          },
           token,
           postId
         );
@@ -104,10 +111,6 @@ const ReplyCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -118,14 +121,16 @@ const ReplyCard = ({
             lastName: profile?.lastName || "Anonymous",
           },
           createAt: isoStringWithOffset,
+          originalCommentId: commentId,
+          parentId: detailsComment._id,
         };
 
         setRepliesData((prev: any) => [enrichedComment, ...prev]);
 
-        if (detailsComment.userId._id !== profile._id) {
+        if (detailsComment?.userId._id !== profile._id) {
           const notificationParams = {
             senderId: profile._id,
-            receiverId: detailsComment.userId._id,
+            receiverId: detailsComment?.userId._id,
             type: "reply_comment",
             commentId: detailsComment._id,
             ...(postId && { postId }),
@@ -133,6 +138,8 @@ const ReplyCard = ({
           };
 
           await createNotification(notificationParams, token);
+        }
+        if (profile._id !== author._id) {
           const notificationParams2 = {
             senderId: profile._id,
             receiverId: author._id,
@@ -145,7 +152,11 @@ const ReplyCard = ({
         }
       } else {
         const newCommentData = await createReplyCommentMedia(
-          { content: newComment, parentId: detailsComment._id },
+          {
+            content: newComment,
+            parentId: detailsComment._id,
+            originalCommentId: commentId,
+          },
           token,
           mediaId
         );
@@ -157,10 +168,6 @@ const ReplyCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -171,14 +178,16 @@ const ReplyCard = ({
             lastName: profile?.lastName || "Anonymous",
           },
           createAt: isoStringWithOffset,
+          originalCommentId: commentId,
+          parentId: detailsComment._id,
         };
 
         setRepliesData((prev: any) => [enrichedComment, ...prev]);
 
-        if (detailsComment.userId._id !== profile._id) {
+        if (detailsComment?.userId._id !== profile._id) {
           const notificationParams = {
             senderId: profile._id,
-            receiverId: detailsComment.userId._id,
+            receiverId: detailsComment?.userId._id,
             type: "reply_comment",
             commentId: detailsComment._id,
             ...(postId && { postId }),
@@ -186,6 +195,8 @@ const ReplyCard = ({
           };
 
           await createNotification(notificationParams, token);
+        }
+        if (profile._id !== author._id) {
           const notificationParams2 = {
             senderId: profile._id,
             receiverId: author._id,
@@ -197,6 +208,7 @@ const ReplyCard = ({
           await createNotification(notificationParams2, token);
         }
       }
+      setNumberOfComments(numberOfComments + 1);
     } catch (error) {
       console.error("Failed to reply to comment:", error);
     }
@@ -211,7 +223,11 @@ const ReplyCard = ({
       <TouchableOpacity onLongPress={handleLongPress}>
         <View className="flex-row items-center my-2">
           <Image
-            source={{ uri: reply.userId.avatar }}
+            source={{
+              uri:
+                reply?.userId.avatar ||
+                "https://i.pinimg.com/736x/9a/00/82/9a0082d8f710e7b626a114657ec5b781.jpg",
+            }}
             className="w-11 h-11 rounded-full"
           />
           <View className="ml-3">
@@ -222,8 +238,9 @@ const ReplyCard = ({
               }}
               className="font-msemibold text-sm"
             >
-              {reply.userId.firstName} {reply.userId.lastName}{" "}
-              {parentComment && (
+              {reply?.userId.firstName} {reply?.userId.lastName}{" "}
+              {detailsComment?.parentId?._id !==
+                detailsComment?.originalCommentId && (
                 <>
                   <View className="pt-3">
                     <ArrowRightIcon size={20} color={iconColor} />
@@ -238,8 +255,8 @@ const ReplyCard = ({
                     }}
                     className="font-msemibold  text-sm"
                   >
-                    {parentComment.userId.firstName || ""}{" "}
-                    {parentComment.userId.lastName || ""}
+                    {parentComment?.userId.firstName || ""}{" "}
+                    {parentComment?.userId.lastName || ""}
                   </Text>
                 </>
               )}
@@ -304,10 +321,13 @@ const ReplyCard = ({
         >
           <CommentMenu
             comment={reply}
+            commentsData={repliesData}
             setCommentsData={setRepliesData}
             setModalVisible={setModalVisible}
             postId={postId}
             mediaId={mediaId}
+            setNumberOfComments={setNumberOfComments}
+            numberOfComments={numberOfComments}
           />
         </Modal>
       </TouchableOpacity>

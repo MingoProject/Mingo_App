@@ -26,21 +26,9 @@ import { Link } from "expo-router";
 import DetailsPost from "../forms/post/DetailsPost";
 import DetailImage from "../forms/media/DetailImage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const calculateTimeDifference = (date: any) => {
-  const now = new Date();
-  const minutesAgo = differenceInMinutes(now, date);
-  const hoursAgo = differenceInHours(now, date);
-  const daysAgo = differenceInDays(now, date);
-
-  if (daysAgo > 0) {
-    return `${daysAgo} ngày trước`;
-  } else if (hoursAgo > 0) {
-    return `${hoursAgo} giờ trước`;
-  } else {
-    return `${minutesAgo} phút trước`;
-  }
-};
+import { getCommentByCommentId } from "@/lib/service/comment.service";
+import DetailVideo from "../forms/media/DetailVideo";
+import { getTimestamp } from "@/lib/utils";
 
 const getNotificationContent = (notification: any) => {
   switch (notification.type) {
@@ -83,6 +71,10 @@ const Notifications = ({ notifications, setNotifications }: any) => {
   const [openDetailImage, setOpenDetailImage] = useState(false);
   const [openDetailVideo, setOpenDetailVideo] = useState(false);
   const { profile } = useAuth();
+  const [commentsData, setCommentsData] = useState<any[]>([]);
+  const [isLiked, setIsLiked] = useState(false);
+  const [numberOfComments, setNumberOfComments] = useState(0);
+  const [numberOfLikes, setNumberOfLikes] = useState(0);
 
   const handleRefuseBff = async (
     id: string,
@@ -90,6 +82,8 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
+      console.log("id", id);
+      console.log("userId", userId);
       const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
         console.error("User is not authenticated");
@@ -117,6 +111,8 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
+      console.log("id", id);
+      console.log("userId", userId);
       const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
         console.error("User is not authenticated");
@@ -145,6 +141,8 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
+      console.log("id", id);
+      console.log("userId", userId);
       const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
         console.error("User is not authenticated");
@@ -158,6 +156,10 @@ const Notifications = ({ notifications, setNotifications }: any) => {
         },
         token
       );
+      await deleteNotification(notificationId, token);
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notif) => notif._id !== notificationId)
+      );
       await createNotification(
         {
           senderId: userId,
@@ -165,10 +167,6 @@ const Notifications = ({ notifications, setNotifications }: any) => {
           type: "friend_accept",
         },
         token
-      );
-      await deleteNotification(notificationId, token);
-      setNotifications((prevNotifications) =>
-        prevNotifications.filter((notif) => notif._id !== notificationId)
       );
     } catch (error: any) {
       console.error("Error:", error);
@@ -181,6 +179,8 @@ const Notifications = ({ notifications, setNotifications }: any) => {
     notificationId: string
   ) => {
     try {
+      console.log("id", id);
+      console.log("userId", userId);
       const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
         console.error("User is not authenticated");
@@ -193,6 +193,10 @@ const Notifications = ({ notifications, setNotifications }: any) => {
         },
         token
       );
+      await deleteNotification(notificationId, token); // Delete the notification
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notif) => notif._id !== notificationId)
+      );
       await createNotification(
         {
           senderId: userId,
@@ -200,10 +204,6 @@ const Notifications = ({ notifications, setNotifications }: any) => {
           type: "bff_accept",
         },
         token
-      );
-      await deleteNotification(notificationId, token); // Delete the notification
-      setNotifications((prevNotifications) =>
-        prevNotifications.filter((notif) => notif._id !== notificationId)
       );
     } catch (error: any) {
       console.error("Error:", error);
@@ -215,7 +215,26 @@ const Notifications = ({ notifications, setNotifications }: any) => {
       case "like":
         try {
           const data = await getPostByPostId(notification.postId);
+          const detailsComments = await Promise.all(
+            data.comments.map(async (comment: any) => {
+              return await getCommentByCommentId(comment);
+            })
+          );
+          const userId: string | null = await AsyncStorage.getItem("userId");
+          if (userId) {
+            try {
+              const isUserLiked = data.likes.some(
+                (like: any) => like === userId
+              );
+              setIsLiked(isUserLiked);
+            } catch (error) {
+              console.error("Invalid token:", error);
+            }
+          }
           setPost(data);
+          setCommentsData(detailsComments);
+          setNumberOfLikes(data.likes.length);
+          setNumberOfComments(data.comments.length);
           setOpenDetailPost(true);
         } catch (error) {
           console.error("Error fetching post data:", error);
@@ -224,17 +243,64 @@ const Notifications = ({ notifications, setNotifications }: any) => {
       case "like_comment":
         try {
           if (notification.postId) {
-            const data = await getPostByPostId(notification.postId);
-            setPost(data);
-            setOpenDetailPost(true);
+            try {
+              const data = await getPostByPostId(notification.postId);
+              const detailsComments = await Promise.all(
+                data.comments.map(async (comment: any) => {
+                  return await getCommentByCommentId(comment);
+                })
+              );
+              const userId: string | null = await AsyncStorage.getItem(
+                "userId"
+              );
+              if (userId) {
+                try {
+                  const isUserLiked = data.likes.some(
+                    (like: any) => like === userId
+                  );
+                  setIsLiked(isUserLiked);
+                } catch (error) {
+                  console.error("Invalid token:", error);
+                }
+              }
+              setPost(data);
+              setCommentsData(detailsComments);
+              setNumberOfLikes(data.likes.length);
+              setNumberOfComments(data.comments.length);
+              setOpenDetailPost(true);
+            } catch (error) {
+              console.error("Error fetching post data:", error);
+            }
           } else {
             const data = await getMediaByMediaId(notification.mediaId);
+            const detailsComments = await Promise.all(
+              data.comments.map(async (comment: any) => {
+                return await getCommentByCommentId(comment);
+              })
+            );
+            const userId: string | null = await AsyncStorage.getItem("userId");
+            if (userId) {
+              try {
+                const isUserLiked = data.likes.some(
+                  (like: any) => like === userId
+                );
+                setIsLiked(isUserLiked);
+              } catch (error) {
+                console.error("Invalid token:", error);
+              }
+            }
 
             if (data.type === "image") {
               setImage(data);
+              setCommentsData(detailsComments);
+              setNumberOfLikes(data.likes.length);
+              setNumberOfComments(data.comments.length);
               setOpenDetailImage(true);
             } else {
               setVideo(data);
+              setCommentsData(detailsComments);
+              setNumberOfLikes(data.likes.length);
+              setNumberOfComments(data.comments.length);
               setOpenDetailVideo(true);
             }
           }
@@ -245,12 +311,33 @@ const Notifications = ({ notifications, setNotifications }: any) => {
       case "like_media":
         try {
           const data = await getMediaByMediaId(notification.mediaId);
-
+          const detailsComments = await Promise.all(
+            data.comments.map(async (comment: any) => {
+              return await getCommentByCommentId(comment);
+            })
+          );
+          const userId: string | null = await AsyncStorage.getItem("userId");
+          if (userId) {
+            try {
+              const isUserLiked = data.likes.some(
+                (like: any) => like === userId
+              );
+              setIsLiked(isUserLiked);
+            } catch (error) {
+              console.error("Invalid token:", error);
+            }
+          }
           if (data.type === "image") {
             setImage(data);
+            setCommentsData(detailsComments);
+            setNumberOfLikes(data.likes.length);
+            setNumberOfComments(data.comments.length);
             setOpenDetailImage(true);
           } else {
             setVideo(data);
+            setCommentsData(detailsComments);
+            setNumberOfLikes(data.likes.length);
+            setNumberOfComments(data.comments.length);
             setOpenDetailVideo(true);
           }
         } catch (error) {
@@ -260,7 +347,26 @@ const Notifications = ({ notifications, setNotifications }: any) => {
       case "comment":
         try {
           const data = await getPostByPostId(notification.postId);
+          const detailsComments = await Promise.all(
+            data.comments.map(async (comment: any) => {
+              return await getCommentByCommentId(comment);
+            })
+          );
+          const userId: string | null = await AsyncStorage.getItem("userId");
+          if (userId) {
+            try {
+              const isUserLiked = data.likes.some(
+                (like: any) => like === userId
+              );
+              setIsLiked(isUserLiked);
+            } catch (error) {
+              console.error("Invalid token:", error);
+            }
+          }
           setPost(data);
+          setCommentsData(detailsComments);
+          setNumberOfLikes(data.likes.length);
+          setNumberOfComments(data.comments.length);
           setOpenDetailPost(true);
         } catch (error) {
           console.error("Error fetching post data:", error);
@@ -269,12 +375,33 @@ const Notifications = ({ notifications, setNotifications }: any) => {
       case "comment_media":
         try {
           const data = await getMediaByMediaId(notification.mediaId);
-
+          const detailsComments = await Promise.all(
+            data.comments.map(async (comment: any) => {
+              return await getCommentByCommentId(comment);
+            })
+          );
+          const userId: string | null = await AsyncStorage.getItem("userId");
+          if (userId) {
+            try {
+              const isUserLiked = data.likes.some(
+                (like: any) => like === userId
+              );
+              setIsLiked(isUserLiked);
+            } catch (error) {
+              console.error("Invalid token:", error);
+            }
+          }
           if (data.type === "image") {
             setImage(data);
+            setCommentsData(detailsComments);
+            setNumberOfLikes(data.likes.length);
+            setNumberOfComments(data.comments.length);
             setOpenDetailImage(true);
           } else {
             setVideo(data);
+            setCommentsData(detailsComments);
+            setNumberOfLikes(data.likes.length);
+            setNumberOfComments(data.comments.length);
             setOpenDetailVideo(true);
           }
         } catch (error) {
@@ -284,17 +411,64 @@ const Notifications = ({ notifications, setNotifications }: any) => {
       case "reply_comment":
         try {
           if (notification.postId) {
-            const data = await getPostByPostId(notification.postId);
-            setPost(data);
-            setOpenDetailPost(true);
+            try {
+              const data = await getPostByPostId(notification.postId);
+              const detailsComments = await Promise.all(
+                data.comments.map(async (comment: any) => {
+                  return await getCommentByCommentId(comment);
+                })
+              );
+              const userId: string | null = await AsyncStorage.getItem(
+                "userId"
+              );
+              if (userId) {
+                try {
+                  const isUserLiked = data.likes.some(
+                    (like: any) => like === userId
+                  );
+                  setIsLiked(isUserLiked);
+                } catch (error) {
+                  console.error("Invalid token:", error);
+                }
+              }
+              setPost(data);
+              setCommentsData(detailsComments);
+              setNumberOfLikes(data.likes.length);
+              setNumberOfComments(data.comments.length);
+              setOpenDetailPost(true);
+            } catch (error) {
+              console.error("Error fetching post data:", error);
+            }
           } else {
             const data = await getMediaByMediaId(notification.mediaId);
+            const detailsComments = await Promise.all(
+              data.comments.map(async (comment: any) => {
+                return await getCommentByCommentId(comment);
+              })
+            );
+            const userId: string | null = await AsyncStorage.getItem("userId");
+            if (userId) {
+              try {
+                const isUserLiked = data.likes.some(
+                  (like: any) => like === userId
+                );
+                setIsLiked(isUserLiked);
+              } catch (error) {
+                console.error("Invalid token:", error);
+              }
+            }
 
             if (data.type === "image") {
               setImage(data);
+              setCommentsData(detailsComments);
+              setNumberOfLikes(data.likes.length);
+              setNumberOfComments(data.comments.length);
               setOpenDetailImage(true);
             } else {
               setVideo(data);
+              setCommentsData(detailsComments);
+              setNumberOfLikes(data.likes.length);
+              setNumberOfComments(data.comments.length);
               setOpenDetailVideo(true);
             }
           }
@@ -305,7 +479,26 @@ const Notifications = ({ notifications, setNotifications }: any) => {
       case "tags":
         try {
           const data = await getPostByPostId(notification.postId);
+          const detailsComments = await Promise.all(
+            data.comments.map(async (comment: any) => {
+              return await getCommentByCommentId(comment);
+            })
+          );
+          const userId: string | null = await AsyncStorage.getItem("userId");
+          if (userId) {
+            try {
+              const isUserLiked = data.likes.some(
+                (like: any) => like === userId
+              );
+              setIsLiked(isUserLiked);
+            } catch (error) {
+              console.error("Invalid token:", error);
+            }
+          }
           setPost(data);
+          setCommentsData(detailsComments);
+          setNumberOfLikes(data.likes.length);
+          setNumberOfComments(data.comments.length);
           setOpenDetailPost(true);
         } catch (error) {
           console.error("Error fetching post data:", error);
@@ -471,7 +664,7 @@ const Notifications = ({ notifications, setNotifications }: any) => {
               </View>
               <View className="flex flex-row justify-between items-center">
                 <Text className="text-gray-400 font-semibold text-xs">
-                  {calculateTimeDifference(notification?.createAt)}
+                  {getTimestamp(notification?.createAt)}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -486,6 +679,14 @@ const Notifications = ({ notifications, setNotifications }: any) => {
                   post={post}
                   isModalVisible={openDetailPost}
                   setModalVisible={() => setOpenDetailPost(false)}
+                  numberOfLikes={numberOfLikes}
+                  setNumberOfLikes={setNumberOfLikes}
+                  isLiked={isLiked}
+                  setIsLiked={setIsLiked}
+                  setNumberOfComments={setNumberOfComments}
+                  numberOfComments={numberOfComments}
+                  commentsData={commentsData}
+                  setCommentsData={setCommentsData}
                 />
               </Modal>
             )}
@@ -500,6 +701,24 @@ const Notifications = ({ notifications, setNotifications }: any) => {
                   image={image}
                   isModalVisible={openDetailImage}
                   setModalVisible={setOpenDetailImage}
+                  commentsData={commentsData}
+                  setCommentsData={setCommentsData}
+                />
+              </Modal>
+            )}
+            {openDetailVideo && (
+              <Modal
+                visible={openDetailVideo}
+                animationType="fade"
+                transparent={true}
+                onRequestClose={() => setOpenDetailVideo(false)}
+              >
+                <DetailVideo
+                  video={video}
+                  isModalVisible={openDetailVideo}
+                  setModalVisible={setOpenDetailVideo}
+                  commentsData={commentsData}
+                  setCommentsData={setCommentsData}
                 />
               </Modal>
             )}

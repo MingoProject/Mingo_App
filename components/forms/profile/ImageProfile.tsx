@@ -4,12 +4,13 @@ import React, { useEffect, useState } from "react";
 import { View, Image, TouchableOpacity, Modal } from "react-native";
 import DetailImage from "../media/DetailImage";
 import { getMediaByMediaId } from "@/lib/service/media.service";
+import { getCommentByCommentId } from "@/lib/service/comment.service";
 
 const ImageProfile = ({ userId }: any) => {
   const [images, setImages] = useState<any[]>([]);
-  // const [isModalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
+  const [commentsData, setCommentsData] = useState<any[]>([]);
 
   const fetchImagesdata = async () => {
     try {
@@ -29,7 +30,13 @@ const ImageProfile = ({ userId }: any) => {
   const handleClick = async (image: any) => {
     try {
       const data = await getMediaByMediaId(image._id);
+      const detailsComments = await Promise.all(
+        data.comments.map(async (comment: any) => {
+          return await getCommentByCommentId(comment);
+        })
+      );
       setSelectedImage(data);
+      setCommentsData(detailsComments);
       setOpenModal(true);
     } catch (error) {
       console.error("Error loading image details:", error);
@@ -71,6 +78,8 @@ const ImageProfile = ({ userId }: any) => {
             isModalVisible={openModal}
             setModalVisible={setOpenModal}
             image={selectedImage}
+            commentsData={commentsData}
+            setCommentsData={setCommentsData}
           />
         )}
       </Modal>

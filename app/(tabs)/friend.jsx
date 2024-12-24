@@ -148,8 +148,8 @@ const Friend = () => {
                   isActiveTab === "follower"
                     ? colors.primary[100]
                     : colorScheme === "dark"
-                    ? colors.dark[200]
-                    : colors.light[600]
+                    ? colors.dark[400]
+                    : colors.light[800]
                 }
                 titleStyle={{
                   color:

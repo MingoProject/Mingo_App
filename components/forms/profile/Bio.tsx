@@ -1,4 +1,4 @@
-import { PenIcon } from "@/components/icons/Icons";
+import { CancelIcon, PenIcon } from "@/components/icons/Icons";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { updateUserBio } from "@/lib/service/user.service";
@@ -8,7 +8,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Modal, TextInput } from "react-native";
 
 const Bio = ({ profileUser, setProfile }: any) => {
-  const { colorScheme, toggleColorScheme } = useTheme();
+  const { colorScheme } = useTheme();
+  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [showEdit, setShowEdit] = useState(false);
   const [isMe, setIsMe] = useState(false);
   const { profile } = useAuth();
@@ -48,34 +49,40 @@ const Bio = ({ profileUser, setProfile }: any) => {
     }
   }, [profileUser._id]);
   return (
-    <View className="p-3 w-[266px]">
-      {profileUser.nickName && (
+    <>
+      <View className="p-3 w-[266px]">
+        {profileUser.nickName && (
+          <Text
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            }}
+            className="font-mbold text-[16px] "
+          >
+            {"("}
+            {profileUser.nickName || "No bio"}
+            {")"}
+          </Text>
+        )}
+
         <Text
           style={{
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="font-mbold text-[16px] "
+          className="font-mregular text-[14px] mt-3"
         >
-          {"("}
-          {profileUser.nickName || "No bio"}
-          {")"}
+          {profileUser.bio || "No bio"}
         </Text>
-      )}
-
-      <Text
-        style={{
-          color: colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-        }}
-        className="font-mregular text-[14px] mt-3"
-      >
-        {profileUser.bio || "No bio"}
-      </Text>
-      {isMe && (
-        <TouchableOpacity className="ml-auto" onPress={() => setShowEdit(true)}>
-          <PenIcon size={23} color={colors.primary[100]} />
-        </TouchableOpacity>
-      )}
+        {isMe && (
+          <TouchableOpacity
+            className="ml-auto"
+            onPress={() => setShowEdit(true)}
+          >
+            <PenIcon size={23} color={colors.primary[100]} />
+          </TouchableOpacity>
+        )}
+      </View>
       <Modal
         animationType="slide"
         transparent={true}
@@ -92,38 +99,30 @@ const Bio = ({ profileUser, setProfile }: any) => {
         >
           <View className="flex-1 justify-center items-center">
             <View
-              className="mt-4 py-4 px-6"
+              className="mt-4 py-4 "
               style={{
                 backgroundColor:
                   colorScheme === "dark" ? colors.dark[300] : colors.light[700],
                 flex: 1,
               }}
             >
-              <View className="flex-row h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 mb-4">
+              <View className="flex-row h-[39px] w-full px-5 items-center justify-center rounded-r-lg mb-4">
                 <Text
                   style={{
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
-                        : colors.light[500],
+                        : colors["title-pink"],
                   }}
+                  className="text-[20px] font-msemibold"
                 >
                   Update Bio
                 </Text>
                 <TouchableOpacity
-                  className="ml-auto mt-1"
                   onPress={() => setShowEdit(false)}
+                  className="ml-auto"
                 >
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "bold",
-                      marginBottom: 20,
-                      color: colors.primary[100],
-                    }}
-                  >
-                    Close
-                  </Text>
+                  <CancelIcon size={28} color={iconColor} />
                 </TouchableOpacity>
               </View>
               <TextInput
@@ -145,13 +144,16 @@ const Bio = ({ profileUser, setProfile }: any) => {
                 placeholderTextColor={
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500]
                 }
-                className="border border-gray-400 rounded-lg"
+                className="border border-gray-200 rounded-lg px-2 py-3 mx-5"
               />
-              <TouchableOpacity onPress={handleSave}>
+              <TouchableOpacity
+                onPress={handleSave}
+                className="bg-primary-100 rounded-lg mx-5 mt-3 py-2"
+              >
                 <Text
                   style={{
-                    fontSize: 18,
-                    color: colors.primary[100],
+                    fontSize: 16,
+                    color: "#FFFFFF",
                     textAlign: "center",
                   }}
                 >
@@ -162,7 +164,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
           </View>
         </View>
       </Modal>
-    </View>
+    </>
   );
 };
 

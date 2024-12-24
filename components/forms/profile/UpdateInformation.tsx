@@ -32,6 +32,7 @@ import {
   MusicIcon,
   ChessIcon,
   MicroIcon,
+  CancelIcon,
 } from "@/components/icons/Icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { updateInfo } from "@/lib/service/user.service";
@@ -96,7 +97,6 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(
     profileUser.hobbies
   );
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleChange = (name: string, value: any) => {
     setFormValues({ ...formValues, [name]: value });
@@ -170,39 +170,9 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
         >
           Update Information
         </Text>
-        <View className="ml-auto  mt-1 flex-row">
-          <TouchableOpacity
-            onPress={onClose}
-            className="px-3 h-10 py-2 rounded-lg"
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "bold",
-                color: colors.primary[100],
-              }}
-            >
-              Close
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleSave}
-            className="px-3 h-10 py-2 rounded-lg"
-            style={{
-              backgroundColor: colors.primary[100],
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "bold",
-              }}
-              className="text-white"
-            >
-              Save
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={onClose} className="ml-auto">
+          <CancelIcon size={28} color={iconColor} />
+        </TouchableOpacity>
       </View>
       <View className="flex flex-row">
         <View className="w-1/2">
@@ -512,7 +482,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
                   ? colors.primary[100]
                   : "#ffffff",
               }}
-              className="border border-gray-400 rounded-lg"
+              className="border border-gray-200 rounded-lg"
             >
               {HobbyIcon && (
                 <HobbyIcon
@@ -541,6 +511,22 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
           );
         })}
       </View>
+      <TouchableOpacity
+        onPress={handleSave}
+        className="px-3 h-10 py-2 rounded-lg mb-3"
+        style={{
+          backgroundColor: colors.primary[100],
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 16,
+          }}
+          className="text-white mx-auto"
+        >
+          Save
+        </Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };

@@ -7,16 +7,22 @@ import { useAuth } from "@/context/AuthContext";
 import {
   deleteComment,
   deleteCommentMedia,
+  deleteCommentReply,
+  deleteCommentReplyMedia,
   updateComment,
 } from "@/lib/service/comment.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CommentMenu = ({
   comment,
+  commentsData,
   setCommentsData,
   setModalVisible,
   postId,
   mediaId,
+  setNumberOfComments,
+  numberOfComments,
+  repliesCount,
 }: any) => {
   const [newComment, setNewComment] = useState(comment.content); // Khởi tạo giá trị mặc định là content
   const [isEditing, setIsEditing] = useState(false);
@@ -57,9 +63,57 @@ const CommentMenu = ({
 
     try {
       if (postId) {
-        await deleteComment(commentId, postId, token);
+        if (comment.originalCommentId === null) {
+          await deleteComment(commentId, postId, token);
+          setNumberOfComments(numberOfComments - (repliesCount + 1));
+          setCommentsData((prev: any) =>
+            prev.filter((comment: any) => comment._id !== commentId)
+          );
+        } else {
+          const childReplies = commentsData.filter(
+            (comment: any) => comment.parentId === commentId
+          );
+          setCommentsData((prev: any) =>
+            prev.filter(
+              (comment: any) =>
+                comment._id !== commentId &&
+                !childReplies.some((child: any) => child._id === comment._id)
+            )
+          );
+          await deleteCommentReply(
+            commentId,
+            postId,
+            comment.originalCommentId,
+            token
+          );
+          setNumberOfComments(numberOfComments - (childReplies.length + 1));
+        }
       } else {
-        await deleteCommentMedia(commentId, mediaId, token);
+        if (comment.originalCommentId === null) {
+          await deleteCommentMedia(commentId, mediaId, token);
+          setNumberOfComments(numberOfComments - (repliesCount + 1));
+          setCommentsData((prev: any) =>
+            prev.filter((comment: any) => comment._id !== commentId)
+          );
+        } else {
+          const childReplies = commentsData.filter(
+            (comment: any) => comment.parentId === commentId
+          );
+          setCommentsData((prev: any) =>
+            prev.filter(
+              (comment: any) =>
+                comment._id !== commentId &&
+                !childReplies.some((child: any) => child._id === comment._id)
+            )
+          );
+          await deleteCommentReplyMedia(
+            commentId,
+            mediaId,
+            comment.originalCommentId,
+            token
+          );
+          setNumberOfComments(numberOfComments - (childReplies.length + 1));
+        }
       }
 
       setCommentsData(
@@ -72,7 +126,6 @@ const CommentMenu = ({
   };
   const handleReportComment = () => {
     setModalVisible(false);
-    // Logic báo cáo comment ở đây
     console.log("Báo cáo comment");
   };
 
@@ -90,15 +143,15 @@ const CommentMenu = ({
             <View className="flex-row mt-4">
               <TouchableOpacity
                 onPress={() => handleEditComment(comment._id, newComment)}
-                className="bg-blue-500 rounded-lg px-3 py-2 mr-2"
+                className="bg-primary-100 rounded-lg px-3 py-2 mr-2"
               >
-                <Text className="text-white text-base">Lưu</Text>
+                <Text className="text-white text-base">Save</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setIsEditing(false)}
                 className="bg-gray-300 rounded-lg px-3 py-2"
               >
-                <Text className="text-black text-base">Hủy</Text>
+                <Text className="text-gray-600 text-base">Close</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -113,25 +166,25 @@ const CommentMenu = ({
                   }}
                   className="mb-4"
                 >
-                  <Text className="text-blue-500 text-base">Chỉnh sửa</Text>
+                  <Text className="text-blue-500 text-base">Edit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => handleDeleteComment(comment._id, postId)}
                   className="mb-4"
                 >
-                  <Text className="text-red-500 text-base">Xóa</Text>
+                  <Text className="text-red-500 text-base">Delete</Text>
                 </TouchableOpacity>
               </>
             ) : (
               <TouchableOpacity onPress={handleReportComment} className="mb-4">
-                <Text className="text-yellow-500 text-base">Báo cáo</Text>
+                <Text className="text-yellow-500 text-base">Report</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
               className="mt-2"
             >
-              <Text className="text-gray-500 text-base">Hủy</Text>
+              <Text className="text-gray-500 text-base">Close</Text>
             </TouchableOpacity>
           </>
         )}

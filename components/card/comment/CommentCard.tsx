@@ -7,6 +7,8 @@ import {
   FlatList,
   TextInput,
   Modal,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
@@ -23,13 +25,17 @@ import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ReplyCard from "./ReplyCard";
 import CommentMenu from "@/components/forms/comment/CommentMenu";
+import { CancelIcon } from "@/components/icons/Icons";
 
 const CommentCard = ({
   comment,
+  commentsData,
   setCommentsData,
   author,
   postId,
   mediaId,
+  setNumberOfComments,
+  numberOfComments,
 }: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
@@ -91,9 +97,12 @@ const CommentCard = ({
       setNewComment("");
       setReplyingTo(null);
       if (postId) {
-        console.log({ content: newComment, parentId: comment._id });
         const newCommentData = await createReplyCommentPost(
-          { content: newComment, parentId: comment._id },
+          {
+            content: newComment,
+            parentId: comment._id,
+            originalCommentId: comment._id,
+          },
           token,
           postId
         );
@@ -105,10 +114,6 @@ const CommentCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -120,6 +125,8 @@ const CommentCard = ({
           },
           createAt: isoStringWithOffset,
         };
+
+        console.log(enrichedComment);
 
         setRepliesData((prev) => [enrichedComment, ...prev]);
 
@@ -136,18 +143,23 @@ const CommentCard = ({
           await createNotification(notificationParams, token);
         }
 
-        const notificationParams2 = {
-          senderId: profile._id,
-          receiverId: author._id,
-          type: "comment",
-          ...(postId && { postId }),
-          ...(mediaId && { mediaId }),
-        };
-
-        await createNotification(notificationParams2, token);
+        if (author._id !== profile._id) {
+          const notificationParams2 = {
+            senderId: profile._id,
+            receiverId: author._id,
+            type: "comment",
+            ...(postId && { postId }),
+            ...(mediaId && { mediaId }),
+          };
+          await createNotification(notificationParams2, token);
+        }
       } else {
         const newCommentData = await createReplyCommentMedia(
-          { content: newComment, parentId: comment._id },
+          {
+            content: newComment,
+            parentId: comment._id,
+            originalCommentId: comment._id,
+          },
           token,
           mediaId
         );
@@ -159,10 +171,6 @@ const CommentCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -190,16 +198,18 @@ const CommentCard = ({
           await createNotification(notificationParams, token);
         }
 
-        const notificationParams2 = {
-          senderId: profile._id,
-          receiverId: author._id,
-          type: "comment",
-          ...(postId && { postId }),
-          ...(mediaId && { mediaId }),
-        };
-
-        await createNotification(notificationParams2, token);
+        if (author._id !== profile._id) {
+          const notificationParams2 = {
+            senderId: profile._id,
+            receiverId: author._id,
+            type: "comment",
+            ...(postId && { postId }),
+            ...(mediaId && { mediaId }),
+          };
+          await createNotification(notificationParams2, token);
+        }
       }
+      setNumberOfComments(numberOfComments + 1);
     } catch (error) {
       console.error("Failed to reply to comment:", error);
     }
@@ -210,14 +220,17 @@ const CommentCard = ({
   };
 
   return (
-    <View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
       <TouchableOpacity onLongPress={handleLongPress}>
         <View className="flex-row items-center my-2">
           <Image
             source={{
               uri:
                 comment.userId.avatar ||
-                "https://example.com/default-avatar.png",
+                "https://i.pinimg.com/736x/9a/00/82/9a0082d8f710e7b626a114657ec5b781.jpg",
             }}
             className="w-11 h-11 rounded-full"
           />
@@ -259,12 +272,12 @@ const CommentCard = ({
                 mediaId={mediaId}
               />
             </View>
-            {comment.replies?.length > 0 && (
+            {repliesData?.length > 0 && (
               <TouchableOpacity onPress={() => setShowReplies(!showReplies)}>
                 <Text className="text-blue-500 text-sm mt-2">
                   {showReplies
                     ? "Hide replies"
-                    : `${comment.replies.length} replies`}
+                    : `${repliesData.length} replies`}
                 </Text>
               </TouchableOpacity>
             )}
@@ -280,7 +293,7 @@ const CommentCard = ({
             />
             <TouchableOpacity
               onPress={handleReplyComment}
-              className="bg-blue-500  rounded-lg ml-2 px-3 py-2 flex-row justify-center items-center"
+              className="bg-primary-100  rounded-lg ml-2 px-3 py-2 flex-row justify-center items-center"
             >
               <Text className="text-white text-sm">Reply</Text>
             </TouchableOpacity>
@@ -288,7 +301,7 @@ const CommentCard = ({
               onPress={() => setReplyingTo(null)}
               className=" rounded-lg ml-2 py-2 flex-row justify-center items-center"
             >
-              <Text className="text-sm">X</Text>
+              <CancelIcon size={20} color={iconColor} />
             </TouchableOpacity>
           </View>
         )}
@@ -298,11 +311,14 @@ const CommentCard = ({
               <View key={reply._id}>
                 <ReplyCard
                   reply={reply}
+                  repliesData={repliesData}
                   setRepliesData={setRepliesData}
                   commentId={comment._id}
                   author={author}
                   postId={postId}
                   mediaId={mediaId}
+                  setNumberOfComments={setNumberOfComments}
+                  numberOfComments={numberOfComments}
                 />
               </View>
             ))}
@@ -316,14 +332,18 @@ const CommentCard = ({
         >
           <CommentMenu
             comment={comment}
+            commentsData={commentsData}
             setCommentsData={setCommentsData}
             setModalVisible={setModalVisible}
             postId={postId}
             mediaId={mediaId}
+            setNumberOfComments={setNumberOfComments}
+            numberOfComments={numberOfComments}
+            repliesCount={repliesData?.length}
           />
         </Modal>
       </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
