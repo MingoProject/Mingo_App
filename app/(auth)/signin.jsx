@@ -100,7 +100,7 @@ const SignIn = () => {
     >
       {/* Các thành phần khác */}
       <View className="w-full flex-grow flex flex-col">
-        <View className="w-full items-center justify-end pb-10 mt-28">
+        <View className="w-full items-center justify-end pb-10 mt-40">
           <Text
             className="font-msemibold text-[36px] text-light-500"
             style={{

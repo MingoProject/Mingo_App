@@ -7,16 +7,22 @@ import { useAuth } from "@/context/AuthContext";
 import {
   deleteComment,
   deleteCommentMedia,
+  deleteCommentReply,
+  deleteCommentReplyMedia,
   updateComment,
 } from "@/lib/service/comment.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CommentMenu = ({
   comment,
+  commentsData,
   setCommentsData,
   setModalVisible,
   postId,
   mediaId,
+  setNumberOfComments,
+  numberOfComments,
+  repliesCount,
 }: any) => {
   const [newComment, setNewComment] = useState(comment.content); // Khởi tạo giá trị mặc định là content
   const [isEditing, setIsEditing] = useState(false);
@@ -57,9 +63,57 @@ const CommentMenu = ({
 
     try {
       if (postId) {
-        await deleteComment(commentId, postId, token);
+        if (comment.originalCommentId === null) {
+          await deleteComment(commentId, postId, token);
+          setNumberOfComments(numberOfComments - (repliesCount + 1));
+          setCommentsData((prev: any) =>
+            prev.filter((comment: any) => comment._id !== commentId)
+          );
+        } else {
+          const childReplies = commentsData.filter(
+            (comment: any) => comment.parentId === commentId
+          );
+          setCommentsData((prev: any) =>
+            prev.filter(
+              (comment: any) =>
+                comment._id !== commentId &&
+                !childReplies.some((child: any) => child._id === comment._id)
+            )
+          );
+          await deleteCommentReply(
+            commentId,
+            postId,
+            comment.originalCommentId,
+            token
+          );
+          setNumberOfComments(numberOfComments - (childReplies.length + 1));
+        }
       } else {
-        await deleteCommentMedia(commentId, mediaId, token);
+        if (comment.originalCommentId === null) {
+          await deleteCommentMedia(commentId, mediaId, token);
+          setNumberOfComments(numberOfComments - (repliesCount + 1));
+          setCommentsData((prev: any) =>
+            prev.filter((comment: any) => comment._id !== commentId)
+          );
+        } else {
+          const childReplies = commentsData.filter(
+            (comment: any) => comment.parentId === commentId
+          );
+          setCommentsData((prev: any) =>
+            prev.filter(
+              (comment: any) =>
+                comment._id !== commentId &&
+                !childReplies.some((child: any) => child._id === comment._id)
+            )
+          );
+          await deleteCommentReplyMedia(
+            commentId,
+            mediaId,
+            comment.originalCommentId,
+            token
+          );
+          setNumberOfComments(numberOfComments - (childReplies.length + 1));
+        }
       }
 
       setCommentsData(
@@ -72,7 +126,6 @@ const CommentMenu = ({
   };
   const handleReportComment = () => {
     setModalVisible(false);
-    // Logic báo cáo comment ở đây
     console.log("Báo cáo comment");
   };
 

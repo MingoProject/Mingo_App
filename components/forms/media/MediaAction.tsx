@@ -17,30 +17,18 @@ import {
   likeMedia,
 } from "@/lib/service/media.service";
 
-const MediaAction = ({ isModalVisible, setModalVisible, media }: any) => {
+const MediaAction = ({
+  isModalVisible,
+  setModalVisible,
+  media,
+  numberOfComments,
+}: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(media.likes.length);
-  const [likes, setLikes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-  const { profile } = useAuth();
 
-  useEffect(() => {
-    const fetchLikes = async () => {
-      try {
-        const data = await getLikesByMediaId(media._id);
-        setLikes(data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-        setIsError(true);
-        setIsLoading(false);
-      }
-    };
-    fetchLikes();
-  }, []);
+  const { profile } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -112,23 +100,6 @@ const MediaAction = ({ isModalVisible, setModalVisible, media }: any) => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Error fetching posts. Please try again later.</Text>
-      </View>
-    );
-  }
-
   return (
     <View className="flex-row mt-2 justify-around">
       <TouchableOpacity
@@ -162,7 +133,7 @@ const MediaAction = ({ isModalVisible, setModalVisible, media }: any) => {
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
         >
-          {media.comments.length} Comments
+          {numberOfComments} Comments
         </Text>
       </TouchableOpacity>
 

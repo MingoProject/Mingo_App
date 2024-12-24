@@ -70,7 +70,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
   };
 
   return (
-    <View className=" mt-4 rounded-lg border border-gray-400 py-4">
+    <View className=" mt-4 rounded-lg border border-gray-200 py-4">
       <View className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100">
         <Text className="text-white">Detailed Information</Text>
       </View>
@@ -92,6 +92,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
             >
+              {" "}
               {profileUser.job}
             </Text>
           </Text>
@@ -116,6 +117,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                       : colors.light[500],
                 }}
               >
+                {" "}
                 {profileUser.address}
               </Text>
             </Text>
@@ -178,6 +180,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
             >
+              {" "}
               {profileUser.relationShip}
             </Text>
           </Text>
@@ -205,6 +208,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                         : colors.light[500],
                   }}
                 >
+                  {" "}
                   {formattedDate(profileUser.birthDay)}
                 </Text>
               </Text>
@@ -229,6 +233,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                         : colors.light[500],
                   }}
                 >
+                  {" "}
                   {profileUser.gender ? "Male" : "Female"}
                 </Text>
               </Text>
@@ -253,6 +258,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                         : colors.light[500],
                   }}
                 >
+                  {" "}
                   {formattedDate(profileUser.attendDate)}
                 </Text>
               </Text>
@@ -277,6 +283,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                         : colors.light[500],
                   }}
                 >
+                  {" "}
                   {profileUser.phoneNumber}
                 </Text>
               </Text>
@@ -301,6 +308,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                         : colors.light[500],
                   }}
                 >
+                  {" "}
                   {profileUser.email}
                 </Text>
               </Text>

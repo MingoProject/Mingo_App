@@ -12,51 +12,36 @@ import { useAuth } from "@/context/AuthContext";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
+const PostAction = ({
+  isModalVisible,
+  setModalVisible,
+  post,
+  numberOfLikes,
+  setNumberOfLikes,
+  isLiked,
+  setIsLiked,
+  numberOfComments,
+}: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
-  const [isLiked, setIsLiked] = useState(false);
-  const [numberOfLikes, setNumberOfLikes] = useState(post.likes.length);
-  const [likes, setLikes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  // const [likes, setLikes] = useState([]);
+
   const { profile } = useAuth();
 
-  useEffect(() => {
-    const fetchLikes = async () => {
-      try {
-        const data = await getLikesByPostId(post._id);
-        setLikes(data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-        setIsError(true);
-        setIsLoading(false);
-      }
-    };
-    fetchLikes();
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-    const checkLike = async () => {
-      const userId: string | null = await AsyncStorage.getItem("userId");
-      if (userId) {
-        try {
-          const isUserLiked = post.likes.some((like: any) => like === userId);
-          if (isMounted) {
-            setIsLiked(isUserLiked);
-          }
-        } catch (error) {
-          console.error("Invalid token:", error);
-        }
-      }
-    };
-    checkLike();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // useEffect(() => {
+  //   const fetchLikes = async () => {
+  //     try {
+  //       const data = await getLikesByPostId(post._id);
+  //       setLikes(data);
+  //       setIsLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching posts:", error);
+  //       setIsError(true);
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   fetchLikes();
+  // }, []);
 
   const handleLikePost = async () => {
     try {
@@ -107,23 +92,6 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Error fetching posts. Please try again later.</Text>
-      </View>
-    );
-  }
-
   return (
     <View className="flex-row mt-2 justify-around">
       <TouchableOpacity
@@ -157,7 +125,7 @@ const PostAction = ({ isModalVisible, setModalVisible, post }: any) => {
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
         >
-          {post.comments.length} Comments
+          {numberOfComments} Comments
         </Text>
       </TouchableOpacity>
 

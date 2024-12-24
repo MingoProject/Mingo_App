@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Image,
   Modal,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
@@ -18,6 +19,8 @@ import { ThreeDot } from "@/components/icons/Icons";
 import { useAuth } from "@/context/AuthContext";
 import PostMenu from "@/components/forms/post/PostMenu";
 import TagModal from "@/components/forms/post/TagsModal";
+import { getCommentByCommentId } from "@/lib/service/comment.service";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const PostCard = ({ item, setPostsData }: any) => {
   const router = useRouter();
@@ -30,6 +33,56 @@ const PostCard = ({ item, setPostsData }: any) => {
   const menuRef = useRef<TouchableOpacity | null>(null);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const isAuthor = profile?._id === item.author._id;
+  const [commentsData, setCommentsData] = useState<any[]>([]);
+  const [numberOfLikes, setNumberOfLikes] = useState(item.likes.length);
+  const [numberOfComments, setNumberOfComments] = useState(
+    item.comments.length
+  );
+  const [isLiked, setIsLiked] = useState(false);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const getComments = async () => {
+      const detailsComments = await Promise.all(
+        item.comments.map(async (comment: any) => {
+          return await getCommentByCommentId(comment);
+        })
+      );
+
+      if (isMounted) {
+        setCommentsData(detailsComments);
+      }
+    };
+
+    getComments();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [item.comments]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkLike = async () => {
+      const userId: string | null = await AsyncStorage.getItem("userId");
+      if (userId) {
+        try {
+          const isUserLiked = item.likes.some((like: any) => like === userId);
+          if (isMounted) {
+            setIsLiked(isUserLiked);
+          }
+        } catch (error) {
+          console.error("Invalid token:", error);
+        }
+      }
+    };
+    checkLike();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleTagsModalToggle = () => {
     setIsTagsModalOpen(!isTagsModalOpen);
@@ -37,6 +90,23 @@ const PostCard = ({ item, setPostsData }: any) => {
   const navigateToUserProfile = (item: any) => {
     router.push(`/user/${item}`);
   };
+
+  // if (isLoading) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+  //       <ActivityIndicator size="large" color="#0000ff" />
+  //       <Text>Loading...</Text>
+  //     </View>
+  //   );
+  // }
+
+  // if (isError) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+  //       <Text>Error fetching posts. Please try again later.</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View className="p-4 bg-transparent">
@@ -164,6 +234,14 @@ const PostCard = ({ item, setPostsData }: any) => {
             setModalVisible={setModalVisible}
             post={item}
             setPostsData={setPostsData}
+            numberOfLikes={numberOfLikes}
+            setNumberOfLikes={setNumberOfLikes}
+            isLiked={isLiked}
+            setIsLiked={setIsLiked}
+            setNumberOfComments={setNumberOfComments}
+            numberOfComments={numberOfComments}
+            commentsData={commentsData}
+            setCommentsData={setCommentsData}
           />
         </Modal>
         {isMenuVisible && (
@@ -233,6 +311,11 @@ const PostCard = ({ item, setPostsData }: any) => {
         post={item}
         isModalVisible={isModalVisible}
         setModalVisible={setModalVisible}
+        numberOfLikes={numberOfLikes}
+        setNumberOfLikes={setNumberOfLikes}
+        isLiked={isLiked}
+        setIsLiked={setIsLiked}
+        numberOfComments={numberOfComments}
       />
 
       <View
