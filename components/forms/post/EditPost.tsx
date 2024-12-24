@@ -172,7 +172,6 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
       };
 
       const updatedPost = await editPost(postPayload, post._id, token);
-      console.log(updatedPost);
       setPostsData((prevPosts: any[]) =>
         prevPosts.map((post) => {
           if (post._id === updatedPost._id) {

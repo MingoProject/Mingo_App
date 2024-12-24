@@ -3,11 +3,12 @@ import { View, Text, ScrollView } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
-import MyButton from "../../components/share/MyButton";
 import Notifications from "../../components/notifications/Notifications.tsx";
 // import { Notifications } from "../../components/share/data";
 import { getNotifications } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Pusher from "pusher-js/react-native";
+import { useAuth } from "@/context/AuthContext";
 
 const SearchIcon = ({ size = 24, color = "black", onPress }) => {
   return (
@@ -26,24 +27,17 @@ const SearchIcon = ({ size = 24, color = "black", onPress }) => {
     </Svg>
   );
 };
-
+const PUSHER_APP_KEY = process.env.EXPO_PUBLIC_NEXT_PUBLIC_PUSHER_APP_KEY;
 const Notification = () => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isSearch, setIsSearch] = useState(false);
   const [notifications, setNotifications] = useState([]);
-
-  const handleIsSearch = () => {
-    setIsSearch(true);
-  };
-
-  const handleOnClose = () => {
-    setIsSearch(false);
-  };
-
+  const { profile } = useAuth();
   useEffect(() => {
     let isMounted = true;
-    const fetchNotification = async () => {
+
+    const initializeNotifications = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
         if (!token) {
@@ -52,7 +46,6 @@ const Notification = () => {
         }
 
         const res = await getNotifications(token);
-        console.log("res", res);
         if (isMounted) {
           setNotifications(res);
         }
@@ -61,11 +54,51 @@ const Notification = () => {
       }
     };
 
-    fetchNotification();
+    initializeNotifications();
+
     return () => {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    const pusher = new Pusher(PUSHER_APP_KEY, {
+      cluster: "ap1",
+    });
+
+    const userId = profile?._id;
+
+    if (!userId) return;
+
+    const notificationChannel = pusher.subscribe(`notifications-${userId}`);
+
+    notificationChannel.bind("new-notification", (data) => {
+      setNotifications((prev) => {
+        const newNotification = {
+          ...data.notification,
+          senderId: data.sender,
+        };
+
+        if (
+          prev.some((notification) => notification._id === newNotification._id)
+        ) {
+          return prev;
+        }
+        return [newNotification, ...prev];
+      });
+    });
+
+    notificationChannel.bind("notification-deleted", (data) => {
+      setNotifications((prev) =>
+        prev.filter((notification) => notification._id !== data.notificationId)
+      );
+    });
+
+    return () => {
+      pusher.unsubscribe(`notifications-${userId}`);
+      pusher.disconnect();
+    };
+  }, [profile?._id]);
 
   return (
     <View
@@ -76,7 +109,6 @@ const Notification = () => {
           colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
       }}
     >
-      {/* Header */}
       <View
         style={{
           padding: 16,
@@ -99,27 +131,10 @@ const Notification = () => {
       </View>
       <ScrollView className="h-80">
         <Notifications
-          // notification={item}
           notifications={notifications}
           setNotifications={setNotifications}
         />
       </ScrollView>
-
-      {/* List */}
-      {/* <FlatList
-        data={notifications}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Notifications
-            notification={item}
-            notifications={notifications}
-            setNotifications={setNotifications}
-          />
-        )}
-        contentContainerStyle={{
-          paddingBottom: 16,
-        }}
-      /> */}
     </View>
   );
 };

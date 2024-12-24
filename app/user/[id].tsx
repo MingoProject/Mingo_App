@@ -25,6 +25,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RelationAction from "@/components/forms/user/RelationAction";
 import { ThreeDot } from "@/components/icons/Icons";
 import ReportCard from "@/components/card/report/ReportCard";
+import { ArrowIcon } from "@/components/icons/Icons";
+import { useNavigation } from "@react-navigation/native";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams();
@@ -42,6 +44,9 @@ const UserProfile = () => {
   const [isMenuVisible, setMenuVisible] = useState(false);
   const [isReport, setIsReport] = useState(false);
 
+  const handleBackPress = () => {
+    navigation.goBack(); // Trở về trang trước
+  };
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -174,7 +179,7 @@ const UserProfile = () => {
 
   return (
     <ScrollView
-      className="p-3"
+      className="p-3 pt-14"
       style={{
         backgroundColor:
           colorScheme === "dark" ? colors.dark[300] : colors.light[700],
@@ -182,6 +187,10 @@ const UserProfile = () => {
       }}
     >
       <View className="flex flex-row">
+        <TouchableOpacity onPress={handleBackPress}>
+          <ArrowIcon size={28} color={iconColor} />
+        </TouchableOpacity>
+
         <Text
           style={{
             color:

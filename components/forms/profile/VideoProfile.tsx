@@ -5,11 +5,13 @@ import { View, Image, TouchableOpacity, Modal } from "react-native";
 import { Video, ResizeMode } from "expo-av";
 import { getMediaByMediaId } from "@/lib/service/media.service";
 import DetailVideo from "../media/DetailVideo";
+import { getCommentByCommentId } from "@/lib/service/comment.service";
 
 const VideoProfile = ({ userId }: any) => {
   const [videos, setVideos] = useState<any[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
+  const [commentsData, setCommentsData] = useState<any[]>([]);
 
   const fetchVideosdata = async () => {
     try {
@@ -30,7 +32,13 @@ const VideoProfile = ({ userId }: any) => {
   const handleClick = async (video: any) => {
     try {
       const data = await getMediaByMediaId(video._id);
+      const detailsComments = await Promise.all(
+        data.comments.map(async (comment: any) => {
+          return await getCommentByCommentId(comment);
+        })
+      );
       setSelectedVideo(data);
+      setCommentsData(detailsComments);
       setOpenModal(true);
     } catch (error) {
       console.error("Error loading video details:", error);
@@ -67,6 +75,8 @@ const VideoProfile = ({ userId }: any) => {
             isModalVisible={openModal}
             setModalVisible={setOpenModal}
             video={selectedVideo}
+            commentsData={commentsData}
+            setCommentsData={setCommentsData}
           />
         )}
       </Modal>

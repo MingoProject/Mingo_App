@@ -9,18 +9,22 @@ import {
   MediaIcon,
   ProfileIcon,
   KeyIcon,
+  LogoutIcon,
 } from "../../icons/Icons"; // Đảm bảo đường dẫn đúng
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
 import SavedPosts from "./SavedPosts";
 import LikedPosts from "./LikedPosts";
 import ChangePassword from "./ChangePassword";
+import { useAuth } from "@/context/AuthContext";
 
 const Setting = ({ setSetting }: any) => {
+  const { logout } = useAuth();
   const { colorScheme, toggleColorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isSavedPostModalVisible, setSavedPostModalVisible] = useState(false);
   const [isLikedPostModalVisible, setLikedPostModalVisible] = useState(false);
+
   const [isChangePasswordModalVisible, setChangePasswordModalVisible] =
     useState(false);
 
@@ -33,6 +37,13 @@ const Setting = ({ setSetting }: any) => {
   const toggleChangePasswordModal = () =>
     setChangePasswordModalVisible(!isChangePasswordModalVisible);
 
+  const handleLogout = () => {
+    try {
+      logout();
+    } catch (error) {
+      console.error("Error logout:", error);
+    }
+  };
   return (
     <>
       <View
@@ -172,6 +183,23 @@ const Setting = ({ setSetting }: any) => {
                 }}
               >
                 Change password
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className=" rounded p-3 flex flex-row items-center"
+              onPress={handleLogout}
+            >
+              <LogoutIcon size={28} color={iconColor} />
+              <Text
+                className=" font-mmedium ml-2"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                Logout
               </Text>
             </TouchableOpacity>
           </View>
