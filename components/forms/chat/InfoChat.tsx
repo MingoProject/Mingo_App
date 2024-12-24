@@ -270,6 +270,10 @@ const InfoChat = ({
           <Text
             className={`text-[10px] ml-4 font-helvetica-bold`}
             numberOfLines={2}
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+            }}
           >
             {`${item.fileName}`}
           </Text>
@@ -286,7 +290,14 @@ const InfoChat = ({
       <View className="bg-light-300 dark:bg-dark-20 flex flex-row p-6 rounded-2xl items-center  gap-2">
         {renderFileIcon(item.url?.split(".").pop()!, 50)}
         <View className="flex flex-row ">
-          <Text className={`text-[14px] font-helvetica-bold`} numberOfLines={2}>
+          <Text
+            className={`text-[14px] font-helvetica-bold`}
+            numberOfLines={2}
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+            }}
+          >
             {`${item.fileName}`}
           </Text>
         </View>
@@ -926,7 +937,7 @@ const InfoChat = ({
             <View className="flex flex-row py-4">
               <TouchableOpacity
                 onPress={() => setIsSearch(false)}
-                className="pt-2 flex flex-row"
+                className="pt-2 pr-1 flex flex-row"
               >
                 <ArrowIcon size={30} color={"#FFAABB"} />
               </TouchableOpacity>
@@ -936,6 +947,17 @@ const InfoChat = ({
                 className={` flex-1 h-[42px] text-[#D9D9D9] font-mregular px-4 rounded-full text-sm ${
                   colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
                 }`}
+                style={{
+                  borderWidth: 1, // Thêm borderWidth nếu cần
+                  borderColor:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500], // Sử dụng borderColor thay vì borderBlockColor
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
                 editable={true}
                 value={query}
                 onChangeText={(text) => {

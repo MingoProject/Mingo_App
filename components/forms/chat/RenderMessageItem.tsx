@@ -342,6 +342,10 @@ const RenderMessageItem = ({
       key={item.id}
       className="flex-row items-center py-2"
       onPress={() => handleMessagePress(item)}
+      style={{
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+      }}
     >
       <Image
         source={
@@ -349,7 +353,7 @@ const RenderMessageItem = ({
             ? { uri: item.avatarUrl }
             : require("../../../assets/images/default-user.png")
         }
-        style={{ width: 70, height: 70, borderRadius: 50 }}
+        style={{ width: 55, height: 55, borderRadius: 50 }}
       />
       <View className="ml-3 flex-1">
         <View className="flex flex-col gap-2">
@@ -367,7 +371,6 @@ const RenderMessageItem = ({
             style={{
               color:
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-              flex: 1,
             }}
             className={`text-[15px] font-mregular w-[290px]`}
             numberOfLines={1} // Giới hạn chỉ một dòng
@@ -381,6 +384,12 @@ const RenderMessageItem = ({
                       ? "font-normal"
                       : "font-bold"
                   }`}
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                  }}
                 >
                   {item.userName.trim().split(" ").pop()}:{" "}
                 </Text>
@@ -393,7 +402,16 @@ const RenderMessageItem = ({
 
                   if (lastMessage.text !== "") {
                     return (
-                      <Text className={messageStatusClass}>
+                      <Text
+                        className={messageStatusClass}
+                        style={{
+                          color:
+                            colorScheme === "dark"
+                              ? colors.dark[100]
+                              : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                          flex: 1,
+                        }}
+                      >
                         {lastMessage.text}
                       </Text>
                     );
@@ -403,31 +421,71 @@ const RenderMessageItem = ({
                     switch (type) {
                       case "image":
                         return (
-                          <Text className={messageStatusClass}>
+                          <Text
+                            className={messageStatusClass}
+                            style={{
+                              color:
+                                colorScheme === "dark"
+                                  ? colors.dark[100]
+                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                            }}
+                          >
                             sent an image
                           </Text>
                         );
                       case "video":
                         return (
-                          <Text className={messageStatusClass}>
+                          <Text
+                            className={messageStatusClass}
+                            style={{
+                              color:
+                                colorScheme === "dark"
+                                  ? colors.dark[100]
+                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                            }}
+                          >
                             sent a video
                           </Text>
                         );
                       case "audio":
                         return (
-                          <Text className={messageStatusClass}>
+                          <Text
+                            className={messageStatusClass}
+                            style={{
+                              color:
+                                colorScheme === "dark"
+                                  ? colors.dark[100]
+                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                            }}
+                          >
                             sent an audio
                           </Text>
                         );
                       case "other":
                         return (
-                          <Text className={messageStatusClass}>
+                          <Text
+                            className={messageStatusClass}
+                            style={{
+                              color:
+                                colorScheme === "dark"
+                                  ? colors.dark[100]
+                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                            }}
+                          >
                             sent a file
                           </Text>
                         );
                       default:
                         return (
-                          <Text className={messageStatusClass}>
+                          <Text
+                            className={messageStatusClass}
+                            style={{
+                              color:
+                                colorScheme === "dark"
+                                  ? colors.dark[100]
+                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                            }}
+                          >
                             Started the chat
                           </Text>
                         );
@@ -437,7 +495,17 @@ const RenderMessageItem = ({
               </View>
             ) : (
               <View className="flex flex-row items-center gap-1">
-                <Text className={`"font-normal"`}>You: </Text>
+                <Text
+                  className={`"font-normal"`}
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                  }}
+                >
+                  You:{" "}
+                </Text>
                 {(() => {
                   const type = lastMessage.contentId?.type?.toLowerCase() || "";
                   const messageStatusClass = lastMessage.status
@@ -446,7 +514,15 @@ const RenderMessageItem = ({
 
                   if (lastMessage.text !== "") {
                     return (
-                      <Text className={messageStatusClass}>
+                      <Text
+                        className={messageStatusClass}
+                        style={{
+                          color:
+                            colorScheme === "dark"
+                              ? colors.dark[100]
+                              : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                        }}
+                      >
                         {lastMessage.text}
                       </Text>
                     );
@@ -455,7 +531,15 @@ const RenderMessageItem = ({
                   switch (type) {
                     case "image":
                       return (
-                        <Text className={messageStatusClass}>
+                        <Text
+                          className={messageStatusClass}
+                          style={{
+                            color:
+                              colorScheme === "dark"
+                                ? colors.dark[100]
+                                : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                          }}
+                        >
                           sent an image
                         </Text>
                       );
@@ -487,7 +571,14 @@ const RenderMessageItem = ({
         </View>
       </View>
       <View className="flex-col items-end">
-        <Text className="text-gray-500">{timeString}</Text>
+        <Text
+          className=""
+          style={{
+            color: colorScheme === "dark" ? colors.dark[100] : "text-gray-500", // Sử dụng giá trị màu từ file colors.js
+          }}
+        >
+          {timeString}
+        </Text>
         {isOnlineChat[item.receiverId || ""] && (
           <View className="w-3 h-3 bg-green-500 rounded-full mt-1" />
         )}

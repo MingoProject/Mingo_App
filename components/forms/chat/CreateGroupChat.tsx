@@ -17,19 +17,12 @@ import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "@/context/AuthContext";
 import { getMyBffs, getMyFriends } from "@/lib/service/user.service";
-import {
-  createGroups,
-  getListChat,
-  getListGroupChat,
-} from "@/lib/service/message.service";
+import { createGroups } from "@/lib/service/message.service";
 import { router } from "expo-router";
-import members from "pusher-js/types/src/core/channels/members";
 import { RequestCreateGroup } from "@/dtos/MessageDTO";
 
 const CreateGroupChat = ({
   onClose,
-  setAllChat,
-  setFilteredChat,
 }: {
   onClose: () => void;
   setAllChat: any;
@@ -41,8 +34,6 @@ const CreateGroupChat = ({
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [files, setFiles] = useState<File[]>([]);
-  const [captions, setCaptions] = useState<string[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
   const [taggedFriends, setTaggedFriends] = useState<any[]>([]);
   const { profile } = useAuth();
@@ -183,7 +174,11 @@ const CreateGroupChat = ({
           borderRadius: 8,
           padding: 10,
           marginVertical: 12,
+          color: colorScheme === "dark" ? colors.dark[100] : colors.light[500],
         }}
+        placeholderTextColor={
+          colorScheme === "dark" ? colors.dark[100] : colors.light[500] // Tùy chỉnh màu placeholder
+        }
       />
 
       <View className="mb-4">
@@ -243,7 +238,7 @@ const CreateGroupChat = ({
           backgroundColor: colors.primary[100],
         }}
       >
-        <Text className="text-center text-white font-bold text-[16px]">
+        <Text className="text-center text-white  font-bold text-[16px]">
           Create group
         </Text>
       </TouchableOpacity>

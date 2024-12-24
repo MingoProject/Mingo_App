@@ -541,7 +541,7 @@ const Chat = () => {
 
   return (
     <View
-      className="flex-1 pt-8"
+      className="flex-1 pt-10"
       style={{
         backgroundColor:
           colorScheme === "dark" ? colors.dark[300] : colors.light[700],
@@ -563,16 +563,16 @@ const Chat = () => {
             onPress={() => router.back()}
             className="pt-2 flex flex-row"
           >
-            <ArrowIcon size={30} color={iconColor} />
+            <ArrowIcon size={30} color={"#FFAABB"} />
           </TouchableOpacity>
-          <View className="flex-row items-center pb-2 gap-2">
+          <View className="flex-row items-center pb-2 px-2 gap-2">
             <Image
               source={
                 chatItem?.avatarUrl
                   ? { uri: chatItem.avatarUrl }
                   : require("../../assets/images/default-user.png") // Đảm bảo bạn có ảnh mặc định
               }
-              style={{ width: 55, height: 55, borderRadius: 50 }}
+              style={{ width: 45, height: 45, borderRadius: 50 }}
             />
 
             <Text
@@ -586,7 +586,7 @@ const Chat = () => {
             </Text>
           </View>
         </View>
-        <View className="flex flex-row right-2 ">
+        <View className="flex flex-row right-2 items-center mb-4">
           <TouchableOpacity>
             <CallIcon size={28} color={iconColor} />
           </TouchableOpacity>
@@ -676,9 +676,19 @@ const Chat = () => {
             className={`flex-1 text-sm border rounded-full px-4`}
             onChangeText={handleTextInput}
             value={value}
+            placeholderTextColor={
+              colorScheme === "dark" ? colors.dark[100] : colors.light[500] // Tùy chỉnh màu placeholder
+            }
+            style={{
+              borderWidth: 1, // Thêm borderWidth nếu cần
+              borderColor:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng borderColor thay vì borderBlockColor
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            }}
           />
           <TouchableOpacity onPress={handleSend}>
-            <SendIcon size={28} color={iconColor} />
+            <SendIcon size={28} color={"#FFAABB"} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -717,6 +727,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 20,
     paddingHorizontal: 10,
+    gap: 2,
+    paddingTop: 4,
   },
   modalBackground: {
     flex: 1,

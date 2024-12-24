@@ -41,6 +41,7 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { useEvent } from "expo";
 import AudioPlayer from "../media/AudioPlayer";
 import { openWebFile } from "@/lib/untils/File";
+import { colors } from "@/styles/colors";
 const screenWidth = Dimensions.get("window").width;
 
 const MessageCard = ({
@@ -125,6 +126,8 @@ const MessageCard = ({
         margin: 5,
         borderRadius: 8,
         rowGap: 4,
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700],
       }}
       onPress={async () => await openWebFile(item.url!)}
     >
@@ -139,6 +142,10 @@ const MessageCard = ({
           <Text
             className={`text-[10px] ml-4 font-helvetica-bold`}
             numberOfLines={2}
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+            }}
           >
             {`${item.fileName}`}
           </Text>
@@ -165,8 +172,18 @@ const MessageCard = ({
         {/* Biểu tượng 3 chấm nằm ngoài message, ở bên trái */}
         {isCurrentUser && (
           <TouchableOpacity onPress={toggleModal}>
-            <Text>
-              <ThreeDotsIcon size={16} color="#555" />{" "}
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+            >
+              <ThreeDotsIcon
+                size={16}
+                color={
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500]
+                }
+              />
             </Text>
             {/* Bạn có thể thay đổi màu sắc của icon */}
           </TouchableOpacity>
@@ -306,6 +323,10 @@ const MessageCard = ({
               className={`${
                 isCurrentUser ? "text-white" : "text-gray-500"
               } text-sm italic`}
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
             >
               Message unsent
             </Text>
@@ -389,7 +410,10 @@ const MessageCard = ({
                     <Text
                       style={{
                         fontSize: 14,
-                        color: "#6c757d",
+                        color:
+                          colorScheme === "dark"
+                            ? colors.dark[100]
+                            : colors.light[500],
                       }}
                     >
                       This format is not supported.

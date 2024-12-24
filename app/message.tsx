@@ -14,7 +14,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Link, useRouter } from "expo-router";
+import { Link, router, useRouter } from "expo-router";
 import { useTheme } from "../context/ThemeContext";
 import { colors } from "../styles/colors"; // import màu sắc từ file colors.js
 import { getListChat } from "../lib/service/message.service";
@@ -250,27 +250,40 @@ const Message = () => {
         }}
         className="px-3 mt-10"
       >
-        <View className="flex flex-row py-4">
-          <TextInput
-            placeholder="Find..."
-            placeholderTextColor="#D9D9D9"
-            className={` flex-1 h-[42px] text-[#D9D9D9] font-mregular px-4 rounded-full text-sm ${
-              colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
-            }`}
-            editable={true}
-            value={searchText}
-            onChangeText={(text) => {
-              setSearchText(text); // Cập nhật giá trị tìm kiếm
-              handleSearch(text); // Gọi hàm tìm kiếm
-            }}
-          />
-          <TouchableOpacity
-            className="mt-0"
-            onPress={() => setCreateGroup(true)}
-          >
-            <PlusIcon color={iconColor} size={40} />
+        <View className="flex flex-row items-center w-full px-2 mt-6">
+          {/* Nút quay lại */}
+          <TouchableOpacity className="pr-2" onPress={() => router.back()}>
+            <ArrowIcon size={30} color={"#FFAABB"} />
           </TouchableOpacity>
+
+          {/* TextInput và nút Thêm */}
+          <View className="flex-1 flex flex-row items-center space-x-2">
+            <TextInput
+              placeholder="Find..."
+              placeholderTextColor="#D9D9D9"
+              className={`flex-1 h-[42px] text-[#D9D9D9] font-mregular px-4 rounded-full text-sm ${
+                colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
+              }`}
+              style={{
+                borderWidth: 1, // Thêm borderWidth nếu cần
+                borderColor:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng borderColor thay vì borderBlockColor
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+              editable={true}
+              value={searchText}
+              onChangeText={(text) => {
+                setSearchText(text); // Cập nhật giá trị tìm kiếm
+                handleSearch(text); // Gọi hàm tìm kiếm
+              }}
+            />
+            <TouchableOpacity onPress={() => setCreateGroup(true)}>
+              <PlusIcon color={iconColor} size={40} />
+            </TouchableOpacity>
+          </View>
         </View>
+
         <View className="mt-4">
           {filteredChat.map((item) => (
             <RenderMessageItem item={item} key={item.id} itemUserId={userId} />

@@ -119,7 +119,7 @@ export async function getListChat(): Promise<ItemChat[]> {
             }
           : {
               id: "",
-              text: "Bắt đầu đoạn chat",
+              text: " Started the chat ",
               timestamp: new Date(),
               createBy: "",
               contentId: fileContent,
@@ -196,7 +196,7 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
               id: box.lastMessage.id,
               text: box.lastMessage.text
                 ? box.lastMessage.text
-                : box.lastMessage.text || "Bắt đầu đoạn chat",
+                : box.lastMessage.text || "Started the chat",
               contentId: box.lastMessage.contentId || fileContent,
               timestamp: new Date(box.lastMessage.createAt),
               createBy: box.lastMessage.createBy,
@@ -204,7 +204,7 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
             }
           : {
               id: "",
-              text: "Bắt đầu đoạn chat",
+              text: "Started the chat",
               timestamp: new Date(),
               createBy: "",
               contentId: fileContent,
