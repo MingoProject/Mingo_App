@@ -127,9 +127,7 @@ const Chat = () => {
         console.error("Error loading chat:", error);
       }
     };
-
     myChat();
-
     return () => {
       isMounted = false; // Cleanup khi component unmount
     };
@@ -258,79 +256,6 @@ const Chat = () => {
       ]);
     }
   };
-
-  // const handleSendMultipleFiles = async (
-  //   files: { uri: string; type: string; name: string | undefined | null }[]
-  // ) => {
-  //   const storedToken = await AsyncStorage.getItem("token");
-  //   if (!storedToken) return;
-  //   try {
-  //     if (files.length != 0) {
-  //       for (const file of files) {
-  //         const formData = new FormData();
-  //         const fileContent: any = {
-  //           fileName: file.name,
-  //           url: "",
-  //           publicId: "",
-  //           bytes: "",
-  //           width: "0",
-  //           height: "0",
-  //           format: file.name?.split(".").pop(),
-  //           type: file.type,
-  //         };
-  //         let newFile = null;
-  //         if (
-  //           file.type === "image" ||
-  //           file.type === "video" ||
-  //           file.type === "audio"
-  //         ) {
-  //           newFile = {
-  //             uri: file.uri,
-  //             type: "image/jpeg",
-  //             name: file.name,
-  //           };
-  //         } else {
-  //           const formData = new FormData();
-  //           const fileType = file.name?.match(/\.([a-zA-Z0-9]+)$/)?.[1];
-  //           const mimeType =
-  //             fileType === "txt"
-  //               ? "text/plain"
-  //               : fileType?.startsWith("image")
-  //               ? `image/${fileType.split("/")[1]}` // For images, e.g., "image/png"
-  //               : fileType?.startsWith("video")
-  //               ? `video/${fileType.split("/")[1]}` // For videos, e.g., "video/mp4"
-  //               : `application/${fileType || "octet-stream"}`;
-  //           console.log(mimeType, "mimeType");
-  //           console.log(selectedMedia);
-  //           console.log("type: ", mimeType);
-  //           const tempUri = await prepareFileForUpload(file.uri, file.name!);
-  //           console.log("prepare uri: ", tempUri);
-  //           newFile = {
-  //             uri: tempUri,
-  //             type: mimeType,
-  //             name: file.name,
-  //           };
-  //         }
-  //         formData.append("boxId", id.toString());
-  //         formData.append("content", JSON.stringify(fileContent));
-  //         formData.append("file", newFile as any);
-
-  //         try {
-  //           const storedToken = await AsyncStorage.getItem("token");
-  //           if (!storedToken) return;
-
-  //           const response = await sendMessage(formData);
-  //           console.log(response, "response");
-  //         } catch (error) {
-  //           console.error("Error sending message: ", error);
-  //         }
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error sending message:", error);
-  //     throw error;
-  //   }
-  // };
 
   const handleSendMultipleFiles = async (
     files: { uri: string; type: string; name: string | undefined | null }[]
@@ -535,9 +460,9 @@ const Chat = () => {
       if (relation === "blocked") {
         await unblock(params, token);
         setRelation("stranger"); // Hoặc bạn có thể thay thế với giá trị mới mà bạn muốn
-        Alert.alert("Unblock thành công!");
+        Alert.alert("Unblock successfully!");
       } else {
-        Alert.alert("Hiện tại đã là người lạ!");
+        Alert.alert("You are now stranger!");
       }
     } catch (error) {
       console.log(error);
@@ -565,7 +490,7 @@ const Chat = () => {
   // Component khi bị người dùng chặn
   const BlockedView = () => (
     <View className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
-      <Text className="text-sm p-4 flex">You have blocked this user</Text>
+      <Text className="text-sm p-4 flex">You have blocked this user.</Text>
       {/* Nút "Bỏ chặn" */}
       <TouchableOpacity
         style={[styles.button, styles.unblockButton]}

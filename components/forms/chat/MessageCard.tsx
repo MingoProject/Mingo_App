@@ -392,7 +392,7 @@ const MessageCard = ({
                         color: "#6c757d",
                       }}
                     >
-                      Không hỗ trợ định dạng này
+                      This format is not supported.
                     </Text>
                   )}
                 </View>

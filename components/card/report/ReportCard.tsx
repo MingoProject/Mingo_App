@@ -133,7 +133,7 @@ const ReportCard = ({
         await createReport(reportPayload, token);
       }
 
-      Alert.alert("Thành công", "Báo cáo đã được tạo!");
+      Alert.alert("Successfully reported!");
       onClose();
     } catch (err: any) {
       console.error(err);

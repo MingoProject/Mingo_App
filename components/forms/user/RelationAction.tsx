@@ -240,7 +240,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
       }
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Đã xảy ra lỗi.");
+      alert(error.message || "Error");
     }
   };
 

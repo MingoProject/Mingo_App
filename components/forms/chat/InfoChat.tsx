@@ -180,7 +180,7 @@ const InfoChat = ({
               // Cập nhật danh sách chat
               setAllChat(combinedChats);
               setFilteredChat(combinedChats);
-              Alert.alert("Xóa đoạn chat thành công");
+              Alert.alert("Deleted successfully!");
 
               router.push("/message");
             },
@@ -189,7 +189,7 @@ const InfoChat = ({
         { cancelable: true }
       );
     } catch (error) {
-      alert("Xóa chat thất bại. Vui lòng thử lại.");
+      alert("Failed to delete chat.");
     }
   };
 
@@ -218,7 +218,7 @@ const InfoChat = ({
               if (relation !== "block") {
                 await block(params, token); // Gọi API block
                 setRelation("blocked"); // Hoặc bạn có thể thay thế với giá trị mới mà bạn muốn
-                Alert.alert("Block successful!");
+                Alert.alert("Block successfully!");
               } else {
                 Alert.alert("User is already blocked!");
               }
@@ -228,7 +228,7 @@ const InfoChat = ({
         { cancelable: true }
       );
     } catch (error) {
-      alert("Block chat thất bại. Vui lòng thử lại.");
+      alert("Failed to block. Please try again.");
     }
   };
 
