@@ -558,23 +558,21 @@ const Chat = () => {
   // Component khi bị chặn bởi người dùng
   const BlockedByView = () => (
     <View className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
-      <Text className="text-sm">
-        Bạn không thể liên lạc với người dùng này.
-      </Text>
+      <Text className="text-sm">You are unable to contact this user.</Text>
     </View>
   );
 
   // Component khi bị người dùng chặn
   const BlockedView = () => (
     <View className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
-      <Text className="text-sm p-4 flex">Bạn đã chặn người dùng này.</Text>
+      <Text className="text-sm p-4 flex">You have blocked this user</Text>
       {/* Nút "Bỏ chặn" */}
       <TouchableOpacity
         style={[styles.button, styles.unblockButton]}
         className="flex  items-center justify-center w-fit  h-11"
         onPress={() => handleUnBlockChat(relation)}
       >
-        <Text className="self-center w-14 justify-center">Bỏ chặn</Text>
+        <Text className="self-center w-14 justify-center">Unblock</Text>
       </TouchableOpacity>
 
       {/* Nút "Báo cáo" */}
@@ -584,7 +582,7 @@ const Chat = () => {
         onPress={handleIsReport}
       >
         <Text className="self-center w-14 justify-center text-white">
-          Báo cáo
+          Report
         </Text>
       </TouchableOpacity>
     </View>

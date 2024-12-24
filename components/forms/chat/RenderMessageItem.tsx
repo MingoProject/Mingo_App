@@ -250,8 +250,8 @@ const RenderMessageItem = ({
         if (chat.id === data.id) {
           return {
             ...chat,
-            text: "Đã thu hồi", // Hoặc nội dung tùy chỉnh
-            type: "recalled", // Có thể thêm type để phân loại tin nhắn đã thu hồi
+            text: "unsent", // Hoặc nội dung tùy chỉnh
+            type: "recalled", // Có thể thêm type để phân loại tin nhắn unsent
           };
         }
         return chat;
@@ -263,7 +263,7 @@ const RenderMessageItem = ({
         format: "",
         height: "",
         publicId: "",
-        type: "Đã thu hồi",
+        type: "unsent",
         url: "",
         width: "",
       };
@@ -286,7 +286,7 @@ const RenderMessageItem = ({
       } else {
         setLastMessage({
           id: "",
-          text: "Đã thu hồi",
+          text: "unsent",
           contentId: fileContent,
           createBy: "",
           timestamp: new Date(),
@@ -404,31 +404,31 @@ const RenderMessageItem = ({
                       case "image":
                         return (
                           <Text className={messageStatusClass}>
-                            đã gửi 1 ảnh
+                            sent an image
                           </Text>
                         );
                       case "video":
                         return (
                           <Text className={messageStatusClass}>
-                            đã gửi 1 video
+                            sent a video
                           </Text>
                         );
                       case "audio":
                         return (
                           <Text className={messageStatusClass}>
-                            đã gửi 1 âm thanh
+                            sent an audio
                           </Text>
                         );
                       case "other":
                         return (
                           <Text className={messageStatusClass}>
-                            đã gửi 1 file
+                            sent a file
                           </Text>
                         );
                       default:
                         return (
                           <Text className={messageStatusClass}>
-                            Bắt đầu đoạn chat
+                            Started the chat
                           </Text>
                         );
                     }
@@ -437,7 +437,7 @@ const RenderMessageItem = ({
               </View>
             ) : (
               <View className="flex flex-row items-center gap-1">
-                <Text className={`"font-normal"`}>Bạn: </Text>
+                <Text className={`"font-normal"`}>You: </Text>
                 {(() => {
                   const type = lastMessage.contentId?.type?.toLowerCase() || "";
                   const messageStatusClass = lastMessage.status
@@ -455,30 +455,28 @@ const RenderMessageItem = ({
                   switch (type) {
                     case "image":
                       return (
-                        <Text className={messageStatusClass}>đã gửi 1 ảnh</Text>
+                        <Text className={messageStatusClass}>
+                          sent an image
+                        </Text>
                       );
                     case "video":
                       return (
-                        <Text className={messageStatusClass}>
-                          đã gửi 1 video
-                        </Text>
+                        <Text className={messageStatusClass}>sent a video</Text>
                       );
                     case "audio":
                       return (
                         <Text className={messageStatusClass}>
-                          đã gửi 1 âm thanh
+                          sent an audio
                         </Text>
                       );
                     case "other":
                       return (
-                        <Text className={messageStatusClass}>
-                          đã gửi 1 file
-                        </Text>
+                        <Text className={messageStatusClass}>sent a file</Text>
                       );
                     default:
                       return (
                         <Text className={messageStatusClass}>
-                          Bắt đầu đoạn chat
+                          Started the chat
                         </Text>
                       );
                   }

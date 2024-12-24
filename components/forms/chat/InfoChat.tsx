@@ -24,6 +24,7 @@ import {
   DocTypeIcon,
   PdfTypeIcon,
   PptTypeIcon,
+  VideoIcon,
 } from "../../icons/Icons"; // Đảm bảo đường dẫn đúng
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
@@ -77,6 +78,7 @@ const InfoChat = ({
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [notification, setNotification] = useState(true);
   const [showAllImages, setShowAllImages] = useState(false);
+  const [showAllVideos, setShowAllVideos] = useState(false);
   const [showAllFiles, setShowAllFiles] = useState(false);
   const { allChat, setAllChat } = useChatItemContext();
   const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
@@ -161,12 +163,7 @@ const InfoChat = ({
               setFilteredChat(combinedChats);
               Alert.alert("Xóa đoạn chat thành công");
 
-              if (combinedChats.length >= 0) {
-                const firstChat = combinedChats[0];
-                router.push(`./message/${firstChat.id}`); // Điều hướng sang chat đầu tiên
-              } else {
-                router.push("/message"); // Nếu không còn chat, điều hướng về trang tin nhắn chính
-              }
+              router.push("/message");
             },
           },
         ],
@@ -199,21 +196,12 @@ const InfoChat = ({
                 receiver: item?.receiverId || "", // Nếu receiverId là undefined, sử dụng null
               };
 
-              const defultParams = {
-                sender: userId, // Nếu senderId là undefined, sử dụng null
-                receiver: item?.receiverId, // Nếu receiverId là undefined, sử dụng null
-              };
-
-              console.log(relation, "relation");
-
               if (relation !== "block") {
-                console.log(relation, "đã vô đây");
-
                 await block(params, token); // Gọi API block
                 setRelation("blocked"); // Hoặc bạn có thể thay thế với giá trị mới mà bạn muốn
-                Alert.alert("Block thành công!");
+                Alert.alert("Block successful!");
               } else {
-                Alert.alert("User đã bị  block!");
+                Alert.alert("User is already blocked!");
               }
             },
           },
@@ -229,18 +217,18 @@ const InfoChat = ({
     router.push(`/user/${item?.receiverId}`); // Điều hướng sang chat đầu tiên
   };
 
-  const renderFileIcon = (fileType: string) => {
+  const renderFileIcon = (fileType: string, size: number) => {
     switch (fileType.toLowerCase()) {
       case "doc":
       case "docx":
-        return <DocTypeIcon size={30} />;
+        return <DocTypeIcon size={size} />;
       case "ppt":
       case "pptx":
-        return <PptTypeIcon size={30} />;
+        return <PptTypeIcon size={size} />;
       case "pdf":
-        return <PdfTypeIcon size={30} />;
+        return <PdfTypeIcon size={size} />;
       default:
-        return <DocTypeIcon size={30} />; // Fallback to a default icon
+        return <DocTypeIcon size={size} />; // Fallback to a default icon
     }
   };
 
@@ -255,11 +243,8 @@ const InfoChat = ({
       }}
       onPress={async () => await openWebFile(item.url!)}
     >
-      <View
-        className="bg-light-300 dark:bg-dark-20 flex rounded-2xl items-center justify-center"
-        style={{ width: mediaSize, height: mediaSize }}
-      >
-        {renderFileIcon(item.url?.split(".").pop()!)}
+      <View className="bg-light-300 dark:bg-dark-20 flex rounded-2xl items-center justify-center gap-2">
+        {renderFileIcon(item.url?.split(".").pop()!, 30)}
       </View>
       <View className="w-full flex justify-center">
         <View>
@@ -267,6 +252,22 @@ const InfoChat = ({
             className={`text-[10px] ml-4 font-helvetica-bold`}
             numberOfLines={2}
           >
+            {`${item.fileName}`}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const RenderFileDetailItem = ({ item }: { item: FileContent }) => (
+    <TouchableOpacity
+      className={`flex flex-row w-full  items-center `}
+      onPress={async () => await openWebFile(item.url!)}
+    >
+      <View className="bg-light-300 dark:bg-dark-20 flex flex-row p-6 rounded-2xl items-center  gap-2">
+        {renderFileIcon(item.url?.split(".").pop()!, 50)}
+        <View className="flex flex-row ">
+          <Text className={`text-[14px] font-helvetica-bold`} numberOfLines={2}>
             {`${item.fileName}`}
           </Text>
         </View>
@@ -297,7 +298,7 @@ const InfoChat = ({
               style={{ color: colors.primary[100] }}
               className="font-msemibold text-[17px] mt-4 ml-1"
             >
-              Chi tiết
+              Detail
             </Text>
           </View>
         </View>
@@ -352,7 +353,7 @@ const InfoChat = ({
               }}
               className={`text-[12px] text-center font-mregular`}
             >
-              Trang cá nhân
+              Profile
             </Text>
           </View>
 
@@ -378,7 +379,7 @@ const InfoChat = ({
               }}
               className={`text-[12px] text-center font-mregular`}
             >
-              {notification ? "Tắt thông báo" : "Bật thông báo"}
+              {notification ? "Turn off" : "Notifications"}
             </Text>
           </View>
 
@@ -397,9 +398,9 @@ const InfoChat = ({
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
-              className={`text-[12px] text-center font-mregular`}
+              className={`text-[12px] text-center ml-3 font-mregular`}
             >
-              Tìm kiếm
+              Find
             </Text>
           </View>
         </View>
@@ -414,14 +415,14 @@ const InfoChat = ({
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
-              Phương tiện
+              Images
             </Text>
             <TouchableOpacity
               onPress={() => setShowAllImages(true)}
               className="ml-auto"
             >
               <Text className="text-primary-100 text-sm text-right mr-5">
-                Xem tất cả
+                More images
               </Text>
             </TouchableOpacity>
           </View>
@@ -437,8 +438,32 @@ const InfoChat = ({
             />
           ))}
         </View>
+
+        <View className="mt-3 ml-5">
+          <View className="flex flex-row">
+            <VideoIcon size={28} color={iconColor} />
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+              className={`text-[16px] ml-3 mt-1 font-mregular`}
+            >
+              Videos
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowAllVideos(true)}
+              className="ml-auto"
+            >
+              <Text className="text-primary-100 text-sm text-right mr-5">
+                More videos
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         <View className="flex flex-row mt-3 mx-10">
-          {videosInChat.slice(0, 4).map((url, index) => {
+          {videosInChat.slice(0, 2).map((url, index) => {
             // Giả sử bạn đã có thông tin chiều rộng và chiều cao của video trong url.width và url.height
             const aspectRatio = parseInt(url.width) / parseInt(url.height); // Sử dụng url.width và url.height thay cho message.contentId
 
@@ -449,8 +474,8 @@ const InfoChat = ({
               <View
                 key={index}
                 style={{
-                  width: videoWidth, // Sử dụng videoWidth thay vì containerWidth để đảm bảo tỷ lệ đúng
-                  height: videoHeight,
+                  width: 90, // Sử dụng videoWidth thay vì containerWidth để đảm bảo tỷ lệ đúng
+                  height: 90,
                   borderRadius: 12,
                   overflow: "hidden", // Giới hạn nội dung bên trong View
                   alignItems: "center", // Căn giữa nội dung
@@ -474,24 +499,40 @@ const InfoChat = ({
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
-              File
+              Files
             </Text>
             <TouchableOpacity
               onPress={() => setShowAllFiles(true)}
               className="ml-auto"
             >
               <Text className="text-primary-100 text-sm text-right mr-5">
-                Xem tất cả
+                More files
               </Text>
             </TouchableOpacity>
           </View>
         </View>
-        <View className="flex flex-row mt-3 mx-10">
-          {fileInChat.slice(0, 2).map((file, index) => (
-            <View key={index}>
-              <RenderFileItem item={file} />
-            </View>
-          ))}
+        <View className="flex flex-row justify-center items-center mx-10">
+          {fileInChat.slice(0, 4).map((file, index) => {
+            // Giả sử bạn đã có thông tin chiều rộng và chiều cao của video trong url.width và url.height
+            return (
+              <View
+                key={index}
+                style={{
+                  width: 80, // Sử dụng videoWidth thay vì containerWidth để đảm bảo tỷ lệ đúng
+                  height: 80,
+                  borderRadius: 12,
+                  overflow: "hidden", // Giới hạn nội dung bên trong View
+                  alignItems: "center", // Căn giữa nội dung
+                  justifyContent: "flex-start", // Căn giữa nội dung
+                }}
+                className="mt-3"
+              >
+                <View className="mt-2">
+                  <RenderFileItem item={file} />
+                </View>
+              </View>
+            );
+          })}
         </View>
 
         <View className="ml-5 mt-5">
@@ -504,7 +545,7 @@ const InfoChat = ({
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
-              Báo cáo
+              Report
             </Text>
           </TouchableOpacity>
         </View>
@@ -521,7 +562,7 @@ const InfoChat = ({
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
-              Chặn
+              Block
             </Text>
           </TouchableOpacity>
         </View>
@@ -538,7 +579,7 @@ const InfoChat = ({
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
-              Xóa đoạn chat
+              Remove
             </Text>
           </TouchableOpacity>
         </View>
@@ -577,6 +618,81 @@ const InfoChat = ({
             >
               <TouchableOpacity
                 onPress={() => setShowAllImages(false)}
+                className=""
+              >
+                <ArrowIcon size={30} color={"#FFAABB"} />
+              </TouchableOpacity>
+              <View>
+                <Text
+                  style={{ color: colors.primary[100] }}
+                  className="font-msemibold text-[17px] mt-1 h-7 ml-1"
+                >
+                  Back
+                </Text>
+              </View>
+            </View>
+            <FlatList
+              data={imagesInChat}
+              className=""
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    padding: 6,
+                    paddingTop: 0,
+                  }}
+                >
+                  <Image
+                    source={{ uri: item.url }}
+                    className="w-28 h-28 rounded-md  " // Kích thước hình ảnh
+                  />
+                </View>
+              )}
+              numColumns={3} // Hiển thị 3 hình trong 1 hàng
+            />
+            <TouchableOpacity
+              onPress={() => setShowAllImages(false)}
+              className="mt-2 bg-primary-100 rounded p-2"
+            >
+              <Text className="text-white text-center font-mmedium">Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        transparent={true}
+        animationType="slide"
+        className="p-10"
+        visible={showAllVideos}
+        onRequestClose={() => setShowAllVideos(false)}
+      >
+        <View
+          className="flex-1 "
+          style={{
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+            flex: 1,
+          }}
+        >
+          <View
+            className="flex-1 rounded-t-lg p-4"
+            style={{
+              backgroundColor:
+                colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+              flex: 1,
+            }}
+          >
+            <View
+              className="flex flex-row pt-5 max-h-20"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                flex: 1,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => setShowAllVideos(false)}
                 className="mt-3"
               >
                 <ArrowIcon size={30} color={"#FFAABB"} />
@@ -586,28 +702,48 @@ const InfoChat = ({
                   style={{ color: colors.primary[100] }}
                   className="font-msemibold text-[17px] mt-4 ml-1"
                 >
-                  Phương tiện
+                  Back
                 </Text>
               </View>
             </View>
             <FlatList
-              data={imagesInChat}
+              data={videosInChat}
               className="mt-5"
+              renderItem={({ item }) => {
+                // Giả sử video có width và height, tính toán kích thước video
+                const aspectRatio =
+                  parseInt(item.width) / parseInt(item.height);
+                const videoHeight = Math.min(containerWidth / aspectRatio, 200); // Giới hạn chiều cao tối đa là 200px
+                const videoWidth = videoHeight * aspectRatio; // Tính lại chiều rộng theo tỷ lệ
+
+                return (
+                  <View
+                    key={item.url}
+                    style={{
+                      width: 170,
+                      height: 190,
+                      borderRadius: 12,
+                      overflow: "hidden",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 6,
+                      marginRight: 6,
+                    }}
+                  >
+                    <VideoPlayer videoSource={item.url} />
+                    {/* Hiển thị video */}
+                  </View>
+                );
+              }}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <Image
-                  source={{ uri: item.url }}
-                  className="w-28 h-28 rounded-md mb-2" // Kích thước hình ảnh
-                />
-              )}
-              numColumns={3} // Hiển thị 3 hình trong 1 hàng
+              numColumns={2} // Hiển thị 2 video trong mỗi hàng
               columnWrapperStyle={{ justifyContent: "space-between" }} // Căn chỉnh các cột
             />
             <TouchableOpacity
-              onPress={() => setShowAllImages(false)}
+              onPress={() => setShowAllVideos(false)}
               className="mt-2 bg-primary-100 rounded p-2"
             >
-              <Text className="text-white text-center font-mmedium">Đóng</Text>
+              <Text className="text-white text-center font-mmedium">Close</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -652,7 +788,7 @@ const InfoChat = ({
                 style={{ color: colors.primary[100] }}
                 className="font-msemibold text-[17px] mt-4 ml-1"
               >
-                Files
+                Back
               </Text>
             </View>
           </View>
@@ -668,36 +804,11 @@ const InfoChat = ({
               data={fileInChat}
               className="h-[700px]"
               renderItem={({ item }) => (
-                <View
-                // className={`flex-1 flex-row h-[50px] mb-2 items-center font-mregular px-4  rounded-lg text-sm border border-[#D9D9D9] ${
-                //   colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
-                // }`}
-                // style={{
-                //   backgroundColor:
-                //     colorScheme === "dark"
-                //       ? colors.dark[200]
-                //       : colors.light[800], // Sử dụng giá trị màu từ file colors.js
-                //   flex: 1,
-                // }}
-                >
-                  {/* <FileIcon size={28} color={iconColor} />
-                  <Text
-                    style={{
-                      color:
-                        colorScheme === "dark"
-                          ? colors.dark[100]
-                          : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                      flex: 1,
-                    }}
-                    className={`text-[14px] ml-1 font-mmedium `}
-                  >
-                    {item.fileName}
-                  </Text> */}
-                  <RenderFileItem item={item} />
+                <View className="w-full  items-start justify-center ">
+                  <RenderFileDetailItem item={item} />
                 </View>
               )}
-              numColumns={3} // Hiển thị 3 hình trong 1 hàng
-              columnWrapperStyle={{ justifyContent: "space-between" }} // Căn chỉnh các cột
+              numColumns={1} // Hiển thị một file trong mỗi hàng
               keyExtractor={(item, index) => index.toString()}
             />
             <View className="justify-end mt-auto ">
@@ -706,7 +817,7 @@ const InfoChat = ({
                 className="mt-4 bg-primary-100 rounded-full py-2"
               >
                 <Text className="text-white text-center font-mmedium">
-                  Đóng
+                  Close
                 </Text>
               </TouchableOpacity>
             </View>

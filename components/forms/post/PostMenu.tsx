@@ -6,11 +6,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import { TouchableOpacity, View, Text, Modal } from "react-native";
 import EditPost from "./EditPost";
+import ReportCard from "@/components/card/report/ReportCard";
 
 const PostMenu = ({ isAuthor, item, setMenuVisible, setPostsData }: any) => {
   const { colorScheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isReport, setIsReport] = useState(false);
   const { profile } = useAuth();
 
   useEffect(() => {
@@ -20,6 +22,10 @@ const PostMenu = ({ isAuthor, item, setMenuVisible, setPostsData }: any) => {
       setIsSaved(false);
     }
   }, [profile, item._id]);
+
+  const closeReport = () => {
+    setIsReport(false);
+  };
 
   const handleMenuOption = async (option: string) => {
     if (option === "delete") {
@@ -39,7 +45,7 @@ const PostMenu = ({ isAuthor, item, setMenuVisible, setPostsData }: any) => {
         console.error("Failed to delete post:", error);
       }
     } else if (option === "report") {
-      console.log("Report post:", item._id);
+      setIsReport(true);
     } else if (option === "save") {
       const token: string | null = await AsyncStorage.getItem("token");
       if (!token) {
@@ -141,6 +147,7 @@ const PostMenu = ({ isAuthor, item, setMenuVisible, setPostsData }: any) => {
               Report Post
             </Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             onPress={() => handleMenuOption("save")}
             className="p-2"
@@ -180,6 +187,19 @@ const PostMenu = ({ isAuthor, item, setMenuVisible, setPostsData }: any) => {
           post={item}
           onClose={() => setIsEditing(false)}
           setPostsData={setPostsData}
+        />
+      </Modal>
+      <Modal
+        animationType="none"
+        visible={isReport}
+        onRequestClose={closeReport}
+        transparent={true}
+      >
+        <ReportCard
+          onClose={closeReport}
+          type="post"
+          entityId={item._id}
+          reportedId={profile._id || ""}
         />
       </Modal>
     </View>

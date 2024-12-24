@@ -90,7 +90,7 @@ const SearchFriend = ({ onClose }: any) => {
               }}
               className={`text-[20px] font-mmedium`}
             >
-              Tìm bạn
+              Search friends
             </Text>
           </View>
         </View>

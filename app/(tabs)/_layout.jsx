@@ -127,7 +127,7 @@ const TabsLayout = () => {
     const appStateListener = AppState.addEventListener(
       "change",
       (nextAppState) => {
-        if (nextAppState === "background" || nextAppState === "inactive") {
+        if (nextAppState === "inactive") {
           setOfflineStatus(); // Người dùng ra khỏi app
         }
       }
