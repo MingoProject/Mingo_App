@@ -302,7 +302,12 @@ const InfoChat = ({
         findMessage(item?.id || "", query)
           .then((result: FindMessageResponse) => {
             if (result.success && Array.isArray(result.messages)) {
-              setMessages(result.messages);
+              const filteredMessages = result.messages.filter(
+                (message) =>
+                  Array.isArray(message.contentId) &&
+                  message.contentId.length === 0
+              );
+              setMessages(filteredMessages);
             } else {
               setMessages([]);
             }
@@ -919,6 +924,12 @@ const InfoChat = ({
             className="px-3 mt-10"
           >
             <View className="flex flex-row py-4">
+              <TouchableOpacity
+                onPress={() => setIsSearch(false)}
+                className="pt-2 flex flex-row"
+              >
+                <ArrowIcon size={30} color={"#FFAABB"} />
+              </TouchableOpacity>
               <TextInput
                 placeholder="Find..."
                 placeholderTextColor="#D9D9D9"
