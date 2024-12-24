@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Alert,
   Dimensions,
   ScrollView,
+  TextInput,
 } from "react-native";
 import {
   ArrowIcon,
@@ -25,12 +26,20 @@ import {
   PdfTypeIcon,
   PptTypeIcon,
   VideoIcon,
+  PlusIcon,
 } from "../../icons/Icons"; // Đảm bảo đường dẫn đúng
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
 import { router, useLocalSearchParams, useRouter } from "expo-router";
-import { FileContent, ItemChat } from "@/dtos/MessageDTO";
 import {
+  FileContent,
+  FindMessageResponse,
+  ItemChat,
+  ResponseGroupMessageDTO,
+} from "@/dtos/MessageDTO";
+import {
+  createGroup,
+  findMessage,
   getImageList,
   getListChat,
   getListGroupChat,
@@ -47,6 +56,11 @@ import { openWebFile } from "@/lib/untils/File";
 import message from "@/app/message";
 import VideoPlayer from "../media/VideoPlayer";
 import ChangeAvatar from "./ChangeAvatar";
+import debounce from "lodash.debounce";
+import CreateGroupChat from "./CreateGroupChat";
+import RenderMessageItem from "./RenderMessageItem";
+import MessageCard from "./MessageCard";
+import { useAuth } from "@/context/AuthContext";
 const screenWidth = Dimensions.get("window").width;
 
 const getAllImagesFromChat = (chatimageList: FileContent[]) => {
@@ -80,8 +94,8 @@ const InfoChat = ({
   const [showAllImages, setShowAllImages] = useState(false);
   const [showAllVideos, setShowAllVideos] = useState(false);
   const [showAllFiles, setShowAllFiles] = useState(false);
-  const { allChat, setAllChat } = useChatItemContext();
-  const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
+  const { setAllChat } = useChatItemContext();
+  const { setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
   const { id } = useLocalSearchParams();
   const toggleNotification = () => {
     setNotification((prev) => !prev);
@@ -91,9 +105,14 @@ const InfoChat = ({
   const [videoList, setVideoList] = useState<FileContent[]>([]);
   const [files, setFiles] = useState<FileContent[]>([]);
   const [isReport, setIsReport] = useState(false);
+  const [isSearch, setIsSearch] = useState(false);
   const numColumns = 4;
   const mediaSize = screenWidth / numColumns - 10;
   const containerWidth = screenWidth * 0.5; // 50% màn hình
+  const [query, setQuery] = useState<string>("");
+  const [messages, setMessages] = useState<ResponseGroupMessageDTO[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const { profile } = useAuth();
 
   const handleIsReport = () => {
     setIsReport(true);
@@ -275,7 +294,65 @@ const InfoChat = ({
     </TouchableOpacity>
   );
 
-  console.log(item?.groupName === item?.userName);
+  // Fetch messages whenever query changes
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (query.trim().length > 0) {
+        setLoading(true);
+        findMessage(item?.id || "", query)
+          .then((result: FindMessageResponse) => {
+            if (result.success && Array.isArray(result.messages)) {
+              setMessages(result.messages);
+            } else {
+              setMessages([]);
+            }
+            console.log(result.messages, "Fetched messages");
+          })
+          .catch((error) => {
+            console.error("Error fetching messages:", error);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      } else {
+        setMessages([]);
+      }
+    }, 500); // Delay để giảm số lần gọi API không cần thiết
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [query, item?.id]);
+  const fetchSearchResults = (text: string) => {
+    console.log(`Searching for: ${text}`);
+  };
+
+  // Debounce search function
+  const debouncedSearch = useMemo(
+    () => debounce((text: string) => fetchSearchResults(text), 300),
+    []
+  );
+  // Handle search input change
+  useEffect(() => {
+    debouncedSearch(query);
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [query, debouncedSearch]);
+
+  const handleSearch = useCallback(
+    (text: string) => {
+      const lowercasedText = text.toLowerCase();
+
+      // Filter messages array safely
+      const filtered = messages.filter(
+        (chat) =>
+          typeof chat.text === "string" &&
+          chat.text.toLowerCase().includes(lowercasedText)
+      );
+
+      setMessages(filtered);
+    },
+    [messages]
+  );
 
   return (
     <>
@@ -390,6 +467,7 @@ const InfoChat = ({
                 backgroundColor:
                   colorScheme === "dark" ? colors.dark[200] : colors.light[800],
               }}
+              onPress={() => setIsSearch(true)}
             >
               <SearchIcon size={28} color={iconColor} />
             </TouchableOpacity>
@@ -822,6 +900,65 @@ const InfoChat = ({
               </TouchableOpacity>
             </View>
           </View>
+        </View>
+      </Modal>
+
+      <Modal
+        transparent={false}
+        animationType="none"
+        visible={isSearch}
+        onRequestClose={() => setShowAllFiles(false)}
+      >
+        <View style={{ flex: 1, position: "relative" }}>
+          <ScrollView
+            style={{
+              backgroundColor:
+                colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+              flex: 1,
+            }}
+            className="px-3 mt-10"
+          >
+            <View className="flex flex-row py-4">
+              <TextInput
+                placeholder="Find..."
+                placeholderTextColor="#D9D9D9"
+                className={` flex-1 h-[42px] text-[#D9D9D9] font-mregular px-4 rounded-full text-sm ${
+                  colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
+                }`}
+                editable={true}
+                value={query}
+                onChangeText={(text) => {
+                  setQuery(text); // Cập nhật giá trị tìm kiếm
+                  handleSearch(text); // Gọi hàm tìm kiếm
+                }}
+              />
+            </View>
+            <View className="mt-4">
+              {messages.map((message, index) => {
+                const isCurrentUser = message.createBy === profile._id;
+                const currentMessageDate = new Date(message.createAt);
+                const previousMessageDate =
+                  index > 0 ? new Date(messages[index - 1].createAt) : null;
+
+                const isFirstMessageOfDay =
+                  !previousMessageDate ||
+                  currentMessageDate.toDateString() !==
+                    previousMessageDate.toDateString();
+
+                return (
+                  <MessageCard
+                    key={index}
+                    message={message}
+                    isCurrentUser={isCurrentUser}
+                    isFirstMessageOfDay={isFirstMessageOfDay}
+                    chatItem={item || null}
+                    colorScheme={colorScheme}
+                    screenWidth={screenWidth}
+                  />
+                );
+              })}
+            </View>
+          </ScrollView>
         </View>
       </Modal>
 
