@@ -22,10 +22,10 @@ const Avatar = ({ profileUser, setProfile }: any) => {
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
 
   useEffect(() => {
-    if (profile._id && profile._id === profileUser._id) {
+    if (profile?._id && profile?._id === profileUser?._id) {
       setIsMe(true);
     }
-  }, [profileUser._id]);
+  }, [profileUser?._id]);
 
   const uploadUserAvatar = async (file: File) => {
     if (!file) return;
@@ -79,7 +79,7 @@ const Avatar = ({ profileUser, setProfile }: any) => {
           <Image
             source={{
               uri:
-                profileUser.avatar ||
+                profileUser?.avatar ||
                 "https://i.pinimg.com/236x/88/bd/6b/88bd6bd828ec509f4bda0d9f9450824d.jpg",
             }}
             style={{ width: 105, height: 105, borderRadius: 20 }}

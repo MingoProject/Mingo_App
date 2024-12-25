@@ -170,93 +170,87 @@ const SearchHome = ({ onClose }: any) => {
       }}
     >
       <View
-        className="flex flex-row gap-3 pb-2 mx-auto"
+        className="flex flex-row gap-3 pb-2 mt-2 mb-2"
         style={{
           backgroundColor:
             colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
           flex: 1,
         }}
       >
-        <View>
-          <MyButton
-            title="All"
+        <View className="w-14">
+          <TouchableOpacity
+            className="mx-auto"
             onPress={() => setIsActiveTab("")}
-            paddingLeft={20}
-            paddingRight={20}
-            width={100}
-            height={40}
-            borderRadius={30}
-            fontSize={16}
-            isShadow={true}
-            isActive={isActiveTab === ""}
-            backgroundColor={
-              isActiveTab === ""
-                ? colors.primary[100]
-                : colorScheme === "dark"
-                ? colors.dark[400]
-                : colors.light[800]
-            }
-            padding={undefined}
-            paddingTop={undefined}
-            paddingBottom={undefined}
-            borderColor={undefined}
-            fontWeight={undefined}
-            fontFamily={undefined}
-          />
+          >
+            <Text
+              style={{
+                fontSize: 16,
+
+                color:
+                  isActiveTab === ""
+                    ? colors.primary[100] // màu chữ khi active
+                    : colorScheme === "dark"
+                    ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                    : colors.light[500], // màu chữ khi không active và trong light mode
+                borderBottomWidth: isActiveTab === "" ? 2 : 0, // đường viền dưới khi active
+                borderBottomColor:
+                  isActiveTab === "" ? colors.primary[100] : "transparent", // màu đường viền dưới
+              }}
+              className="text-[16px] font-mregular "
+            >
+              All
+            </Text>
+          </TouchableOpacity>
         </View>
-        <View>
-          <MyButton
-            title="Users"
+        <View className="w-14">
+          <TouchableOpacity
+            className="mx-auto"
             onPress={() => setIsActiveTab("user")}
-            paddingLeft={20}
-            paddingRight={20}
-            width={100}
-            height={40}
-            borderRadius={30}
-            fontSize={16}
-            isShadow={true}
-            isActive={isActiveTab === "user"}
-            backgroundColor={
-              isActiveTab === "user"
-                ? colors.primary[100]
-                : colorScheme === "dark"
-                ? colors.dark[400]
-                : colors.light[800]
-            }
-            padding={undefined}
-            paddingTop={undefined}
-            paddingBottom={undefined}
-            borderColor={undefined}
-            fontWeight={undefined}
-            fontFamily={undefined}
-          />
+          >
+            <Text
+              style={{
+                fontSize: 16,
+
+                color:
+                  isActiveTab === "user"
+                    ? colors.primary[100] // màu chữ khi active
+                    : colorScheme === "dark"
+                    ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                    : colors.light[500], // màu chữ khi không active và trong light mode
+                borderBottomWidth: isActiveTab === "user" ? 2 : 0, // đường viền dưới khi active
+                borderBottomColor:
+                  isActiveTab === "user" ? colors.primary[100] : "transparent", // màu đường viền dưới
+              }}
+              className="text-[14px] font-mregular "
+            >
+              User
+            </Text>
+          </TouchableOpacity>
         </View>
-        <View>
-          <MyButton
-            title="Posts"
+        <View className="w-14 mx-auto">
+          <TouchableOpacity
+            className="mx-auto"
             onPress={() => setIsActiveTab("post")}
-            paddingLeft={20}
-            paddingRight={20}
-            width={100}
-            height={40}
-            borderRadius={30}
-            fontSize={16}
-            isShadow={true}
-            isActive={isActiveTab === "post"}
-            backgroundColor={
-              isActiveTab === "post"
-                ? colors.primary[100]
-                : colorScheme === "dark"
-                ? colors.dark[400]
-                : colors.light[800]
-            }
-            padding={undefined}
-            paddingTop={undefined}
-            paddingBottom={undefined}
-            borderColor={undefined}
-            fontWeight={undefined}
-            fontFamily={undefined}
-          />
+          >
+            <Text
+              style={{
+                fontSize: 16,
+
+                color:
+                  isActiveTab === "post"
+                    ? colors.primary[100] // màu chữ khi active
+                    : colorScheme === "dark"
+                    ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                    : colors.light[500], // màu chữ khi không active và trong light mode
+                borderBottomWidth: isActiveTab === "post" ? 2 : 0, // đường viền dưới khi active
+                borderBottomColor:
+                  isActiveTab === "post" ? colors.primary[100] : "transparent", // màu đường viền dưới
+              }}
+              className="text-[14px] font-mregular "
+            >
+              Post
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -274,18 +268,20 @@ const SearchHome = ({ onClose }: any) => {
       <View className="w-full  ">
         <View className="w-full flex flex-row items-center gap-4 ">
           <TouchableOpacity onPress={onClose}>
-            <ArrowIcon size={26} color={iconColor} />
+            <ArrowIcon size={28} color={iconColor} />
           </TouchableOpacity>
           <View className="flex-1">
             <MyInput
               placeholder={"Search"}
+              borderRadius={8}
+              padding={8}
               value={searchTerm}
               onChangeText={handleInputChange}
               onSubmit={handleSubmitEditing}
               borderColor={undefined}
               backgroundColor={undefined}
               fontWeight={undefined}
-              fontFamily={undefined}
+              fontFamily="Montserrat-Medium"
             />
           </View>
         </View>

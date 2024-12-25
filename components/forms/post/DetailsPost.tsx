@@ -21,7 +21,7 @@ import { useAuth } from "@/context/AuthContext";
 import PostAction from "./PostAction";
 import CommentCard from "@/components/card/comment/CommentCard";
 import { ResizeMode, Video } from "expo-av";
-import { ThreeDot } from "@/components/icons/Icons";
+import { FriendIcon, LocationIcon, ThreeDot } from "@/components/icons/Icons";
 import TagModal from "./TagsModal";
 import PostMenu from "./PostMenu";
 
@@ -161,9 +161,10 @@ const DetailsPost = ({
                       colorScheme === "dark"
                         ? colors.dark[100]
                         : colors.light[500],
-                    fontSize: 17,
+                    fontSize: 16,
                     fontWeight: "600",
                   }}
+                  className="font-msemibold"
                 >
                   {post.author?.firstName || ""} {post.author?.lastName || ""}{" "}
                 </Text>
@@ -171,19 +172,23 @@ const DetailsPost = ({
                   <View
                     style={{
                       flexDirection: "row",
-                      alignposts: "center",
+                      alignItems: "center",
                     }}
+                    className="flex"
                   >
+                    <Text> {"- "}</Text>
+                    <LocationIcon size={14} color={iconColor} />
                     {/* <Icon name="mi:location" size={18} color={iconColor} /> */}
                     <Text
                       style={{
+                        fontSize: 16,
                         color:
                           colorScheme === "dark"
                             ? colors.dark[100]
                             : colors.light[500],
                       }}
+                      className="font-mregular ml-1"
                     >
-                      {"- "}
                       {post.location}
                     </Text>
                   </View>
@@ -196,36 +201,28 @@ const DetailsPost = ({
                       colorScheme === "dark"
                         ? colors.dark[100]
                         : colors.light[500],
-                    fontSize: 17,
-                    marginBottom: 5,
+                    fontSize: 16,
+                    // marginBottom: 5,
                   }}
+                  className="font-mmedium"
                 >
-                  {"with "}
-                  {post.tags?.slice(0, 1).map((tag, index) => (
-                    <Text
-                      key={tag._id}
-                      style={{
-                        color: colors.primary[100],
-                        fontSize: 17,
-                        // fontWeight: "600",
-                      }}
-                    >
-                      {tag?.firstName}
-                      {index < post.tags?.slice(0, 1).length - 1 ? ", " : ""}
-                    </Text>
-                  ))}
-                  {post.tags?.length > 1 && (
+                  <FriendIcon size={18} color={iconColor} />
+
+                  {post.tags?.length > 0 && (
                     <TouchableOpacity
                       onPress={handleTagsModalToggle}
-                      className="mt-[9px]"
+                      // className="mt-[10px]"
                     >
                       <Text
                         style={{
                           color: colors.primary[100],
-                          fontSize: 17,
+                          fontSize: 16,
                         }}
+                        className="font-mregular"
+                        numberOfLines={1} // Hiển thị tối đa 1 dòng
+                        ellipsizeMode="tail"
                       >
-                        {` and ${post.tags.length - 1} others`}
+                        {` with ${post.tags.length} others`}
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -369,7 +366,7 @@ const DetailsPost = ({
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
-                className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg"
+                className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg font-mregular"
               />
               <TouchableOpacity
                 onPress={handleSendComment}

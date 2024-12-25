@@ -60,10 +60,10 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
 
   useEffect(() => {
-    if (profile._id && profile._id === profileUser._id) {
+    if (profile?._id && profile?._id === profileUser?._id) {
       setIsMe(true);
     }
-  }, [profileUser._id]);
+  }, [profileUser?._id]);
 
   const formattedDate = (date: string) => {
     return new Date(date).toLocaleDateString();
@@ -72,13 +72,13 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
   return (
     <View className=" mt-4 rounded-lg border border-gray-200 py-4">
       <View className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100">
-        <Text className="text-white">Detailed Information</Text>
+        <Text className="text-white font-mmedium">Detailed Information</Text>
       </View>
 
       <ScrollView className="ml-[5%] mt-1 w-full">
-        {profileUser.job && (
+        {profileUser?.job && (
           <Text
-            className="text-dark100_light500 mt-4"
+            className="text-dark100_light500 mt-4 font-mregular"
             style={{
               color:
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -86,7 +86,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
           >
             Job:
             <Text
-              className="font-semibold"
+              className="font-msemibold"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -98,10 +98,10 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
           </Text>
         )}
 
-        {profileUser.address && (
+        {profileUser?.address && (
           <View className="mt-4">
             <Text
-              className="text-dark100_light500"
+              className="text-dark100_light500 font-mregular"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -124,10 +124,10 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
           </View>
         )}
 
-        {profileUser.hobbies?.length > 0 && (
+        {profileUser?.hobbies?.length > 0 && (
           <View className="mt-4">
             <Text
-              className="text-dark100_light500"
+              className="text-dark100_light500 font-mregular"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -141,13 +141,13 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                 return (
                   <View
                     key={index}
-                    className="mx-2 flex-row items-center rounded-lg border border-gray-400 px-2 py-1"
+                    className="mx-2 flex-row items-center rounded-lg border border-gray-200 px-2 py-1"
                   >
                     {HobbyIcon && (
                       <HobbyIcon size={20} color={colors.primary[100]} />
                     )}
                     <Text
-                      className="ml-1"
+                      className="ml-1 font-mregular"
                       style={{
                         color:
                           colorScheme === "dark"
@@ -164,9 +164,9 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
           </View>
         )}
 
-        {profileUser.relationShip && (
+        {profileUser?.relationShip && (
           <Text
-            className="mt-4 text-dark100_light500"
+            className="mt-4 text-dark100_light500 font-mregular"
             style={{
               color:
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -174,7 +174,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
           >
             Relationship:
             <Text
-              className="font-semibold"
+              className="font-msemibold"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -188,9 +188,9 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
 
         {showDetails && (
           <>
-            {profileUser.birthDay && (
+            {profileUser?.birthDay && (
               <Text
-                className="mt-4 text-dark100_light500"
+                className="mt-4 text-dark100_light500 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -200,7 +200,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
               >
                 Birthday:
                 <Text
-                  className="font-semibold"
+                  className="font-msemibold"
                   style={{
                     color:
                       colorScheme === "dark"
@@ -213,9 +213,9 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                 </Text>
               </Text>
             )}
-            {profileUser.gender !== undefined && (
+            {profileUser?.gender !== undefined && (
               <Text
-                className="mt-4 text-dark100_light500"
+                className="mt-4 text-dark100_light500 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -225,7 +225,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
               >
                 Gender:
                 <Text
-                  className="font-semibold"
+                  className="font-msemibold"
                   style={{
                     color:
                       colorScheme === "dark"
@@ -238,9 +238,9 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                 </Text>
               </Text>
             )}
-            {profileUser.attendDate && (
+            {profileUser?.attendDate && (
               <Text
-                className="mt-4 text-dark100_light500"
+                className="mt-4 text-dark100_light500 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -250,7 +250,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
               >
                 Attend date:
                 <Text
-                  className="font-semibold"
+                  className="font-msemibold"
                   style={{
                     color:
                       colorScheme === "dark"
@@ -263,9 +263,9 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                 </Text>
               </Text>
             )}
-            {profileUser.phoneNumber && (
+            {profileUser?.phoneNumber && (
               <Text
-                className="mt-4 text-dark100_light500"
+                className="mt-4 text-dark100_light500 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -275,7 +275,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
               >
                 Phone number:
                 <Text
-                  className="font-semibold"
+                  className="font-msemibold"
                   style={{
                     color:
                       colorScheme === "dark"
@@ -288,9 +288,9 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                 </Text>
               </Text>
             )}
-            {profileUser.email && (
+            {profileUser?.email && (
               <Text
-                className="mt-4 text-dark100_light500"
+                className="mt-4 text-dark100_light500 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -300,7 +300,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
               >
                 Email:
                 <Text
-                  className="font-semibold"
+                  className="font-msemibold"
                   style={{
                     color:
                       colorScheme === "dark"
@@ -322,7 +322,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
           className="ml-[5%] mr-[2%] mt-4"
           onPress={() => setShowDetails(!showDetails)}
         >
-          <Text className="text-primary-100">
+          <Text className="text-primary-100 font-mmedium">
             {showDetails ? "Hidden" : "See all"}
           </Text>
         </TouchableOpacity>

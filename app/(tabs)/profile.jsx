@@ -39,7 +39,7 @@ const Profile = () => {
 
   const fetchData = async () => {
     try {
-      const data = await getMyPosts(profile._id);
+      const data = await getMyPosts(profile?._id);
       const postsData = await fetchDetailedPosts(data.userPosts);
       const sortedPosts = postsData.sort(
         (a, b) =>
@@ -106,9 +106,9 @@ const Profile = () => {
         );
 
       case "photos":
-        return <ImageProfile userId={profile._id} />;
+        return <ImageProfile userId={profile?._id} />;
       case "videos":
-        return <VideoProfile userId={profile._id} />;
+        return <VideoProfile userId={profile?._id} />;
       default:
         return null;
     }
@@ -138,7 +138,7 @@ const Profile = () => {
                 }}
                 className="text-[20px] font-msemibold"
               >
-                {profile.firstName} {profile.lastName}
+                {profile?.firstName} {profile?.lastName}
               </Text>
               <TouchableOpacity
                 onPress={() => setSetting(true)}

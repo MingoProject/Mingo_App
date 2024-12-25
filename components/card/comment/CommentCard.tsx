@@ -245,7 +245,7 @@ const CommentCard = ({
               {comment.userId.firstName} {comment.userId.lastName}
             </Text>
             <Text
-              className="text-sm mt-1 border-gray-400"
+              className="text-sm mt-1 border-gray-400 font-mmedium"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -255,7 +255,7 @@ const CommentCard = ({
             </Text>
             <View className="flex-row">
               <Text
-                className="text-xs"
+                className="text-xs font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -274,7 +274,7 @@ const CommentCard = ({
             </View>
             {repliesData?.length > 0 && (
               <TouchableOpacity onPress={() => setShowReplies(!showReplies)}>
-                <Text className="text-blue-500 text-sm mt-2">
+                <Text className="text-primary-100 text-sm mt-2 font-mmedium">
                   {showReplies
                     ? "Hide replies"
                     : `${repliesData.length} replies`}
@@ -289,13 +289,13 @@ const CommentCard = ({
               value={newComment}
               onChangeText={setNewComment}
               placeholder="Write a reply..."
-              className="border w-60 border-gray-300 rounded-lg p-2 text-sm"
+              className="border w-[220px] border-gray-300 rounded-lg p-2 text-sm font-mmedium"
             />
             <TouchableOpacity
               onPress={handleReplyComment}
               className="bg-primary-100  rounded-lg ml-2 px-3 py-2 flex-row justify-center items-center"
             >
-              <Text className="text-white text-sm">Reply</Text>
+              <Text className="text-white text-sm font-mbold">Reply</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setReplyingTo(null)}

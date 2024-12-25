@@ -13,7 +13,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
   const [showEdit, setShowEdit] = useState(false);
   const [isMe, setIsMe] = useState(false);
   const { profile } = useAuth();
-  const [bio, setBio] = useState(profileUser.bio);
+  const [bio, setBio] = useState(profileUser?.bio);
 
   const handleSave = async () => {
     try {
@@ -44,14 +44,14 @@ const Bio = ({ profileUser, setProfile }: any) => {
   };
 
   useEffect(() => {
-    if (profile._id && profile._id === profileUser._id) {
+    if (profile?._id && profile?._id === profileUser?._id) {
       setIsMe(true);
     }
-  }, [profileUser._id]);
+  }, [profileUser?._id]);
   return (
     <>
       <View className="p-3 w-[266px]">
-        {profileUser.nickName && (
+        {profileUser?.nickName && (
           <Text
             style={{
               color:
@@ -60,7 +60,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
             className="font-mbold text-[16px] "
           >
             {"("}
-            {profileUser.nickName || "No bio"}
+            {profileUser?.nickName || "No bio"}
             {")"}
           </Text>
         )}
@@ -72,7 +72,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
           }}
           className="font-mregular text-[14px] mt-3"
         >
-          {profileUser.bio || "No bio"}
+          {profileUser?.bio || "No bio"}
         </Text>
         {isMe && (
           <TouchableOpacity

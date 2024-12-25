@@ -92,6 +92,7 @@ const PostMenu = ({ isAuthor, item, setMenuVisible, setPostsData }: any) => {
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
                 flex: 1,
               }}
+              className="font-mmedium"
             >
               Edit Post
             </Text>
@@ -106,6 +107,7 @@ const PostMenu = ({ isAuthor, item, setMenuVisible, setPostsData }: any) => {
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
                 flex: 1,
               }}
+              className="font-mmedium"
             >
               Delete Post
             </Text>
@@ -120,6 +122,7 @@ const PostMenu = ({ isAuthor, item, setMenuVisible, setPostsData }: any) => {
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
                 flex: 1,
               }}
+              className="font-mmedium"
             >
               Close
             </Text>

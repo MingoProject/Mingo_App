@@ -45,7 +45,6 @@ const SearchFriend = ({ onClose }: any) => {
   const router = useRouter();
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
-
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isClickSearch, setIsClickSearch] = useState(false);
   const [noResults, setNoResults] = useState(false);
@@ -68,7 +67,7 @@ const SearchFriend = ({ onClose }: any) => {
 
   return (
     <View
-      className={`w-full h-full flex flex-col p-4 bg-white`}
+      className={`w-full h-full flex flex-col p-4 pt-14 bg-white`}
       style={{
         backgroundColor:
           colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
@@ -90,7 +89,7 @@ const SearchFriend = ({ onClose }: any) => {
               }}
               className={`text-[20px] font-mmedium`}
             >
-              Tìm bạn
+              Search friend
             </Text>
           </View>
         </View>
@@ -155,9 +154,10 @@ const SearchFriend = ({ onClose }: any) => {
               style={{
                 color: colorScheme === "dark" ? colors.dark[100] : "#92898A",
               }}
+              className="font-mmedium"
             >
               No user found with phone number{" "}
-              <Text className={`font-msemibold `}>{phoneNumber}</Text>
+              <Text className={`font-mbold `}>{phoneNumber}</Text>
             </Text>
           </View>
         </View>

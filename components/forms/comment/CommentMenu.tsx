@@ -137,21 +137,23 @@ const CommentMenu = ({
             <TextInput
               value={newComment}
               onChangeText={setNewComment}
-              className="border border-gray-300 rounded-lg p-2 text-sm"
-              placeholder="Sửa bình luận..."
+              className="border border-gray-300 rounded-lg p-2 text-sm font-mmedium"
+              placeholder="Update comment..."
             />
             <View className="flex-row mt-4">
               <TouchableOpacity
                 onPress={() => handleEditComment(comment._id, newComment)}
                 className="bg-primary-100 rounded-lg px-3 py-2 mr-2"
               >
-                <Text className="text-white text-base">Save</Text>
+                <Text className="text-white text-sm font-mmedium">Save</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setIsEditing(false)}
                 className="bg-gray-300 rounded-lg px-3 py-2"
               >
-                <Text className="text-gray-600 text-base">Close</Text>
+                <Text className="text-gray-600 text-sm font-mmedium">
+                  Close
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -166,25 +168,31 @@ const CommentMenu = ({
                   }}
                   className="mb-4"
                 >
-                  <Text className="text-blue-500 text-base">Edit</Text>
+                  <Text className="text-blue-500 text-sm font-mmedium">
+                    Edit
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => handleDeleteComment(comment._id, postId)}
                   className="mb-4"
                 >
-                  <Text className="text-red-500 text-base">Delete</Text>
+                  <Text className="text-red-500 text-sm font-mmedium">
+                    Delete
+                  </Text>
                 </TouchableOpacity>
               </>
             ) : (
               <TouchableOpacity onPress={handleReportComment} className="mb-4">
-                <Text className="text-yellow-500 text-base">Report</Text>
+                <Text className="text-yellow-500 text-sm font-mmedium">
+                  Report
+                </Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
               className="mt-2"
             >
-              <Text className="text-gray-500 text-base">Close</Text>
+              <Text className="text-gray-500 text-sm font-mmedium">Close</Text>
             </TouchableOpacity>
           </>
         )}
