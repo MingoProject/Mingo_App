@@ -1,13 +1,25 @@
+import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
+import { useRouter } from "expo-router";
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
 const UserCard = ({ item }: any) => {
   const { colorScheme } = useTheme();
+  const router = useRouter();
+  const { profile } = useAuth();
+  const navigateToUserProfile = (item: any) => {
+    if (item === profile._id) {
+      router.push(`/profile`);
+    } else {
+      router.push(`/user/${item}`);
+    }
+  };
 
   return (
-    <View
+    <TouchableOpacity
+      onPress={() => navigateToUserProfile(item._id)}
       className="mx-2"
       style={[
         styles.card,
@@ -54,7 +66,7 @@ const UserCard = ({ item }: any) => {
           </Text>
         ) : null}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

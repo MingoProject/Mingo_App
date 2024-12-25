@@ -296,7 +296,11 @@ const Home = () => {
 
           <View className="flex-row mt-2 justify-around">
             <TouchableOpacity className="flex-row items-center mr-4">
-              <LikeIcon size={25} color={iconColor} />
+              <LikeIcon
+                size={25}
+                color={isLiked ? colors.primary[100] : iconColor}
+                fillColor={isLiked ? colors.primary[100] : "none"}
+              />
               <Text
                 className="ml-1 text-gray-700"
                 style={{

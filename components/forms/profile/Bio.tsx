@@ -109,12 +109,13 @@ const Bio = ({ profileUser, setProfile }: any) => {
               <View className="flex-row h-[39px] w-full px-5 items-center justify-center rounded-r-lg mb-4">
                 <Text
                   style={{
+                    fontSize: 24,
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
                         : colors["title-pink"],
                   }}
-                  className="text-[20px] font-msemibold"
+                  className="text-[20px] font-mbold"
                 >
                   Update Bio
                 </Text>
@@ -144,11 +145,11 @@ const Bio = ({ profileUser, setProfile }: any) => {
                 placeholderTextColor={
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500]
                 }
-                className="border border-gray-200 rounded-lg px-2 py-3 mx-5"
+                className="border mt-5 border-gray-200 rounded-lg px-2 py-3 mx-5 font-mmedium"
               />
               <TouchableOpacity
                 onPress={handleSave}
-                className="bg-primary-100 rounded-lg mx-5 mt-3 py-2"
+                className="bg-primary-100 rounded-[8px] mx-5 mt-3 py-3"
               >
                 <Text
                   style={{
@@ -156,6 +157,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
                     color: "#FFFFFF",
                     textAlign: "center",
                   }}
+                  className="font-msemibold"
                 >
                   Save
                 </Text>

@@ -152,7 +152,17 @@ const PostCard = ({ item, setPostsData }: any) => {
                 }}
                 className="flex"
               >
-                <Text> {"- "}</Text>
+                <Text
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
+                  }}
+                >
+                  {" "}
+                  {"- "}
+                </Text>
                 <LocationIcon size={14} color={iconColor} />
                 {/* <Icon name="mi:location" size={18} color={iconColor} /> */}
                 <Text

@@ -11,6 +11,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { useRouter } from "expo-router";
 import { CancelIcon } from "@/components/icons/Icons";
+import { useAuth } from "@/context/AuthContext";
 
 interface TagModalProps {
   tags: { _id: string; firstName: string; lastName: string; avatar?: string }[];
@@ -23,11 +24,17 @@ const TagModal: React.FC<TagModalProps> = ({ tags, isOpen, onClose }) => {
   const router = useRouter();
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const { profile } = useAuth();
 
   const navigateToUserProfile = (item: any) => {
     onClose();
-    router.push(`/user/${item}`);
+    if (item === profile._id) {
+      router.push(`/profile`);
+    } else {
+      router.push(`/user/${item}`);
+    }
   };
+
   return (
     <Modal
       animationType="fade"

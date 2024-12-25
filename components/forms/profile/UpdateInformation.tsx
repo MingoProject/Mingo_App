@@ -162,11 +162,11 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
         <Text
           style={{
             fontSize: 24,
-            fontWeight: "bold",
             marginBottom: 20,
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
+          className="font-mbold"
         >
           Update Information
         </Text>
@@ -181,7 +181,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
               color:
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
             }}
-            className="mb-1"
+            className="mb-1 font-mmedium"
           >
             First Name
           </Text>
@@ -194,7 +194,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
               color:
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
             }}
-            className="border w-[98%] mr-1 border-gray-400 rounded-lg"
+            className="border w-[98%] mr-1 border-gray-200 rounded-lg font-mmedium"
             placeholder="First Name"
             value={formValues.firstName}
             onChangeText={(text) => handleChange("firstName", text)}
@@ -206,7 +206,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
               color:
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
             }}
-            className="mb-1"
+            className="mb-1 font-mmedium"
           >
             Last Name
           </Text>
@@ -219,7 +219,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
               color:
                 colorScheme === "dark" ? colors.dark[100] : colors.light[500],
             }}
-            className="border w-[98%] ml-1 border-gray-400 rounded-lg"
+            className="border w-[98%] font-mmedium ml-1 border-gray-200 rounded-lg"
             placeholder="Last Name"
             value={formValues.lastName}
             onChangeText={(text) => handleChange("lastName", text)}
@@ -233,7 +233,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="mb-1"
+          className="mb-1 font-mmedium mt-3"
         >
           Nick Name
         </Text>
@@ -246,7 +246,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="border border-gray-400 rounded-lg"
+          className="border border-gray-200 rounded-lg font-mmedium"
           placeholder="Nick Name"
           value={formValues.nickName}
           onChangeText={(text) => handleChange("nickName", text)}
@@ -259,12 +259,19 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="mb-1"
+          className="mb-1 font-mmedium"
         >
           Gender
         </Text>
         <Picker
           selectedValue={formValues.gender}
+          itemStyle={{
+            fontSize: 16, // Chỉnh font size
+            fontFamily: "Montserrat-Regular", // Thêm font tùy chỉnh nếu có
+            color:
+              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            height: 120,
+          }}
           onValueChange={(itemValue: any) => handleChange("gender", itemValue)}
           className="border rounded-lg"
         >
@@ -279,7 +286,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="mb-1"
+          className="mb-1 font-mmedium"
         >
           Job
         </Text>
@@ -292,7 +299,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="border border-gray-400 rounded-lg"
+          className="border border-gray-200 rounded-lg font-mmedium"
           placeholder="Job"
           value={formValues.job}
           onChangeText={(text) => handleChange("job", text)}
@@ -304,7 +311,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="mb-1"
+          className="mb-1 font-mmedium"
         >
           Address
         </Text>
@@ -317,7 +324,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="border border-gray-400 rounded-lg"
+          className="border border-gray-200 rounded-lg font-mmedium"
           placeholder="Address"
           value={formValues.address}
           onChangeText={(text) => handleChange("address", text)}
@@ -330,7 +337,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="mb-1"
+          className="mb-1 font-mmedium"
         >
           Relationship
         </Text>
@@ -339,6 +346,13 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
           onValueChange={(itemValue: any) =>
             handleChange("relationShip", itemValue)
           }
+          itemStyle={{
+            fontSize: 16, // Chỉnh font size
+            fontFamily: "Montserrat-Regular", // Thêm font tùy chỉnh nếu có
+            color:
+              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            height: 120,
+          }}
           className="border rounded-lg text-base"
           style={{
             color:
@@ -397,13 +411,13 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
       </View>
 
       {/* Birthday */}
-      <View className="mb-5 h-56">
+      <View className="mb-5 h-36">
         <Text
           style={{
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="mb-1"
+          className="mb-1 font-mmedium"
         >
           Birthday
         </Text>
@@ -412,6 +426,13 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
           <Picker
             selectedValue={selectedDay.toString()}
             style={{ flex: 1, height: 50 }}
+            itemStyle={{
+              fontSize: 16, // Chỉnh font size
+              fontFamily: "Montserrat-Regular", // Thêm font tùy chỉnh nếu có
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              height: 120,
+            }}
             onValueChange={(itemValue: any) => setSelectedDay(itemValue)}
           >
             {days.map((day) => (
@@ -427,6 +448,13 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
           <Picker
             selectedValue={selectedMonth.toString()}
             style={{ flex: 1, height: 50 }}
+            itemStyle={{
+              fontSize: 16, // Chỉnh font size
+              fontFamily: "Montserrat-Regular", // Thêm font tùy chỉnh nếu có
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              height: 120,
+            }}
             onValueChange={(itemValue: any) => setSelectedMonth(itemValue)}
           >
             {months.map((month) => (
@@ -442,6 +470,13 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
           <Picker
             selectedValue={selectedYear.toString()}
             style={{ flex: 1, height: 50 }}
+            itemStyle={{
+              fontSize: 16, // Chỉnh font size
+              fontFamily: "Montserrat-Regular", // Thêm font tùy chỉnh nếu có
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              height: 120,
+            }}
             onValueChange={(itemValue: any) => setSelectedYear(itemValue)}
           >
             {years.map((year) => (
@@ -459,12 +494,13 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
         style={{
           color: colorScheme === "dark" ? colors.dark[100] : colors.light[500],
         }}
-        className="mb-1"
+        className="mb-1 font-mmedium"
       >
         Hobbies
       </Text>
       <View
         style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 20 }}
+        className="mt-2"
       >
         {Object.keys(hobbyIcons).map((hobby) => {
           const HobbyIcon = hobbyIcons[hobby]; // Lấy icon tương ứng từ hobbyIcons
@@ -480,7 +516,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
                 padding: 10,
                 backgroundColor: selectedHobbies.includes(hobby)
                   ? colors.primary[100]
-                  : "#ffffff",
+                  : "tranparent",
               }}
               className="border border-gray-200 rounded-lg"
             >
@@ -504,6 +540,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
                     ? colors.dark[100]
                     : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 {hobby}
               </Text>
@@ -513,7 +550,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
       </View>
       <TouchableOpacity
         onPress={handleSave}
-        className="px-3 h-10 py-2 rounded-lg mb-3"
+        className="px-3 h-10 py-2 rounded-[8px] mb-3"
         style={{
           backgroundColor: colors.primary[100],
         }}
@@ -522,7 +559,7 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
           style={{
             fontSize: 16,
           }}
-          className="text-white mx-auto"
+          className="text-white mx-auto font-msemibold"
         >
           Save
         </Text>

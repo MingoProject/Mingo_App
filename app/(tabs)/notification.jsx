@@ -104,7 +104,7 @@ const Notification = () => {
     <View
       style={{
         flex: 1,
-        paddingTop: Platform.OS === "android" ? 4 : 12, // Android: 0, iOS: 12
+        paddingTop: Platform.OS === "android" ? 4 : 52, // Android: 0, iOS: 12
         backgroundColor:
           colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
       }}
