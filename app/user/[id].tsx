@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Modal,
+  Image,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { colors } from "@/styles/colors";
@@ -40,6 +41,7 @@ const UserProfile = () => {
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const navigation = useNavigation();
   const { profile } = useAuth();
+  const [isBlocked, setIsBlocked] = useState(false);
 
   const handleBackPress = () => {
     navigation.goBack(); // Trở về trang trước
@@ -95,6 +97,7 @@ const UserProfile = () => {
                   setRelation("blocked"); //
                 } else if (userId === receiver) {
                   setRelation("blockedBy");
+                  setIsBlocked(true);
                 }
               } else {
                 setRelation("stranger"); //
@@ -197,167 +200,201 @@ const UserProfile = () => {
         flex: 1,
       }}
     >
-      <View className="flex flex-row">
-        <TouchableOpacity onPress={handleBackPress}>
-          <ArrowIcon size={28} color={iconColor} />
-        </TouchableOpacity>
+      {!isBlocked ? (
+        <>
+          <View className="flex flex-row">
+            <TouchableOpacity onPress={handleBackPress}>
+              <ArrowIcon size={28} color={iconColor} />
+            </TouchableOpacity>
 
-        <Text
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="text-[20px] font-msemibold"
-        >
-          {profileUser?.firstName} {profileUser?.lastName}
-        </Text>
-      </View>
-      <Background profileUser={profileUser} />
-      <View className="flex flex-row mt-2">
-        <Avatar profileUser={profileUser} />
-        <Bio profileUser={profileUser} />
-      </View>
-      <View className="flex-row">
-        <TouchableOpacity
-          onPress={() => setModalOpen(true)}
-          className={` mt-3 rounded-xl px-4 py-3 text-white ${
-            relation === "bff"
-              ? "bg-yellow-500"
-              : relation === "senderRequestBff"
-              ? "bg-yellow-300"
-              : relation === "receiverRequestBff"
-              ? "bg-yellow-700"
-              : relation === "friend"
-              ? "bg-green-500"
-              : relation === "following"
-              ? "bg-blue-500"
-              : relation === "follower"
-              ? "bg-purple-500"
-              : relation === "blocked"
-              ? "bg-red-500"
-              : relation === "blockedBy"
-              ? "bg-gray-500"
-              : "bg-gray-400"
-          }`}
-        >
-          <Text className="text-white font-mmedium">
-            {relation === "bff"
-              ? "Best friend"
-              : relation === "senderRequestBff"
-              ? "Sending friend request"
-              : relation === "receiverRequestBff"
-              ? "Friend request"
-              : relation === "friend"
-              ? "Friend"
-              : relation === "following"
-              ? "Following"
-              : relation === "follower"
-              ? "Follower"
-              : relation === "blocked"
-              ? "Blocked"
-              : relation === "blockedBy"
-              ? "Blocked by"
-              : "Stranger"}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="mt-3 rounded-xl px-7 py-3 text-white bg-slate-500 ml-3 "
-          style={{
-            // height: 1,
-            backgroundColor: colors.primary[100],
-            // marginVertical: 5,
-          }}
-        >
-          <Text className="text-white font-mmedium">Chat</Text>
-        </TouchableOpacity>
-        <Modal
-          visible={isModalOpen}
-          animationType="fade"
-          transparent={true}
-          onRequestClose={() => setModalOpen(false)}
-        >
-          <RelationAction
-            relation={relation}
-            onClose={() => setModalOpen(false)}
-            id={id}
-            setRelation={setRelation}
-          />
-        </Modal>
-      </View>
-      <DetailInformation profileUser={profileUser} />
-      <View className="flex  flex-row justify-start  mx-[10%] mt-10">
-        <TouchableOpacity onPress={() => setActiveTab("posts")}>
-          <Text
-            style={{
-              fontSize: 14,
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+              className="text-[20px] font-msemibold"
+            >
+              {profileUser?.firstName} {profileUser?.lastName}
+            </Text>
+          </View>
+          <Background profileUser={profileUser} />
+          <View className="flex flex-row mt-2">
+            <Avatar profileUser={profileUser} />
+            <Bio profileUser={profileUser} />
+          </View>
+          <View className="flex-row">
+            <TouchableOpacity
+              onPress={() => setModalOpen(true)}
+              className={` mt-3 rounded-xl px-4 py-3 text-white ${
+                relation === "bff"
+                  ? "bg-yellow-500"
+                  : relation === "senderRequestBff"
+                  ? "bg-yellow-300"
+                  : relation === "receiverRequestBff"
+                  ? "bg-yellow-700"
+                  : relation === "friend"
+                  ? "bg-green-500"
+                  : relation === "following"
+                  ? "bg-blue-500"
+                  : relation === "follower"
+                  ? "bg-purple-500"
+                  : relation === "blocked"
+                  ? "bg-red-500"
+                  : relation === "blockedBy"
+                  ? "bg-gray-500"
+                  : "bg-gray-400"
+              }`}
+            >
+              <Text className="text-white font-mmedium">
+                {relation === "bff"
+                  ? "Best friend"
+                  : relation === "senderRequestBff"
+                  ? "Sending friend request"
+                  : relation === "receiverRequestBff"
+                  ? "Friend request"
+                  : relation === "friend"
+                  ? "Friend"
+                  : relation === "following"
+                  ? "Following"
+                  : relation === "follower"
+                  ? "Follower"
+                  : relation === "blocked"
+                  ? "Blocked"
+                  : relation === "blockedBy"
+                  ? "Blocked by"
+                  : "Stranger"}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="mt-3 rounded-xl px-7 py-3 text-white bg-slate-500 ml-3 "
+              style={{
+                // height: 1,
+                backgroundColor: colors.primary[100],
+                // marginVertical: 5,
+              }}
+            >
+              <Text className="text-white font-mmedium">Chat</Text>
+            </TouchableOpacity>
+            <Modal
+              visible={isModalOpen}
+              animationType="fade"
+              transparent={true}
+              onRequestClose={() => setModalOpen(false)}
+            >
+              <RelationAction
+                relation={relation}
+                onClose={() => setModalOpen(false)}
+                id={id}
+                setRelation={setRelation}
+              />
+            </Modal>
+          </View>
+          <DetailInformation profileUser={profileUser} />
+          <View className="flex  flex-row justify-start  mx-[10%] mt-10">
+            <TouchableOpacity onPress={() => setActiveTab("posts")}>
+              <Text
+                style={{
+                  fontSize: 14,
 
-              color:
-                activeTab === "posts"
-                  ? colors.primary[100] // màu chữ khi active
-                  : colorScheme === "dark"
-                  ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                  : colors.light[500], // màu chữ khi không active và trong light mode
-              borderBottomWidth: activeTab === "posts" ? 2 : 0, // đường viền dưới khi active
-              borderBottomColor:
-                activeTab === "posts" ? colors.primary[100] : "transparent", // màu đường viền dưới
-            }}
-            className="text-[14px] font-mregular "
-          >
-            Posts
-          </Text>
-        </TouchableOpacity>
+                  color:
+                    activeTab === "posts"
+                      ? colors.primary[100] // màu chữ khi active
+                      : colorScheme === "dark"
+                      ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                      : colors.light[500], // màu chữ khi không active và trong light mode
+                  borderBottomWidth: activeTab === "posts" ? 2 : 0, // đường viền dưới khi active
+                  borderBottomColor:
+                    activeTab === "posts" ? colors.primary[100] : "transparent", // màu đường viền dưới
+                }}
+                className="text-[14px] font-mregular "
+              >
+                Posts
+              </Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setActiveTab("photos")}>
-          <Text
-            style={{
-              fontSize: 14,
-              color:
-                activeTab === "photos"
-                  ? colors.primary[100] // màu chữ khi active
-                  : colorScheme === "dark"
-                  ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                  : colors.light[500], // màu chữ khi không active và trong light mode
-              borderBottomWidth: activeTab === "photos" ? 2 : 0, // đường viền dưới khi active
-              borderBottomColor:
-                activeTab === "photos" ? colors.primary[100] : "transparent", // màu đường viền dưới khi active
-            }}
-            className="text-[14px] font-mregular ml-5"
-          >
-            Pictures
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setActiveTab("videos")}>
-          <Text
-            style={{
-              fontSize: 14,
-              color:
-                activeTab === "videos"
-                  ? colors.primary[100] // màu chữ khi active
-                  : colorScheme === "dark"
-                  ? colors.dark[100] // màu chữ khi không active trong dark mode
-                  : colors.light[500], // màu chữ khi không active trong light mode
-              borderBottomWidth: activeTab === "videos" ? 2 : 0, // đường viền dưới khi active
-              borderBottomColor:
-                activeTab === "videos" ? colors.primary[100] : "transparent", // màu đường viền dưới khi active
-            }}
-            className="text-[14px] font-mregular ml-5"
-          >
-            Videos
-          </Text>
-        </TouchableOpacity>
-      </View>
+            <TouchableOpacity onPress={() => setActiveTab("photos")}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color:
+                    activeTab === "photos"
+                      ? colors.primary[100] // màu chữ khi active
+                      : colorScheme === "dark"
+                      ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                      : colors.light[500], // màu chữ khi không active và trong light mode
+                  borderBottomWidth: activeTab === "photos" ? 2 : 0, // đường viền dưới khi active
+                  borderBottomColor:
+                    activeTab === "photos"
+                      ? colors.primary[100]
+                      : "transparent", // màu đường viền dưới khi active
+                }}
+                className="text-[14px] font-mregular ml-5"
+              >
+                Pictures
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setActiveTab("videos")}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color:
+                    activeTab === "videos"
+                      ? colors.primary[100] // màu chữ khi active
+                      : colorScheme === "dark"
+                      ? colors.dark[100] // màu chữ khi không active trong dark mode
+                      : colors.light[500], // màu chữ khi không active trong light mode
+                  borderBottomWidth: activeTab === "videos" ? 2 : 0, // đường viền dưới khi active
+                  borderBottomColor:
+                    activeTab === "videos"
+                      ? colors.primary[100]
+                      : "transparent", // màu đường viền dưới khi active
+                }}
+                className="text-[14px] font-mregular ml-5"
+              >
+                Videos
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-      <View className=" py-3 h-auto">
-        <View
-          style={{
-            height: 1,
-            backgroundColor: "#D9D9D9",
-            width: "100%",
-            marginVertical: 5,
-          }}
-        />
-        {renderContent()}
-      </View>
+          <View className=" py-3 h-auto">
+            <View
+              style={{
+                height: 1,
+                backgroundColor: "#D9D9D9",
+                width: "100%",
+                marginVertical: 5,
+              }}
+            />
+            {renderContent()}
+          </View>
+        </>
+      ) : (
+        <>
+          <View className="">
+            <TouchableOpacity onPress={handleBackPress}>
+              <ArrowIcon size={28} color={iconColor} />
+            </TouchableOpacity>
+            <Image
+              source={
+                colorScheme === "dark"
+                  ? require("../../assets/images/Screenshot 2024-09-25 225618.png")
+                  : require("../../assets/images/CannotFound.png")
+              }
+              style={{ width: 233, height: 235 }} // Tránh lỗi style
+              className="mx-auto mt-40"
+            />
+            <Text
+              className="font-msemibold text-[20px] mx-auto"
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+            >
+              User not found
+            </Text>
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 };
