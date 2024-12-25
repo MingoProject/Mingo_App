@@ -7,6 +7,7 @@ import { colors } from "../../styles/colors";
 import MyInput from "../share/MyInput";
 import { findUserByPhoneNumber } from "@/lib/service/user.service";
 import { useRouter } from "expo-router";
+import { useAuth } from "@/context/AuthContext";
 const BackIcon = ({ size = 24, color = "black", onPress }) => {
   return (
     <Svg
@@ -48,11 +49,16 @@ const SearchFriend = ({ onClose }: any) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isClickSearch, setIsClickSearch] = useState(false);
   const [noResults, setNoResults] = useState(false);
+  const { profile } = useAuth();
 
   const handleSearch = async () => {
     const user = await findUserByPhoneNumber(phoneNumber);
     if (user) {
-      router.push(`/user/${user._id}`);
+      if (user._id === profile._id) {
+        router.push(`/profile`);
+      } else {
+        router.push(`/user/${user._id}`);
+      }
     } else {
       setNoResults(true);
     }
