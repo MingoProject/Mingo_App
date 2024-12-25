@@ -19,12 +19,7 @@ import { colors } from "../../styles/colors";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { useChatContext } from "../../context/ChatContext";
 import {
-  getAllChat,
-  getListChat,
-  getListGroupChat,
-  MarkMessageAsRead,
-  removeMessage,
-  revokeMessage,
+  getGroupAllChat,
   sendMessage,
 } from "../../lib/service/message.service";
 import {
@@ -41,10 +36,10 @@ import {
 import InfoChat from "../../components/forms/chat/InfoChat";
 import { useAuth } from "../../context/AuthContext";
 import {
-  FileContent,
+  ItemChat,
   PusherDelete,
   PusherRevoke,
-  ResponseMessageDTO,
+  ResponseGroupMessageDTO,
 } from "@/dtos/MessageDTO";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { pusherClient } from "@/lib/pusher";
@@ -53,15 +48,15 @@ import { useChatItemContext } from "@/context/ChatItemContext";
 import { pickMedia } from "@/lib/untils/GalleryPicker";
 import MessageCard from "@/components/forms/chat/MessageCard";
 import { checkRelation } from "@/lib/service/relation.service";
-import { FriendRequestDTO } from "@/dtos/FriendDTO";
 import { unblock } from "@/lib/service/friend.service";
 import ReportCard from "@/components/card/report/ReportCard";
-import MyInput from "@/components/share/MyInput";
 import { pickDocument } from "@/lib/untils/DoucmentPicker";
 import AudioRecorder from "@/components/forms/media/AudioRecorder";
 import { useClickOutside } from "react-native-click-outside";
+import { useCamera } from "@/context/CameraContext";
+import ExpoCamera from "@/components/forms/media/ExpoCamera";
 const Chat = () => {
-  const [messages, setMessages] = useState<ResponseMessageDTO[]>([]); // Mảng tin nhắn
+  const [messages, setMessages] = useState<ResponseGroupMessageDTO[]>([]); // Mảng tin nhắn
   const { profile } = useAuth();
   const { colorScheme } = useTheme();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -84,6 +79,9 @@ const Chat = () => {
   >([]);
   const [isReport, setIsReport] = useState(false);
   const [isMicroOpen, setIsMicroOpen] = useState(false);
+  const router = useRouter();
+  const [chatItem, setChatItem] = useState<ItemChat | null>(null); // State lưu trữ itemChat
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   const ref = useClickOutside<View>(() => {
     setIsMicroOpen(false);
@@ -118,14 +116,12 @@ const Chat = () => {
     setTemporaryToCloudinaryMap([]);
   }, [temporaryToCloudinaryMap]);
 
-  const chatItem = allChat.find((chat) => chat.id === id);
-
   useEffect(() => {
     let isMounted = true;
 
     const myChat = async () => {
       try {
-        const data = await getAllChat(chatItem?.id.toString() || ""); // Gọi API
+        const data = await getGroupAllChat(id.toString() || ""); // Gọi API
         // console.log(data, "this is data of body");
         if (isMounted && data.success) {
           setMessages(data.messages); // Lưu trực tiếp `messages` từ API
@@ -134,16 +130,25 @@ const Chat = () => {
         console.error("Error loading chat:", error);
       }
     };
-
     myChat();
-
     return () => {
       isMounted = false; // Cleanup khi component unmount
     };
   }, []);
 
   useEffect(() => {
+    const chatItem = allChat.find((chat) => chat.id === id);
+    if (chatItem) {
+      setChatItem(chatItem); // Cập nhật itemChat khi tìm thấy cuộc trò chuyện
+    }
+  }, [id, allChat]);
+
+  useEffect(() => {
+    if (!chatItem) {
+      return; // Nếu chưa có chatItem, không thực hiện gì
+    }
     let isMounted = true;
+    const userId = AsyncStorage.getItem("userId");
 
     const check = async () => {
       try {
@@ -199,7 +204,7 @@ const Chat = () => {
     return () => {
       isMounted = false; // Cleanup khi component unmount
     };
-  }, [chatItem?.receiverId]);
+  }, [chatItem]);
 
   const handlePickMedia = async () => {
     const media = await pickMedia();
@@ -255,83 +260,12 @@ const Chat = () => {
     }
   };
 
-  // const handleSendMultipleFiles = async (
-  //   files: { uri: string; type: string; name: string | undefined | null }[]
-  // ) => {
-  //   const storedToken = await AsyncStorage.getItem("token");
-  //   if (!storedToken) return;
-  //   try {
-  //     if (files.length != 0) {
-  //       for (const file of files) {
-  //         const formData = new FormData();
-  //         const fileContent: any = {
-  //           fileName: file.name,
-  //           url: "",
-  //           publicId: "",
-  //           bytes: "",
-  //           width: "0",
-  //           height: "0",
-  //           format: file.name?.split(".").pop(),
-  //           type: file.type,
-  //         };
-  //         let newFile = null;
-  //         if (
-  //           file.type === "image" ||
-  //           file.type === "video" ||
-  //           file.type === "audio"
-  //         ) {
-  //           newFile = {
-  //             uri: file.uri,
-  //             type: "image/jpeg",
-  //             name: file.name,
-  //           };
-  //         } else {
-  //           const formData = new FormData();
-  //           const fileType = file.name?.match(/\.([a-zA-Z0-9]+)$/)?.[1];
-  //           const mimeType =
-  //             fileType === "txt"
-  //               ? "text/plain"
-  //               : fileType?.startsWith("image")
-  //               ? `image/${fileType.split("/")[1]}` // For images, e.g., "image/png"
-  //               : fileType?.startsWith("video")
-  //               ? `video/${fileType.split("/")[1]}` // For videos, e.g., "video/mp4"
-  //               : `application/${fileType || "octet-stream"}`;
-  //           console.log(mimeType, "mimeType");
-  //           console.log(selectedMedia);
-  //           console.log("type: ", mimeType);
-  //           const tempUri = await prepareFileForUpload(file.uri, file.name!);
-  //           console.log("prepare uri: ", tempUri);
-  //           newFile = {
-  //             uri: tempUri,
-  //             type: mimeType,
-  //             name: file.name,
-  //           };
-  //         }
-  //         formData.append("boxId", id.toString());
-  //         formData.append("content", JSON.stringify(fileContent));
-  //         formData.append("file", newFile as any);
-
-  //         try {
-  //           const storedToken = await AsyncStorage.getItem("token");
-  //           if (!storedToken) return;
-
-  //           const response = await sendMessage(formData);
-  //           console.log(response, "response");
-  //         } catch (error) {
-  //           console.error("Error sending message: ", error);
-  //         }
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error sending message:", error);
-  //     throw error;
-  //   }
-  // };
-
   const handleSendMultipleFiles = async (
     files: { uri: string; type: string; name: string | undefined | null }[]
   ) => {
     const storedToken = await AsyncStorage.getItem("token");
+    console.log(selectedMedia, "selectedMedia for checkcheck");
+
     if (!storedToken) return;
 
     if (files.length === 0) return;
@@ -382,6 +316,8 @@ const Chat = () => {
         console.log("fileType", fileType);
 
         let newFile = null;
+
+        console.log(file.uri, "this is uri in id");
 
         // Prepare file based on type
         if (
@@ -469,7 +405,7 @@ const Chat = () => {
     }
 
     // console.log(messages, "this is message");
-    const handleNewMessage = (data: ResponseMessageDTO) => {
+    const handleNewMessage = (data: ResponseGroupMessageDTO) => {
       if (id !== data.boxId) return; // Kiểm tra đúng kênh
       setMessages((prevMessages) => {
         return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
@@ -531,9 +467,9 @@ const Chat = () => {
       if (relation === "blocked") {
         await unblock(params, token);
         setRelation("stranger"); // Hoặc bạn có thể thay thế với giá trị mới mà bạn muốn
-        Alert.alert("Unblock thành công!");
+        Alert.alert("Unblock successfully!");
       } else {
-        Alert.alert("Hiện tại đã là người lạ!");
+        Alert.alert("You are now stranger!");
       }
     } catch (error) {
       console.log(error);
@@ -554,23 +490,21 @@ const Chat = () => {
   // Component khi bị chặn bởi người dùng
   const BlockedByView = () => (
     <View className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
-      <Text className="text-sm">
-        Bạn không thể liên lạc với người dùng này.
-      </Text>
+      <Text className="text-sm">You are unable to contact this user.</Text>
     </View>
   );
 
   // Component khi bị người dùng chặn
   const BlockedView = () => (
     <View className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
-      <Text className="text-sm p-4 flex">Bạn đã chặn người dùng này.</Text>
+      <Text className="text-sm p-4 flex">You have blocked this user.</Text>
       {/* Nút "Bỏ chặn" */}
       <TouchableOpacity
         style={[styles.button, styles.unblockButton]}
         className="flex  items-center justify-center w-fit  h-11"
         onPress={() => handleUnBlockChat(relation)}
       >
-        <Text className="self-center w-14 justify-center">Bỏ chặn</Text>
+        <Text className="self-center w-14 justify-center">Unblock</Text>
       </TouchableOpacity>
 
       {/* Nút "Báo cáo" */}
@@ -580,7 +514,7 @@ const Chat = () => {
         onPress={handleIsReport}
       >
         <Text className="self-center w-14 justify-center text-white">
-          Báo cáo
+          Report
         </Text>
       </TouchableOpacity>
     </View>
@@ -607,27 +541,39 @@ const Chat = () => {
 
   return (
     <View
-      className="flex-1 pt-12"
       style={{
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? 8 : 12, // Android: 0, iOS: 10
         backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Màu sắc tùy thuộc vào colorScheme
       }}
     >
+      {isCameraOpen ? (
+        <ExpoCamera
+          onClose={() => setIsCameraOpen(false)}
+          onSend={handleSend}
+          setSelectedMedia={(uri: string, type: string, name: string) =>
+            setSelectedMedia([{ uri: uri, type: type, name: name }])
+          }
+          isSendNow={true}
+        />
+      ) : null}
       <View className="flex  flex-row items-center justify-between px-3 pt-3 pb-1 shadow-md">
         <View className="flex flex-row">
-          <Link href="./message" className="pt-2 flex flex-row">
-            <View className="pt-3">
-              <ArrowIcon size={30} color={iconColor} />
-            </View>
-          </Link>
-          <View className="flex-row items-center pb-2 gap-2">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="pt-2 flex flex-row"
+          >
+            <ArrowIcon size={30} color={"#FFAABB"} />
+          </TouchableOpacity>
+          <View className="flex-row items-center pb-2 px-2 gap-2">
             <Image
               source={
                 chatItem?.avatarUrl
                   ? { uri: chatItem.avatarUrl }
                   : require("../../assets/images/default-user.png") // Đảm bảo bạn có ảnh mặc định
               }
-              style={{ width: 55, height: 55, borderRadius: 50 }}
+              style={{ width: 45, height: 45, borderRadius: 50 }}
             />
 
             <Text
@@ -635,13 +581,13 @@ const Chat = () => {
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
-              className="text-[16px] font-medium"
+              className="text-[16px] font-mmedium"
             >
-              {chatItem?.userName}
+              {chatItem?.groupName}
             </Text>
           </View>
         </View>
-        <View className="flex flex-row right-2 ">
+        <View className="flex flex-row right-2 items-center mb-4">
           <TouchableOpacity>
             <CallIcon size={28} color={iconColor} />
           </TouchableOpacity>
@@ -662,10 +608,11 @@ const Chat = () => {
           onRequestClose={() => setModalVisible(false)}
         >
           <InfoChat
-            item={chatItem}
+            item={chatItem || null}
             setModalVisible={setModalVisible}
             setRelation={setRelation}
             relation={relation}
+            setGroupData={setChatItem}
           />
         </Modal>
       </View>
@@ -696,7 +643,7 @@ const Chat = () => {
               message={message}
               isCurrentUser={isCurrentUser}
               isFirstMessageOfDay={isFirstMessageOfDay}
-              chatItem={chatItem}
+              chatItem={chatItem || null}
               colorScheme={colorScheme}
               screenWidth={screenWidth}
             />
@@ -712,7 +659,7 @@ const Chat = () => {
           <TouchableOpacity onPress={handlePickDocument}>
             <PlusIcon size={27} color={iconColor} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handlePickMedia}>
+          <TouchableOpacity onPress={() => setIsCameraOpen(true)}>
             <CameraIcon size={27} color={iconColor} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handlePickMedia}>
@@ -726,14 +673,23 @@ const Chat = () => {
             />
           </TouchableOpacity>
           <TextInput
-            placeholder="Nhập tin nhắn..."
+            placeholder="Aa..."
             className={`flex-1 text-sm border rounded-full px-4`}
             onChangeText={handleTextInput}
             value={value}
+            placeholderTextColor={
+              colorScheme === "dark" ? colors.dark[100] : colors.light[500] // Tùy chỉnh màu placeholder
+            }
+            style={{
+              borderWidth: 1, // Thêm borderWidth nếu cần
+              borderColor:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng borderColor thay vì borderBlockColor
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            }}
           />
-
           <TouchableOpacity onPress={handleSend}>
-            <SendIcon size={28} color={iconColor} />
+            <SendIcon size={28} color={"#FFAABB"} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -772,6 +728,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 20,
     paddingHorizontal: 10,
+    gap: 2,
+    paddingTop: 4,
   },
   modalBackground: {
     flex: 1,

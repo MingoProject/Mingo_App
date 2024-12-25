@@ -29,7 +29,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
 
       const token = await AsyncStorage.getItem("token");
       if (!token) {
-        alert("Bạn cần đăng nhập để thực hiện hành động này.");
+        alert("You need to log in to perform this action.");
         return;
       }
       const userId = await AsyncStorage.getItem("userId");
@@ -240,7 +240,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
       }
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Đã xảy ra lỗi.");
+      alert(error.message || "Error");
     }
   };
 

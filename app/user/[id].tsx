@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Modal,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { colors } from "@/styles/colors";
@@ -22,6 +23,8 @@ import { useTheme } from "@/context/ThemeContext";
 import { checkRelation } from "@/lib/service/relation.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RelationAction from "@/components/forms/user/RelationAction";
+import { ThreeDot } from "@/components/icons/Icons";
+import ReportCard from "@/components/card/report/ReportCard";
 import { ArrowIcon } from "@/components/icons/Icons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -36,7 +39,10 @@ const UserProfile = () => {
   const [relation, setRelation] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
-  const navigation = useNavigation(); // Khởi tạo navigation
+  const menuRef = useRef<TouchableOpacity | null>(null);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [isMenuVisible, setMenuVisible] = useState(false);
+  const [isReport, setIsReport] = useState(false);
 
   const handleBackPress = () => {
     navigation.goBack(); // Trở về trang trước
@@ -167,6 +173,10 @@ const UserProfile = () => {
     }
   };
 
+  const closeReport = () => {
+    setIsReport(false);
+  };
+
   return (
     <ScrollView
       className="p-3 pt-14"
@@ -249,6 +259,18 @@ const UserProfile = () => {
         >
           <Text className="text-white">Chat</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          className="mt-3 rounded-xl px-7 py-3 text-white flex-1 felx flex-row justify-end"
+          ref={menuRef}
+          onPress={() => {
+            menuRef.current?.measure((fx, fy, width, height, px, py) => {
+              setMenuPosition({ x: px, y: py + height }); // Lấy vị trí dưới dấu `...`
+            });
+            setMenuVisible(true);
+          }}
+        >
+          <ThreeDot size={20} color={iconColor} />
+        </TouchableOpacity>
         <Modal
           visible={isModalOpen}
           animationType="fade"
@@ -261,6 +283,40 @@ const UserProfile = () => {
             id={id}
             setRelation={setRelation}
           />
+        </Modal>
+        <Modal
+          visible={isMenuVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setMenuVisible(false)}
+        >
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            className="bg-black/50"
+          >
+            <View
+              className=" rounded-lg p-5 w-[80%]"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+              }}
+            >
+              <TouchableOpacity
+                className="py-3 mt-2"
+                onPress={() => setIsReport(true)}
+              >
+                <Text className="text-center text-primary-100">
+                  Report user
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="py-3 mt-4"
+                onPress={() => setMenuVisible(false)}
+              >
+                <Text className="text-center text-gray-400">Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </Modal>
       </View>
       <DetailInformation profileUser={profileUser} />
@@ -337,6 +393,19 @@ const UserProfile = () => {
         />
         {renderContent()}
       </View>
+      <Modal
+        animationType="none"
+        visible={isReport}
+        onRequestClose={closeReport}
+        transparent={true}
+      >
+        <ReportCard
+          onClose={closeReport}
+          type="user"
+          entityId={profileUser?._id || ""}
+          reportedId={profileUser?._id || ""}
+        />
+      </Modal>
     </ScrollView>
   );
 };

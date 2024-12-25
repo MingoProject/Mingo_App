@@ -6,6 +6,7 @@ import {
   Modal,
   ScrollView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { SettingsIcon } from "../../components/icons/Icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -121,8 +122,9 @@ const Profile = () => {
       default:
         return (
           <ScrollView
-            className="p-3 pt-12"
+            className="p-3"
             style={{
+              paddingTop: Platform.OS === "android" ? 16 : 12, // Android: 0, iOS: 12
               backgroundColor:
                 colorScheme === "dark" ? colors.dark[300] : colors.light[700],
               flex: 1,
@@ -131,6 +133,8 @@ const Profile = () => {
             <View className="flex flex-row">
               <Text
                 style={{
+                  fontSize: 26,
+                  fontWeight: "600",
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]

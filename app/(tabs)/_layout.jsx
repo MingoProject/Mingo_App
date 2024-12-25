@@ -1,8 +1,15 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, AppState } from "react-native";
 import { Tabs } from "expo-router";
 import Svg, { Path } from "react-native-svg";
-import { useTheme } from "../../context/ThemeContext";
+import { ThemeProvider, useTheme } from "../../context/ThemeContext";
+import { pusherClient } from "../../lib/pusher";
+import { useChatContext } from "../../context/ChatContext";
+import { useChatItemContext } from "../../context/ChatItemContext";
+import { IsOffline, IsOnline } from "../../lib/service/message.service";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// import { useTheme } from "../../context/ThemeContext";
 
 const TabIcon = ({ SvgIcon, color, name, focused }) => {
   return (
@@ -87,6 +94,75 @@ const ProfileIcon = ({ color = "currentColor", width = 24, height = 24 }) => (
 
 const TabsLayout = () => {
   const { colorScheme } = useTheme();
+  const { setIsOnlineChat, isOnlineChat } = useChatContext();
+  const { allChat } = useChatItemContext();
+
+  const checkOnlineStatus = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+      const result = await IsOnline(userId?.toString() || "");
+      console.log("User online status:", result);
+    } catch (error) {
+      console.error("Error checking online status:", error);
+    }
+  };
+  const setOfflineStatus = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+      await IsOffline(userId?.toString() || "");
+      console.log("User is offline");
+    } catch (error) {
+      console.error("Error setting offline status:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Gọi `checkOnlineStatus` khi ở trong layout
+    checkOnlineStatus();
+
+    const appStateListener = AppState.addEventListener(
+      "change",
+      (nextAppState) => {
+        if (nextAppState === "inactive") {
+          setOfflineStatus(); // Người dùng ra khỏi app
+        }
+      }
+    );
+
+    return () => {
+      appStateListener.remove(); // Cleanup listener on component unmount
+      setOfflineStatus(); // Đặt trạng thái offline khi rời layout
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleOnline = (data) => {
+      console.log("Successfully received online-status:", data);
+      setIsOnlineChat((prevState) => ({
+        ...prevState,
+        [data.userId]: true,
+      }));
+    };
+
+    const handleOffline = (data) => {
+      console.log("Successfully received offline-status:", data);
+      setIsOnlineChat((prevState) => ({
+        ...prevState,
+        [data.userId]: false,
+      }));
+    };
+
+    allChat.forEach((box) => {
+      pusherClient.subscribe(`private-${box.receiverId}`);
+      pusherClient.bind("online-status", handleOnline);
+      pusherClient.bind("offline-status", handleOffline);
+    });
+  });
+
   return (
     <Tabs
       options={{ headerShown: false }}

@@ -12,6 +12,7 @@ import {
   updateComment,
 } from "@/lib/service/comment.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ReportCard from "@/components/card/report/ReportCard";
 
 const CommentMenu = ({
   comment,
@@ -26,7 +27,13 @@ const CommentMenu = ({
 }: any) => {
   const [newComment, setNewComment] = useState(comment.content); // Khởi tạo giá trị mặc định là content
   const [isEditing, setIsEditing] = useState(false);
+  const [isReport, setIsReport] = useState(false);
+
   const { profile } = useAuth();
+
+  const closeReport = () => {
+    setIsReport(false);
+  };
 
   const handleEditComment = async (
     commentId: string,
@@ -125,7 +132,7 @@ const CommentMenu = ({
     }
   };
   const handleReportComment = () => {
-    setModalVisible(false);
+    setIsReport(true);
     console.log("Báo cáo comment");
   };
 
@@ -197,6 +204,20 @@ const CommentMenu = ({
           </>
         )}
       </View>
+      <Modal
+        animationType="none"
+        visible={isReport}
+        onRequestClose={closeReport}
+        transparent={true}
+      >
+        <ReportCard
+          onClose={closeReport}
+          type="comment"
+          entityId={comment._id}
+          reportedId={profile._id || ""}
+          postId={postId}
+        />
+      </Modal>
     </View>
   );
 };

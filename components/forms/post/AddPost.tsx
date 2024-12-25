@@ -112,7 +112,7 @@ const AddPost = ({ onClose }: any) => {
       const permissionResult =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permissionResult.granted) {
-        alert("Cần cấp quyền truy cập thư viện ảnh!");
+        alert("Permission to access the photo library is required!");
         return;
       }
 
