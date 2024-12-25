@@ -109,7 +109,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
             >
               Address:
               <Text
-                className="font-semibold"
+                className="font-msemibold"
                 style={{
                   color:
                     colorScheme === "dark"

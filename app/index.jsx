@@ -32,14 +32,8 @@ export default function App() {
 
   return (
     <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-3xl font-jsemibold">Mingle</Text>
-      {/* <StatusBar style="auto" />
-      <Link href="/signin" style={{ color: "blue" }}>
-        Go to Sign In
-      </Link> */}
       <Image
         source={require("../assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg")}
-        // style={{ width: fu, height: 105, borderRadius: 20 }}
         className="w-full h-full"
       />
     </View>

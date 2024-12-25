@@ -98,7 +98,11 @@ const PostAction = ({
         className="flex-row items-center mr-4"
         onPress={toggleLike}
       >
-        <LikeIcon size={25} color={isLiked ? colors.primary[100] : iconColor} />
+        <LikeIcon
+          size={25}
+          color={isLiked ? colors.primary[100] : iconColor}
+          fillColor={isLiked ? colors.primary[100] : "none"}
+        />
         <Text
           className="ml-1 font-mmedium"
           style={{

@@ -82,10 +82,14 @@ const EmotionIcon = ({ size = 48, color = "currentColor" }) => {
   );
 };
 
-const LikeIcon = ({ size = 24, color = "currentColor" }) => (
-  <Svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+const LikeIcon = ({
+  size = 24,
+  color = "currentColor",
+  fillColor = "currentColor",
+}) => (
+  <Svg width={size} height={size} viewBox="0 0 48 48" fill={fillColor}>
     <Path
-      fill="none"
+      fill={fillColor}
       stroke={color}
       strokeLinecap="round"
       strokeLinejoin="round"

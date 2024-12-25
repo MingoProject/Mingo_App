@@ -608,7 +608,7 @@ const Chat = () => {
     <View
       style={{
         flex: 1,
-        paddingTop: Platform.OS === "android" ? 8 : 12, // Android: 0, iOS: 10
+        paddingTop: Platform.OS === "android" ? 8 : 40, // Android: 0, iOS: 10
         backgroundColor:
           colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Màu sắc tùy thuộc vào colorScheme
       }}
@@ -722,24 +722,24 @@ const Chat = () => {
       >
         <View style={styles.inputContainer}>
           <TouchableOpacity onPress={handlePickDocument}>
-            <PlusIcon size={27} color={iconColor} />
+            <PlusIcon size={33} color={iconColor} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setIsCameraOpen(true)}>
-            <CameraIcon size={27} color={iconColor} />
+            <CameraIcon size={35} color={iconColor} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handlePickMedia}>
-            <ImageIcon size={25} color={iconColor} />
+            <ImageIcon size={28} color={iconColor} />
           </TouchableOpacity>
           <TouchableOpacity>
             <MicroIcon
-              size={25}
+              size={28}
               color={iconColor}
               onClick={() => setIsMicroOpen(true)}
             />
           </TouchableOpacity>
           <TextInput
             placeholder="Aa..."
-            className={`flex-1 text-sm border rounded-full px-4`}
+            className={`flex-1 text-sm border py-2 rounded-full px-4`}
             onChangeText={handleTextInput}
             value={value}
             placeholderTextColor={

@@ -257,6 +257,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Add Friend
               </Text>
@@ -270,6 +271,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Block
               </Text>
@@ -287,6 +289,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Unfollow
               </Text>
@@ -300,6 +303,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Block
               </Text>
@@ -317,6 +321,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Unfriend
               </Text>
@@ -330,6 +335,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Add Best Friend
               </Text>
@@ -343,6 +349,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Block
               </Text>
@@ -360,6 +367,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Remove Best Friend
               </Text>
@@ -373,6 +381,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Block
               </Text>
@@ -387,6 +396,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
+              className="font-mmedium"
             >
               Unblock
             </Text>
@@ -405,6 +415,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Cancel Best Friend Request
               </Text>
@@ -418,6 +429,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Block
               </Text>
@@ -437,6 +449,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Refuse Best Friend Request
               </Text>
@@ -452,6 +465,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Accept Best Friend Request
               </Text>
@@ -465,6 +479,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Block
               </Text>
@@ -484,6 +499,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Refuse Friend Request
               </Text>
@@ -499,6 +515,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Accept Friend Request
               </Text>
@@ -512,6 +529,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               >
                 Block
               </Text>
@@ -533,7 +551,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
         }}
       >
         <Text
-          className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4"
+          className="text-xl font-mbold text-gray-900 dark:text-gray-100 mb-4"
           style={{
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -544,7 +562,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
         <View className="space-y-4">{renderOptions()}</View>
         <TouchableOpacity onPress={onClose} className="mt-6">
           <Text
-            className="text-center text-blue-600 dark:text-blue-400 font-semibold"
+            className="text-center font-msemibold"
             style={{
               color: colors.primary[100],
             }}

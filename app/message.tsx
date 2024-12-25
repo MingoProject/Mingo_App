@@ -245,7 +245,7 @@ const Message = () => {
     <View style={{ flex: 1, position: "relative" }}>
       <ScrollView
         style={{
-          marginTop: Platform.OS === "android" ? 0 : 12, // Android: 0, iOS: 10
+          paddingTop: Platform.OS === "android" ? 0 : 40, // Android: 0, iOS: 10
           backgroundColor:
             colorScheme === "dark" ? colors.dark[300] : colors.light[700],
           flex: 1,
@@ -263,13 +263,13 @@ const Message = () => {
             <TextInput
               placeholder="Find..."
               placeholderTextColor="#D9D9D9"
-              className={`flex-1 h-[42px] text-[#D9D9D9] font-mregular px-4 rounded-full text-sm ${
-                colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
+              className={`flex-1 h-[42px] text-[#D9D9D9] font-mregular px-4 rounded-full border-gray-200 text-sm ${
+                colorScheme === "dark" ? "bg-dark-400" : "bg-light-800"
               }`}
               style={{
                 borderWidth: 1, // Thêm borderWidth nếu cần
-                borderColor:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng borderColor thay vì borderBlockColor
+                // borderColor:
+                //   colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng borderColor thay vì borderBlockColor
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}

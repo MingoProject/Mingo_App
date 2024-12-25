@@ -1,31 +1,7 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  ActivityIndicator,
-  ScrollView,
-} from "react-native";
-import Video from "react-native-video";
+import React from "react";
+import { View, Text, TextInput, Image } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
-import { colors } from "@/styles/colors"; // import màu sắc từ file colors.js
-import AddPost from "@/components/home-component/AddPost";
-import { Link } from "expo-router";
-import { getTimestamp } from "@/lib/utils";
-import fetchDetailedPosts from "@/hooks/usePosts";
-import {
-  SearchIcon,
-  MessageIcon,
-  PictureIcon,
-  VideoIcon,
-  EmotionIcon,
-  LikeIcon,
-  CommentIcon,
-  ShareIcon,
-} from "@/components/icons/Icons";
+import { PictureIcon, VideoIcon, EmotionIcon } from "@/components/icons/Icons";
 
 const OpenAddPost = ({ handleAddPost }: any) => {
   const { colorScheme } = useTheme();
