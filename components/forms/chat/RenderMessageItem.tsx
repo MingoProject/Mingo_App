@@ -252,7 +252,7 @@ const RenderMessageItem = ({
         if (chat.id === data.id) {
           return {
             ...chat,
-            text: "unsent", // Hoặc nội dung tùy chỉnh
+            text: "message unsent", // Hoặc nội dung tùy chỉnh
             type: "recalled", // Có thể thêm type để phân loại tin nhắn unsent
           };
         }
@@ -265,7 +265,7 @@ const RenderMessageItem = ({
         format: "",
         height: "",
         publicId: "",
-        type: "unsent",
+        type: "message unsent",
         url: "",
         width: "",
       };
@@ -288,7 +288,7 @@ const RenderMessageItem = ({
       } else {
         setLastMessage({
           id: "",
-          text: "unsent",
+          text: "message unsent",
           contentId: fileContent,
           createBy: "",
           timestamp: new Date(),
@@ -339,6 +339,8 @@ const RenderMessageItem = ({
     fetchProfile();
   }, [item, item?.receiverId]);
 
+  console.log(lastMessage.text, "lastMessage.text");
+
   return (
     <TouchableOpacity
       key={item.id}
@@ -378,198 +380,223 @@ const RenderMessageItem = ({
             numberOfLines={1} // Giới hạn chỉ một dòng
             ellipsizeMode="tail"
           >
-            {isReceiver ? (
-              <View className="flex flex-row gap-1">
+            {lastMessage.text === "Started the chat" ? (
+              <View className="w-full flex flex-row justify-center">
                 <Text
-                  className={`${
-                    lastMessage.status || !isReceiver
-                      ? "font-mregular"
-                      : "font-mmedium"
-                  }`}
                   style={{
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
                         : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                    flex: 1,
                   }}
+                  className={`font-msemibold text-[14px]`}
                 >
-                  {item.userName.trim().split(" ").pop()}:{" "}
+                  {lastMessage.text}
                 </Text>
-                {(() => {
-                  console.log(lastMessage.contentId?.type?.toLowerCase());
-                  const type = lastMessage.contentId?.type?.toLowerCase() || "";
-                  const messageStatusClass = lastMessage.status
-                    ? "font-mregular"
-                    : "font-msemibold";
-
-                  if (lastMessage.text !== "") {
-                    return (
-                      <Text
-                        className={messageStatusClass}
-                        style={{
-                          color:
-                            colorScheme === "dark"
-                              ? colors.dark[100]
-                              : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                          flex: 1,
-                        }}
-                      >
-                        {lastMessage.text}
-                      </Text>
-                    );
-                  }
-
-                  if (type) {
-                    switch (type) {
-                      case "image":
-                        return (
-                          <Text
-                            className={messageStatusClass}
-                            style={{
-                              color:
-                                colorScheme === "dark"
-                                  ? colors.dark[100]
-                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                            }}
-                          >
-                            sent an image
-                          </Text>
-                        );
-                      case "video":
-                        return (
-                          <Text
-                            className={messageStatusClass}
-                            style={{
-                              color:
-                                colorScheme === "dark"
-                                  ? colors.dark[100]
-                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                            }}
-                          >
-                            sent a video
-                          </Text>
-                        );
-                      case "audio":
-                        return (
-                          <Text
-                            className={messageStatusClass}
-                            style={{
-                              color:
-                                colorScheme === "dark"
-                                  ? colors.dark[100]
-                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                            }}
-                          >
-                            sent an audio
-                          </Text>
-                        );
-                      case "other":
-                        return (
-                          <Text
-                            className={messageStatusClass}
-                            style={{
-                              color:
-                                colorScheme === "dark"
-                                  ? colors.dark[100]
-                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                            }}
-                          >
-                            sent a file
-                          </Text>
-                        );
-                      default:
-                        return (
-                          <Text
-                            className={messageStatusClass}
-                            style={{
-                              color:
-                                colorScheme === "dark"
-                                  ? colors.dark[100]
-                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                            }}
-                          >
-                            Started the chat
-                          </Text>
-                        );
-                    }
-                  }
-                })()}
               </View>
             ) : (
-              <View className="flex flex-row items-center gap-1">
-                <Text
-                  className={`${
-                    lastMessage.status ? "font-mregular" : "font-msemibold"
-                  }`}
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                  }}
-                >
-                  You:{" "}
-                </Text>
-                {(() => {
-                  const type = lastMessage.contentId?.type?.toLowerCase() || "";
-                  const messageStatusClass = lastMessage.status
-                    ? "font-mregular"
-                    : "font-msemibold";
+              <>
+                {isReceiver ? (
+                  <View className="flex flex-row gap-1">
+                    <Text
+                      className={`${
+                        lastMessage.status || !isReceiver
+                          ? "font-mregular"
+                          : "font-mmedium"
+                      }`}
+                      style={{
+                        color:
+                          colorScheme === "dark"
+                            ? colors.dark[100]
+                            : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                      }}
+                    >
+                      {item.userName.trim().split(" ").pop()}:{" "}
+                    </Text>
+                    {(() => {
+                      console.log(lastMessage.contentId?.type?.toLowerCase());
+                      const type =
+                        lastMessage.contentId?.type?.toLowerCase() || "";
+                      const messageStatusClass = lastMessage.status
+                        ? "font-mregular"
+                        : "font-msemibold";
 
-                  if (lastMessage.text !== "") {
-                    return (
-                      <Text
-                        className={messageStatusClass}
-                        style={{
-                          color:
-                            colorScheme === "dark"
-                              ? colors.dark[100]
-                              : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                        }}
-                      >
-                        {lastMessage.text}
-                      </Text>
-                    );
-                  }
+                      if (lastMessage.text !== "") {
+                        return (
+                          <Text
+                            className={messageStatusClass}
+                            style={{
+                              color:
+                                colorScheme === "dark"
+                                  ? colors.dark[100]
+                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                              flex: 1,
+                            }}
+                          >
+                            {lastMessage.text}
+                          </Text>
+                        );
+                      }
 
-                  switch (type) {
-                    case "image":
-                      return (
-                        <Text
-                          className={messageStatusClass}
-                          style={{
-                            color:
-                              colorScheme === "dark"
-                                ? colors.dark[100]
-                                : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                          }}
-                        >
-                          sent an image
-                        </Text>
-                      );
-                    case "video":
-                      return (
-                        <Text className={messageStatusClass}>sent a video</Text>
-                      );
-                    case "audio":
-                      return (
-                        <Text className={messageStatusClass}>
-                          sent an audio
-                        </Text>
-                      );
-                    case "other":
-                      return (
-                        <Text className={messageStatusClass}>sent a file</Text>
-                      );
-                    default:
-                      return (
-                        <Text className={messageStatusClass}>
-                          Started the chat
-                        </Text>
-                      );
-                  }
-                })()}
-              </View>
+                      if (type) {
+                        switch (type) {
+                          case "image":
+                            return (
+                              <Text
+                                className={messageStatusClass}
+                                style={{
+                                  color:
+                                    colorScheme === "dark"
+                                      ? colors.dark[100]
+                                      : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                                }}
+                              >
+                                sent an image
+                              </Text>
+                            );
+                          case "video":
+                            return (
+                              <Text
+                                className={messageStatusClass}
+                                style={{
+                                  color:
+                                    colorScheme === "dark"
+                                      ? colors.dark[100]
+                                      : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                                }}
+                              >
+                                sent a video
+                              </Text>
+                            );
+                          case "audio":
+                            return (
+                              <Text
+                                className={messageStatusClass}
+                                style={{
+                                  color:
+                                    colorScheme === "dark"
+                                      ? colors.dark[100]
+                                      : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                                }}
+                              >
+                                sent an audio
+                              </Text>
+                            );
+                          case "other":
+                            return (
+                              <Text
+                                className={messageStatusClass}
+                                style={{
+                                  color:
+                                    colorScheme === "dark"
+                                      ? colors.dark[100]
+                                      : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                                }}
+                              >
+                                sent a file
+                              </Text>
+                            );
+                          default:
+                            return (
+                              <Text
+                                className={messageStatusClass}
+                                style={{
+                                  color:
+                                    colorScheme === "dark"
+                                      ? colors.dark[100]
+                                      : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                                }}
+                              >
+                                undefined
+                              </Text>
+                            );
+                        }
+                      }
+                    })()}
+                  </View>
+                ) : (
+                  <View className="flex flex-row items-center gap-1">
+                    <Text
+                      className={`${
+                        lastMessage.status ? "font-mregular" : "font-mregular"
+                      }`}
+                      style={{
+                        color:
+                          colorScheme === "dark"
+                            ? colors.dark[100]
+                            : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                      }}
+                    >
+                      You:{" "}
+                    </Text>
+                    {(() => {
+                      const type =
+                        lastMessage.contentId?.type?.toLowerCase() || "";
+                      const messageStatusClass = lastMessage.status
+                        ? "font-mregular"
+                        : "font-mregular";
+
+                      if (lastMessage.text !== "") {
+                        return (
+                          <Text
+                            className={messageStatusClass}
+                            style={{
+                              color:
+                                colorScheme === "dark"
+                                  ? colors.dark[100]
+                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                            }}
+                          >
+                            {lastMessage.text}
+                          </Text>
+                        );
+                      }
+
+                      switch (type) {
+                        case "image":
+                          return (
+                            <Text
+                              className={messageStatusClass}
+                              style={{
+                                color:
+                                  colorScheme === "dark"
+                                    ? colors.dark[100]
+                                    : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                              }}
+                            >
+                              sent an image
+                            </Text>
+                          );
+                        case "video":
+                          return (
+                            <Text className={messageStatusClass}>
+                              sent a video
+                            </Text>
+                          );
+                        case "audio":
+                          return (
+                            <Text className={messageStatusClass}>
+                              sent an audio
+                            </Text>
+                          );
+                        case "other":
+                          return (
+                            <Text className={messageStatusClass}>
+                              sent a file
+                            </Text>
+                          );
+                        default:
+                          return (
+                            <Text className={messageStatusClass}>
+                              undefined
+                            </Text>
+                          );
+                      }
+                    })()}
+                  </View>
+                )}
+              </>
             )}
           </Text>
         </View>

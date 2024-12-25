@@ -55,6 +55,17 @@ import AudioRecorder from "@/components/forms/media/AudioRecorder";
 import { useClickOutside } from "react-native-click-outside";
 import { useCamera } from "@/context/CameraContext";
 import ExpoCamera from "@/components/forms/media/ExpoCamera";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 const Chat = () => {
   const [messages, setMessages] = useState<ResponseGroupMessageDTO[]>([]); // Mảng tin nhắn
   const { profile } = useAuth();
@@ -82,6 +93,7 @@ const Chat = () => {
   const router = useRouter();
   const [chatItem, setChatItem] = useState<ItemChat | null>(null); // State lưu trữ itemChat
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [permissionGreanted, setPermissionGranted] = useState(false);
 
   const ref = useClickOutside<View>(() => {
     setIsMicroOpen(false);
@@ -359,6 +371,24 @@ const Chat = () => {
     }
   };
 
+  useEffect(() => {
+    const requestPermissions = async () => {
+      if (Device.isDevice) {
+        const { status: existingStatus } =
+          await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== "granted") {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+        setPermissionGranted(finalStatus === "granted");
+      } else {
+        console.log("Must use a physical device for Push Notifications");
+      }
+    };
+    requestPermissions();
+  }, []);
+
   const handleSendTextMessage = async () => {
     if (!value.trim()) return;
 
@@ -405,11 +435,29 @@ const Chat = () => {
     }
 
     // console.log(messages, "this is message");
-    const handleNewMessage = (data: ResponseGroupMessageDTO) => {
+    const handleNewMessage = async (data: ResponseGroupMessageDTO) => {
       if (id !== data.boxId) return; // Kiểm tra đúng kênh
+
       setMessages((prevMessages) => {
         return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
       });
+      if (!permissionGreanted) {
+        console.log(
+          "Notifications not granted. Please enable them in settings."
+        );
+        return;
+      }
+
+      const rs = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "New messsage",
+          body: `${data.createName}: ${value}`,
+          sound: "default",
+        },
+        trigger: new Date(Date.now() + 30 * 1000),
+      });
+
+      console.log(rs, "rs mess notifi");
     };
 
     const handleDeleteMessage = ({ id: messageId }: PusherDelete) => {
