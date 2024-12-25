@@ -26,7 +26,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getMyBffs, getMyFriends } from "@/lib/service/user.service";
 import * as ImagePicker from "expo-image-picker";
 
-const AddPost = ({ onClose }: any) => {
+const AddPost = ({ onClose, setPostsData }: any) => {
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [content, setContent] = useState("");
@@ -199,6 +199,7 @@ const AddPost = ({ onClose }: any) => {
         }
       }
       alert("Post created successfully!");
+      setPostsData((prevPosts) => [res, ...prevPosts]);
       onClose();
     } catch (err: any) {
       console.error(err);

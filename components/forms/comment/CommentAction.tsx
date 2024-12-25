@@ -2,12 +2,6 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
-import { LikeIcon, CommentIcon, ShareIcon } from "@/components/icons/Icons";
-import {
-  dislikePost,
-  getLikesByPostId,
-  likePost,
-} from "@/lib/service/post.service";
 import { useAuth } from "@/context/AuthContext";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,20 +21,20 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
   const [isError, setIsError] = useState(false);
   const { profile } = useAuth();
 
-  useEffect(() => {
-    const fetchLikes = async () => {
-      try {
-        const data = await getLikesByCommentId(comment._id);
-        setLikes(data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-        setIsError(true);
-        setIsLoading(false);
-      }
-    };
-    fetchLikes();
-  }, []);
+  // useEffect(() => {
+  //   const fetchLikes = async () => {
+  //     try {
+  //       const data = await getLikesByCommentId(comment._id);
+  //       setLikes(data);
+  //       setIsLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching posts:", error);
+  //       setIsError(true);
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   fetchLikes();
+  // }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -49,7 +43,7 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
       if (userId) {
         try {
           const isUserLiked = comment.likes.some(
-            (like: any) => like._id === userId
+            (like: any) => like === userId
           );
           if (isMounted) {
             setIsLiked(isUserLiked);

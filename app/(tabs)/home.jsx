@@ -80,7 +80,7 @@ const Home = () => {
       case "searchHome":
         return <SearchHome onClose={handleClose} />;
       case "addPost":
-        return <AddPost onClose={handleClose} />;
+        return <AddPost onClose={handleClose} setPostsData={setPostsData} />;
       default:
         return (
           <FlatList

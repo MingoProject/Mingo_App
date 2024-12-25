@@ -24,6 +24,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RelationAction from "@/components/forms/user/RelationAction";
 import { ArrowIcon } from "@/components/icons/Icons";
 import { useNavigation } from "@react-navigation/native";
+import { pusherClient } from "@/lib/pusher";
+import { useAuth } from "@/context/AuthContext";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams();
@@ -36,7 +38,8 @@ const UserProfile = () => {
   const [relation, setRelation] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
-  const navigation = useNavigation(); // Khởi tạo navigation
+  const navigation = useNavigation();
+  const { profile } = useAuth();
 
   const handleBackPress = () => {
     navigation.goBack(); // Trở về trang trước
@@ -58,9 +61,10 @@ const UserProfile = () => {
 
   useEffect(() => {
     let isMounted = true;
+    // const userId = await AsyncStorage.getItem("userId");
+    const userId = profile._id;
     const check = async () => {
       try {
-        const userId = await AsyncStorage.getItem("userId");
         if (userId) {
           const res: any = await checkRelation(userId, id);
           if (isMounted) {
@@ -104,8 +108,25 @@ const UserProfile = () => {
       }
     };
     check();
+    const userChannel = pusherClient.subscribe(`user-${userId}`);
+    const targetChannel = pusherClient.subscribe(`user-${id}`);
+
+    const handleFriendEvent = (data: any) => {
+      if (isMounted) {
+        console.log("Friend event:", data);
+        check();
+      }
+    };
+
+    userChannel.bind("friend", handleFriendEvent);
+    targetChannel.bind("friend", handleFriendEvent);
+
     return () => {
       isMounted = false;
+      userChannel.unbind("friend", handleFriendEvent);
+      targetChannel.unbind("friend", handleFriendEvent);
+      pusherClient.unsubscribe(`user-${userId}`);
+      pusherClient.unsubscribe(`user-${id}`);
     };
   }, [id]);
 
@@ -219,7 +240,7 @@ const UserProfile = () => {
               : "bg-gray-400"
           }`}
         >
-          <Text className="text-white">
+          <Text className="text-white font-mmedium">
             {relation === "bff"
               ? "Best friend"
               : relation === "senderRequestBff"
@@ -247,7 +268,7 @@ const UserProfile = () => {
             // marginVertical: 5,
           }}
         >
-          <Text className="text-white">Chat</Text>
+          <Text className="text-white font-mmedium">Chat</Text>
         </TouchableOpacity>
         <Modal
           visible={isModalOpen}

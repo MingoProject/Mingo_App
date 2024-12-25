@@ -24,6 +24,7 @@ import { ResizeMode, Video } from "expo-av";
 import { FriendIcon, LocationIcon, ThreeDot } from "@/components/icons/Icons";
 import TagModal from "./TagsModal";
 import PostMenu from "./PostMenu";
+import { useRouter } from "expo-router";
 
 const DetailsPost = ({
   isModalVisible,
@@ -42,13 +43,13 @@ const DetailsPost = ({
   const { colorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [comment, setComment] = useState("");
-  // const [commentsData, setCommentsData] = useState<any[]>([]);
   const { profile } = useAuth();
   const menuRef = useRef<TouchableOpacity | null>(null);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
   const isAuthor = profile?._id === post.author._id;
+  const router = useRouter();
 
   const handleTagsModalToggle = () => {
     setIsTagsModalOpen(!isTagsModalOpen);
@@ -114,6 +115,15 @@ const DetailsPost = ({
     }
   };
 
+  const navigateToUserProfile = (item: any) => {
+    setModalVisible(false);
+    if (item === profile._id) {
+      router.push(`/profile`);
+    } else {
+      router.push(`/user/${item}`);
+    }
+  };
+
   return (
     <View className="flex-1 bg-black bg-opacity-50">
       <KeyboardAvoidingView
@@ -146,10 +156,15 @@ const DetailsPost = ({
 
           {/* Author Info */}
           <View className="flex-row items-center mb-2">
-            <Image
-              source={{ uri: post.author.avatar }}
-              className="w-10 h-10 rounded-full"
-            />
+            <TouchableOpacity
+              onPress={() => navigateToUserProfile(post.author._id)}
+            >
+              <Image
+                source={{ uri: post.author.avatar }}
+                className="w-10 h-10 rounded-full"
+              />
+            </TouchableOpacity>
+
             <View className="ml-4">
               <View
                 style={{ flexDirection: "row", alignItems: "center" }}
@@ -176,9 +191,18 @@ const DetailsPost = ({
                     }}
                     className="flex"
                   >
-                    <Text> {"- "}</Text>
+                    <Text
+                      style={{
+                        color:
+                          colorScheme === "dark"
+                            ? colors.dark[100]
+                            : colors.light[500],
+                      }}
+                    >
+                      {" "}
+                      {"- "}
+                    </Text>
                     <LocationIcon size={14} color={iconColor} />
-                    {/* <Icon name="mi:location" size={18} color={iconColor} /> */}
                     <Text
                       style={{
                         fontSize: 16,
