@@ -5,36 +5,13 @@ import { colors } from "@/styles/colors";
 import { useAuth } from "@/context/AuthContext";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  dislikeComment,
-  getLikesByCommentId,
-  likeComment,
-} from "@/lib/service/comment.service";
+import { dislikeComment, likeComment } from "@/lib/service/comment.service";
 
 const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(comment.likes.length);
-  const [likes, setLikes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
   const { profile } = useAuth();
-
-  // useEffect(() => {
-  //   const fetchLikes = async () => {
-  //     try {
-  //       const data = await getLikesByCommentId(comment._id);
-  //       setLikes(data);
-  //       setIsLoading(false);
-  //     } catch (error) {
-  //       console.error("Error fetching posts:", error);
-  //       setIsError(true);
-  //       setIsLoading(false);
-  //     }
-  //   };
-  //   fetchLikes();
-  // }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -111,23 +88,6 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Error fetching posts. Please try again later.</Text>
-      </View>
-    );
-  }
-
   return (
     <View className="flex-row">
       <TouchableOpacity onPress={toggleLike}>
@@ -137,8 +97,8 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
             color: isLiked
               ? colors.primary[100]
               : colorScheme === "dark"
-              ? colors.dark[100]
-              : colors.light[500],
+                ? colors.dark[100]
+                : colors.light[500],
           }}
         >
           Like
@@ -151,8 +111,8 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
             color: isLiked
               ? colors.primary[100]
               : colorScheme === "dark"
-              ? colors.dark[100]
-              : colors.light[500],
+                ? colors.dark[100]
+                : colors.light[500],
           }}
         >
           {numberOfLikes}

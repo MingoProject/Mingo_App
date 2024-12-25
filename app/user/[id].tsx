@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Modal,
   Image,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { colors } from "@/styles/colors";
@@ -23,6 +24,8 @@ import { useTheme } from "@/context/ThemeContext";
 import { checkRelation } from "@/lib/service/relation.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RelationAction from "@/components/forms/user/RelationAction";
+import { ThreeDot } from "@/components/icons/Icons";
+import ReportCard from "@/components/card/report/ReportCard";
 import { ArrowIcon } from "@/components/icons/Icons";
 import { useNavigation } from "@react-navigation/native";
 import { pusherClient } from "@/lib/pusher";
@@ -39,6 +42,10 @@ const UserProfile = () => {
   const [relation, setRelation] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const menuRef = useRef<TouchableOpacity | null>(null);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [isMenuVisible, setMenuVisible] = useState(false);
+  const [isReport, setIsReport] = useState(false);
   const navigation = useNavigation();
   const { profile } = useAuth();
   const [isBlocked, setIsBlocked] = useState(false);
@@ -191,6 +198,10 @@ const UserProfile = () => {
     }
   };
 
+  const closeReport = () => {
+    setIsReport(false);
+  };
+
   return (
     <ScrollView
       className="p-3 pt-14"
@@ -275,6 +286,18 @@ const UserProfile = () => {
             >
               <Text className="text-white font-mmedium">Chat</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              className="mt-3 rounded-xl px-7 py-3 text-white flex-1 felx flex-row justify-end"
+              ref={menuRef}
+              onPress={() => {
+                menuRef.current?.measure((fx, fy, width, height, px, py) => {
+                  setMenuPosition({ x: px, y: py + height }); // Lấy vị trí dưới dấu `...`
+                });
+                setMenuVisible(true);
+              }}
+            >
+              <ThreeDot size={20} color={iconColor} />
+            </TouchableOpacity>
             <Modal
               visible={isModalOpen}
               animationType="fade"
@@ -287,6 +310,46 @@ const UserProfile = () => {
                 id={id}
                 setRelation={setRelation}
               />
+            </Modal>
+            <Modal
+              visible={isMenuVisible}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setMenuVisible(false)}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                className="bg-black/50"
+              >
+                <View
+                  className=" rounded-lg p-5 w-[80%]"
+                  style={{
+                    backgroundColor:
+                      colorScheme === "dark"
+                        ? colors.dark[300]
+                        : colors.light[700],
+                  }}
+                >
+                  <TouchableOpacity
+                    className="py-3 mt-2"
+                    onPress={() => setIsReport(true)}
+                  >
+                    <Text className="text-center text-primary-100">
+                      Report user
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    className="py-3 mt-4"
+                    onPress={() => setMenuVisible(false)}
+                  >
+                    <Text className="text-center text-gray-400">Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </Modal>
           </View>
           <DetailInformation profileUser={profileUser} />
@@ -318,15 +381,15 @@ const UserProfile = () => {
                   fontSize: 14,
                   color:
                     activeTab === "photos"
-                      ? colors.primary[100] // màu chữ khi active
+                      ? colors.primary[100]
                       : colorScheme === "dark"
-                      ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                      : colors.light[500], // màu chữ khi không active và trong light mode
-                  borderBottomWidth: activeTab === "photos" ? 2 : 0, // đường viền dưới khi active
+                      ? colors.dark[100]
+                      : colors.light[500],
+                  borderBottomWidth: activeTab === "photos" ? 2 : 0,
                   borderBottomColor:
                     activeTab === "photos"
                       ? colors.primary[100]
-                      : "transparent", // màu đường viền dưới khi active
+                      : "transparent",
                 }}
                 className="text-[14px] font-mregular ml-5"
               >
@@ -339,15 +402,15 @@ const UserProfile = () => {
                   fontSize: 14,
                   color:
                     activeTab === "videos"
-                      ? colors.primary[100] // màu chữ khi active
+                      ? colors.primary[100]
                       : colorScheme === "dark"
-                      ? colors.dark[100] // màu chữ khi không active trong dark mode
-                      : colors.light[500], // màu chữ khi không active trong light mode
-                  borderBottomWidth: activeTab === "videos" ? 2 : 0, // đường viền dưới khi active
+                      ? colors.dark[100]
+                      : colors.light[500],
+                  borderBottomWidth: activeTab === "videos" ? 2 : 0,
                   borderBottomColor:
                     activeTab === "videos"
                       ? colors.primary[100]
-                      : "transparent", // màu đường viền dưới khi active
+                      : "transparent",
                 }}
                 className="text-[14px] font-mregular ml-5"
               >
@@ -356,6 +419,30 @@ const UserProfile = () => {
             </TouchableOpacity>
           </View>
 
+          <View className=" py-3 h-auto">
+            <View
+              style={{
+                height: 1,
+                backgroundColor: "#D9D9D9",
+                width: "100%",
+                marginVertical: 5,
+              }}
+            />
+            {renderContent()}
+          </View>
+          <Modal
+            animationType="none"
+            visible={isReport}
+            onRequestClose={closeReport}
+            transparent={true}
+          >
+            <ReportCard
+              onClose={closeReport}
+              type="user"
+              entityId={profileUser?._id || ""}
+              reportedId={profileUser?._id || ""}
+            />
+          </Modal>
           <View className=" py-3 h-auto">
             <View
               style={{

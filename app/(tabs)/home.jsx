@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
+  Platform,
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
@@ -95,9 +96,9 @@ const Home = () => {
             ListHeaderComponent={
               <>
                 <View
-                  className={`flex flex-row items-center mt-12 ${
+                  className={`flex flex-row items-center ${
                     colorScheme === "dark" ? "dark:bg-dark-300" : "bg-light-700"
-                  }`}
+                  } ${Platform.OS === "android" ? "pt-0" : "pt-12"}`}
                 >
                   <Text
                     style={{

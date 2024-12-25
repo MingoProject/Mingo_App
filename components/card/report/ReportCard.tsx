@@ -65,7 +65,7 @@ const categorizedReportOptions = [
     category: "TÔN TRỌNG QUYỀN SỞ HỮU TRÍ TUỆ",
     options: [
       "Vi phạm quyền sở hữu trí tuệ của bên thứ ba",
-      "Sử dụng giấy phép và quyền sở hữu trí tuệ của Meta",
+      "Sử dụng giấy phép và quyền sở hữu trí tuệ của Mingo",
     ],
   },
   {
@@ -133,7 +133,7 @@ const ReportCard = ({
         await createReport(reportPayload, token);
       }
 
-      Alert.alert("Thành công", "Báo cáo đã được tạo!");
+      Alert.alert("Successfully reported!");
       onClose();
     } catch (err: any) {
       console.error(err);
@@ -149,7 +149,7 @@ const ReportCard = ({
 
       <View style={styles.card}>
         <View style={styles.header}>
-          <Text style={styles.headerText}>Nội dung</Text>
+          <Text style={styles.headerText}>NỘI DUNG</Text>
           <TouchableOpacity onPress={onClose}>
             <CancelIcon size={28} color={iconColor} />
           </TouchableOpacity>
@@ -166,11 +166,15 @@ const ReportCard = ({
                   onPress={() => setSelectedOption(option)}
                 >
                   {selectedOption === option ? (
-                    <CircleFillIcon size={28} color="blue" />
+                    <CircleFillIcon size={20} color="#FFAABB" />
                   ) : (
-                    <CircleTickIcon size={28} color="gray" />
+                    <CircleTickIcon size={20} color="gray" />
                   )}
-                  <Text style={styles.optionText} numberOfLines={0}>
+                  <Text
+                    style={styles.optionText}
+                    numberOfLines={0}
+                    className="pb-1"
+                  >
                     {option}
                   </Text>
                 </TouchableOpacity>
@@ -213,8 +217,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   categoryTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "semibold",
+    color: "#FFAABB",
   },
   option: {
     flexDirection: "row", // Căn chỉnh icon và text theo chiều ngang
@@ -224,7 +229,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap", // Cho phép nội dung xuống dòng nếu quá dài
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 14,
     marginLeft: 10, // Khoảng cách giữa icon và chữ
     flex: 1, // Khi sử dụng flex, text sẽ chiếm hết không gian còn lại
     flexWrap: "wrap", // Đảm bảo text có thể xuống dòng khi cần
@@ -261,6 +266,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "#FFAABB",
   },
 
   actions: {
@@ -283,7 +289,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   confirmButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#FFAABB",
   },
   confirmText: {
     color: "#fff",

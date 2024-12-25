@@ -5,40 +5,43 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Platform,
 } from "react-native";
-import { ArrowIcon } from "../components/icons/Icons";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useRouter } from "expo-router";
+import { ArrowIcon, PlusIcon } from "../components/icons/Icons";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Link, router, useRouter } from "expo-router";
 import { useTheme } from "../context/ThemeContext";
 import { colors } from "../styles/colors"; // import màu sắc từ file colors.js
-import { getAllChat, getListChat } from "../lib/service/message.service";
+import { getListChat } from "../lib/service/message.service";
 import { getListGroupChat } from "../lib/service/message.service";
-import { useChatContext } from "../context/ChatContext";
-import { ItemChat } from "@/dtos/MessageDTO";
 import RenderMessageItem from "@/components/forms/chat/RenderMessageItem";
 import { useChatItemContext } from "@/context/ChatItemContext";
 import { pusherClient } from "@/lib/pusher";
-import profile from "./(tabs)/profile";
 import { useAuth } from "@/context/AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSearchParams } from "expo-router/build/hooks";
+import CreateGroupChat from "@/components/forms/chat/CreateGroupChat";
+import { debouncedSearch } from "@/lib/untils/declarations";
+import debounce from "lodash.debounce";
 
 const Message = () => {
   const { colorScheme } = useTheme();
-
-  const router = useRouter(); // Khởi tạo router
-  const [selectedItem, setSelectedItem] = useState(null);
+  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const { allChat, setAllChat } = useChatItemContext();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchText, setSearchText] = useState("");
   const { profile } = useAuth();
   const [userId, setUserId] = useState<string>(profile._id);
   const id = useSearchParams();
   const { filteredChat, setFilteredChat } = useChatItemContext();
   const channelRefs = useRef<any[]>([]);
+  const [createGroup, setCreateGroup] = useState(false);
 
   const fetchChats = useCallback(async () => {
-    const userId = await AsyncStorage.getItem("userId");
-    setUserId(userId || "");
     try {
       const [normalChats, groupChats] = await Promise.all([
         getListChat(),
@@ -59,34 +62,58 @@ const Message = () => {
     } catch (error) {
       console.error("Error loading chats:", error);
     }
-  }, [setAllChat, setFilteredChat]);
+  }, [setAllChat, setFilteredChat, allChat]);
 
   useEffect(() => {
     fetchChats();
-  }, []);
+  }, [setAllChat]);
 
-  // Hàm lọc các cuộc trò chuyện theo tên
-  const handleSearch = (text: string) => {
-    const searchValue = text;
-    setSearchTerm(searchValue);
-
-    // Filter the chats by username
-    const filtered = allChat.filter((chat) =>
-      chat.userName.toLowerCase().includes(searchValue.toLowerCase())
-    );
-
-    // Sort the filtered chats by lastMessage timestamp (createAt)
-    const sortedFilteredChats = filtered.sort((a, b) => {
-      const timestampA = new Date(a.lastMessage.timestamp).getTime();
-      const timestampB = new Date(b.lastMessage.timestamp).getTime();
-      return timestampB - timestampA; // Sorting in descending order
-    });
-
-    setFilteredChat(sortedFilteredChats);
+  // Handle search results
+  const fetchSearchResults = (text: string) => {
+    console.log(`Searching for: ${text}`);
   };
 
+  // Debounce search function
+  const debouncedSearch = useMemo(
+    () => debounce((text: string) => fetchSearchResults(text), 300),
+    []
+  );
+
+  // Filter sorted chats
+  const sortedChats = useMemo(() => {
+    return [...allChat].sort(
+      (a, b) =>
+        new Date(b.lastMessage.timestamp).getTime() -
+        new Date(a.lastMessage.timestamp).getTime()
+    );
+  }, [allChat]);
+
+  // Handle search input change and filtering
+  const handleSearch = useCallback(
+    (text: string) => {
+      const lowercasedText = text.toLowerCase();
+      // Lọc allChat theo groupName
+      const filtered = allChat.filter((chat) =>
+        chat.groupName.toLowerCase().includes(lowercasedText)
+      );
+      setFilteredChat(filtered);
+    },
+    [allChat]
+  );
+
+  useEffect(() => {
+    debouncedSearch(searchText);
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [searchText, debouncedSearch]);
+
+  // Handle new messages and update chats
   useEffect(() => {
     const handleNewMessage = (data: any) => {
+      if (id !== data.boxId) return; // Kiểm tra đúng kênh
+      // console.log(data.boxId);
+
       setAllChat((prevChats: any) => {
         const updatedChats = prevChats.map((chat: any) => {
           if (chat.id === data.boxId) {
@@ -94,7 +121,7 @@ const Message = () => {
               ...chat,
               lastMessage: {
                 ...chat.lastMessage,
-                text: data.text || "Đã gửi 1 file",
+                text: data.text || "",
                 timestamp: new Date(data.createAt),
               },
             };
@@ -109,11 +136,11 @@ const Message = () => {
           updatedChats.unshift({
             id: data.boxId,
             userName: data.userName || "Người dùng mới",
-            avatarUrl: data.avatarUrl || "/assets/images/default-user.png",
+            avatarUrl: data.avatarUrl || "/assets/images/default-avatar.png",
             lastMessage: {
               id: "unique-id",
               createBy: "system",
-              text: "Bắt đầu đoạn chat",
+              text: "",
               timestamp: new Date(data.createAt),
               status: false,
               contentId: {
@@ -131,6 +158,7 @@ const Message = () => {
             isRead: false,
             senderId: profile._id,
             receiverId: data.receiverIds,
+            groupName: data.groupName,
           });
         }
 
@@ -159,11 +187,11 @@ const Message = () => {
           updatedChats.unshift({
             id: data.boxId,
             userName: data.userName || "Người dùng mới",
-            avatarUrl: data.avatarUrl || "/assets/images/default-user.png",
+            avatarUrl: data.avatarUrl || "/assets/images/default-avatar.png",
             lastMessage: {
               id: "unique-id",
               createBy: "system",
-              text: "Bắt đầu đoạn chat",
+              text: "",
               timestamp: new Date(data.createAt),
               status: false,
               contentId: {
@@ -181,6 +209,7 @@ const Message = () => {
             isRead: false,
             senderId: profile._id,
             receiverId: data.receiverIds,
+            groupName: data.groupName,
           });
         }
 
@@ -190,78 +219,102 @@ const Message = () => {
       });
     };
 
-    // Đảm bảo hủy đăng ký kênh cũ
+    // Set up new message subscription
     channelRefs.current.forEach((channel) => {
       channel.unbind("new-message", handleNewMessage);
       pusherClient.unsubscribe(channel.name);
     });
 
-    // Đăng ký kênh mới
     const channels: any[] = allChat.map((chat) => {
       const channel = pusherClient.subscribe(`private-${chat.id.toString()}`);
-      channel.bind("new-message", handleNewMessage); // Đảm bảo lại bind sự kiện
+      channel.bind("new-message", handleNewMessage);
       return channel;
     });
 
-    // Lưu lại các kênh đã đăng ký
     channelRefs.current = channels;
 
-    // Hủy đăng ký khi component unmount hoặc khi allChat thay đổi
     return () => {
       channels.forEach((channel: any) => {
         channel.unbind("new-message", handleNewMessage);
-        pusherClient.unsubscribe(channel.name); // Hủy đăng ký kênh
+        pusherClient.unsubscribe(channel.name);
       });
     };
-  }, [id, allChat]);
-
-  console.log(
-    filteredChat.map((it) => it),
-    "filterchat"
-  );
+  }, [id, allChat, profile._id, setAllChat, setFilteredChat]);
 
   return (
-    <ScrollView
-      style={{
-        backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-        flex: 1,
-      }}
-      className="px-3"
-    >
-      <Link href="./home" style={{ color: "blue" }} className="flex flex-row">
-        <View className="pt-3 ">
-          <ArrowIcon size={30} color={"#FFAABB"} />
+    <View style={{ flex: 1, position: "relative" }}>
+      <ScrollView
+        style={{
+          paddingTop: Platform.OS === "android" ? 0 : 40, // Android: 0, iOS: 10
+          backgroundColor:
+            colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+          flex: 1,
+        }}
+        className="px-3"
+      >
+        <View className="flex flex-row items-center w-full px-2 mt-6">
+          {/* Nút quay lại */}
+          <TouchableOpacity className="pr-2" onPress={() => router.back()}>
+            <ArrowIcon size={30} color={"#FFAABB"} />
+          </TouchableOpacity>
+
+          {/* TextInput và nút Thêm */}
+          <View className="flex-1 flex flex-row items-center space-x-2">
+            <TextInput
+              placeholder="Find..."
+              placeholderTextColor="#D9D9D9"
+              className={`flex-1 h-[42px] text-[#D9D9D9] font-mregular px-4 rounded-full border-gray-200 text-sm ${
+                colorScheme === "dark" ? "bg-dark-400" : "bg-light-800"
+              }`}
+              style={{
+                borderWidth: 1, // Thêm borderWidth nếu cần
+                // borderColor:
+                //   colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng borderColor thay vì borderBlockColor
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+              editable={true}
+              value={searchText}
+              onChangeText={(text) => {
+                setSearchText(text); // Cập nhật giá trị tìm kiếm
+                handleSearch(text); // Gọi hàm tìm kiếm
+              }}
+            />
+            <TouchableOpacity onPress={() => setCreateGroup(true)}>
+              <PlusIcon color={iconColor} size={40} />
+            </TouchableOpacity>
+          </View>
         </View>
-        <View>
-          <Text
-            style={{
-              color: colors.primary[100],
-            }}
-            className="font-semibold text-[17px] pb-1"
-          >
-            Home
-          </Text>
+
+        <View className="mt-4">
+          {filteredChat.map((item) => (
+            <RenderMessageItem item={item} key={item.id} itemUserId={userId} />
+          ))}
         </View>
-      </Link>
-      <View className="mt-2">
-        <TextInput
-          placeholder="Tìm kiếm..."
-          placeholderTextColor="#D9D9D9"
-          className={` flex-1 h-[42px] text-[#D9D9D9] font-mregular px-4 rounded-full text-sm ${
-            colorScheme === "dark" ? "bg-dark-200" : "bg-light-800"
-          }`}
-          editable={true}
-          value={searchTerm}
-          onChangeText={(text) => setSearchTerm(text)}
-        />
-      </View>
-      <View className="mt-4">
-        {filteredChat.map((item) => (
-          <RenderMessageItem item={item} key={item.id} itemUserId={userId} />
-        ))}
-      </View>
-    </ScrollView>
+      </ScrollView>
+
+      {createGroup && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[200] : colors.light[700],
+            zIndex: 10,
+            padding: 16,
+          }}
+        >
+          <CreateGroupChat
+            onClose={() => setCreateGroup(false)}
+            setAllChat={setAllChat}
+            setFilteredChat={setFilteredChat}
+          />
+        </View>
+      )}
+    </View>
   );
 };
 

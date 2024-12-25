@@ -6,6 +6,7 @@ import {
   Modal,
   ScrollView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { SettingsIcon } from "../../components/icons/Icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -121,8 +122,9 @@ const Profile = () => {
       default:
         return (
           <ScrollView
-            className="p-3 pt-12"
+            className="p-3"
             style={{
+              paddingTop: Platform.OS === "android" ? 16 : 52, // Android: 0, iOS: 12
               backgroundColor:
                 colorScheme === "dark" ? colors.dark[300] : colors.light[700],
               flex: 1,
@@ -131,6 +133,8 @@ const Profile = () => {
             <View className="flex flex-row">
               <Text
                 style={{
+                  fontSize: 26,
+                  fontWeight: "600",
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
@@ -166,8 +170,8 @@ const Profile = () => {
                       activeTab === "posts"
                         ? colors.primary[100] // màu chữ khi active
                         : colorScheme === "dark"
-                        ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                        : colors.light[500], // màu chữ khi không active và trong light mode
+                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                          : colors.light[500], // màu chữ khi không active và trong light mode
                     borderBottomWidth: activeTab === "posts" ? 2 : 0, // đường viền dưới khi active
                     borderBottomColor:
                       activeTab === "posts"
@@ -188,8 +192,8 @@ const Profile = () => {
                       activeTab === "photos"
                         ? colors.primary[100] // màu chữ khi active
                         : colorScheme === "dark"
-                        ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                        : colors.light[500], // màu chữ khi không active và trong light mode
+                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                          : colors.light[500], // màu chữ khi không active và trong light mode
                     borderBottomWidth: activeTab === "photos" ? 2 : 0, // đường viền dưới khi active
                     borderBottomColor:
                       activeTab === "photos"
@@ -209,8 +213,8 @@ const Profile = () => {
                       activeTab === "videos"
                         ? colors.primary[100] // màu chữ khi active
                         : colorScheme === "dark"
-                        ? colors.dark[100] // màu chữ khi không active trong dark mode
-                        : colors.light[500], // màu chữ khi không active trong light mode
+                          ? colors.dark[100] // màu chữ khi không active trong dark mode
+                          : colors.light[500], // màu chữ khi không active trong light mode
                     borderBottomWidth: activeTab === "videos" ? 2 : 0, // đường viền dưới khi active
                     borderBottomColor:
                       activeTab === "videos"

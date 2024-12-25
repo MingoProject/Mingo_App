@@ -41,6 +41,7 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { useEvent } from "expo";
 import AudioPlayer from "../media/AudioPlayer";
 import { openWebFile } from "@/lib/untils/File";
+import { colors } from "@/styles/colors";
 const screenWidth = Dimensions.get("window").width;
 
 const MessageCard = ({
@@ -54,7 +55,7 @@ const MessageCard = ({
   message: ResponseMessageDTO;
   isCurrentUser: boolean;
   isFirstMessageOfDay: boolean;
-  chatItem?: ItemChat;
+  chatItem?: ItemChat | null;
   colorScheme: any;
   screenWidth: any;
 }) => {
@@ -72,29 +73,12 @@ const MessageCard = ({
 
   const handleDelete = async () => {
     try {
-      Alert.alert(
-        "Delete Message", // Tiêu đề
-        "Are you sure you want to delete this message?", // Nội dung
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Yes",
-            onPress: async () => {
-              await removeMessage(message.id);
-              setMessages((prevMessages) =>
-                prevMessages.filter((msg) => msg.id !== message.id)
-              );
-            },
-          },
-        ],
-
-        { cancelable: true }
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== message.id)
       );
+      await removeMessage(message.id);
     } catch (error) {
-      alert("Xóa chat thất bại. Vui lòng thử lại.");
+      alert("Failed to delete chat. Please try again.");
     }
   };
 
@@ -110,7 +94,7 @@ const MessageCard = ({
       // Gửi yêu cầu lên server để cập nhật trạng thái thu hồi
       await revokeMessage(message.id);
     } catch (error) {
-      alert("Khôi phục thất bại. Vui lòng thử lại.");
+      alert("Failed to unsend. Please try again.");
     }
   };
 
@@ -142,6 +126,8 @@ const MessageCard = ({
         margin: 5,
         borderRadius: 8,
         rowGap: 4,
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700],
       }}
       onPress={async () => await openWebFile(item.url!)}
     >
@@ -156,6 +142,10 @@ const MessageCard = ({
           <Text
             className={`text-[10px] ml-4 font-helvetica-bold`}
             numberOfLines={2}
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+            }}
           >
             {`${item.fileName}`}
           </Text>
@@ -172,7 +162,7 @@ const MessageCard = ({
     >
       {isFirstMessageOfDay && (
         <View className="mx-auto">
-          <Text className="text-center text-light-600 mb-2">
+          <Text className="text-center font-mmedium text-light-600 mb-2">
             {currentMessageDate.toLocaleDateString()}
           </Text>
         </View>
@@ -182,8 +172,18 @@ const MessageCard = ({
         {/* Biểu tượng 3 chấm nằm ngoài message, ở bên trái */}
         {isCurrentUser && (
           <TouchableOpacity onPress={toggleModal}>
-            <Text>
-              <ThreeDotsIcon size={16} color="#555" />{" "}
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+            >
+              <ThreeDotsIcon
+                size={16}
+                color={
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500]
+                }
+              />
             </Text>
             {/* Bạn có thể thay đổi màu sắc của icon */}
           </TouchableOpacity>
@@ -228,28 +228,34 @@ const MessageCard = ({
               onRequestClose={toggleModal}
             >
               <View className="flex-1 justify-center items-center">
-                {/* Thêm bóng mờ nhưng không tối màn hình */}
-                <View
-                  className="absolute top-0 left-0 right-0 bottom-0 bg-transparent"
+                {/* Lớp nền mờ phía sau modal */}
+                <TouchableOpacity
+                  activeOpacity={1}
                   style={{
-                    zIndex: 999,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 5 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 10,
-                    elevation: 5,
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "rgba(0, 0, 0, 0.5)", // Nền mờ
                   }}
-                ></View>
+                  onPress={toggleModal} // Đóng modal khi nhấn ra ngoài
+                />
 
+                {/* Nội dung modal */}
                 <View
-                  className="bg-white p-4 rounded-lg w-60 border border-gray-200"
+                  className="bg-white rounded-lg"
                   style={{
-                    zIndex: 999,
                     width: 250,
                     padding: 20,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 4,
+                    elevation: 10, // Bóng mờ trên Android
                   }}
                 >
-                  {/* Close Button */}
+                  {/* Nút đóng */}
                   <TouchableOpacity
                     onPress={toggleModal}
                     style={{
@@ -259,45 +265,50 @@ const MessageCard = ({
                       zIndex: 1000,
                     }}
                   >
-                    <Text style={{ fontSize: 18, fontWeight: "bold" }}>×</Text>
+                    <Text
+                      style={{ fontSize: 18, fontWeight: "bold" }}
+                      className="text-primary-100 font-mmedium"
+                    >
+                      ×
+                    </Text>
                   </TouchableOpacity>
 
-                  {/* Tùy chọn Revoke và Delete */}
+                  {/* Các tùy chọn */}
                   <TouchableOpacity
-                    className="flex items-center justify-center w-full h-[50px] border-border border-b-[0.5px]"
+                    className="flex items-center justify-center w-full h-[50px] font-mmedium border-b border-gray-200"
                     onPress={() => {
                       handleRevoke();
                       toggleModal();
                     }}
                   >
-                    <Text className="font-helvetica-light text-14 text-center">
-                      Thu hồi
+                    <Text className="text-center text-sm text-primary-100 font-mmedium">
+                      Unsend
                     </Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    className="flex items-center justify-center w-full h-[50px] border-border border-t-[0.5px]"
+                    className="flex items-center justify-center w-full h-[50px] border-t border-gray-200"
                     onPress={() => {
                       handleDelete();
                       toggleModal();
                     }}
                   >
-                    <Text className="font-helvetica-light text-14 text-center">
-                      Xóa
+                    <Text className="text-center text-sm text-primary-100 font-mmedium">
+                      Delete
                     </Text>
                   </TouchableOpacity>
 
-                  {/* Thêm tùy chọn Edit nếu có file và không phải current user */}
+                  {/* Tùy chọn Edit */}
                   {hasFiles && !isCurrentUser && (
                     <TouchableOpacity
-                      className="flex items-center justify-center w-full h-[50px] border-border border-t-[0.5px]"
+                      className="flex items-center justify-center w-full h-[50px] border-t border-gray-200"
                       onPress={() => {
                         handleEdit();
                         toggleModal();
                       }}
                     >
-                      <Text className="font-helvetica-light text-14 text-center">
-                        Sửa
+                      <Text className="text-center text-sm text-primary-100 font-mmedium">
+                        Edit
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -311,15 +322,19 @@ const MessageCard = ({
             <Text
               className={`${
                 isCurrentUser ? "text-white" : "text-gray-500"
-              } text-sm italic`}
+              } text-sm italic font-mmedium`}
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
             >
-              Tin nhắn đã được thu hồi
+              Message unsent
             </Text>
           ) : (
             <>
               {/* Render message text properly inside Text component */}
               <Text
-                className={`text-sm ${
+                className={`text-sm font-mregular ${
                   isCurrentUser ? "text-white" : "text-black"
                 }`}
               >
@@ -395,10 +410,14 @@ const MessageCard = ({
                     <Text
                       style={{
                         fontSize: 14,
-                        color: "#6c757d",
+                        color:
+                          colorScheme === "dark"
+                            ? colors.dark[100]
+                            : colors.light[500],
                       }}
+                      className="font-mregular"
                     >
-                      Không hỗ trợ định dạng này
+                      This format is not supported.
                     </Text>
                   )}
                 </View>

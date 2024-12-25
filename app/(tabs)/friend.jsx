@@ -6,6 +6,7 @@ import {
   Button,
   ScrollView,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
@@ -89,8 +90,9 @@ const Friend = () => {
         <SearchFriend onClose={handleOnClose} />
       ) : (
         <View
-          className="w-full p-4 h-full pt-12"
+          className="w-full p-4 h-full"
           style={{
+            paddingTop: Platform.OS === "android" ? 14 : 52, // Android: 0, iOS: 12
             backgroundColor:
               colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Use color from colors.js
             flex: 1,
@@ -101,6 +103,8 @@ const Friend = () => {
               <View>
                 <Text
                   style={{
+                    fontSize: 26,
+                    fontWeight: "600",
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
@@ -146,8 +150,8 @@ const Friend = () => {
                         isActiveTab === "loimoi"
                           ? colors.primary[100] // màu chữ khi active
                           : colorScheme === "dark"
-                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                          : colors.light[500], // màu chữ khi không active và trong light mode
+                            ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                            : colors.light[500], // màu chữ khi không active và trong light mode
                       borderBottomWidth: isActiveTab === "loimoi" ? 2 : 0, // đường viền dưới khi active
                       borderBottomColor:
                         isActiveTab === "loimoi"
@@ -174,8 +178,8 @@ const Friend = () => {
                         isActiveTab === "banbe"
                           ? colors.primary[100] // màu chữ khi active
                           : colorScheme === "dark"
-                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                          : colors.light[500], // màu chữ khi không active và trong light mode
+                            ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                            : colors.light[500], // màu chữ khi không active và trong light mode
                       borderBottomWidth: isActiveTab === "banbe" ? 2 : 0, // đường viền dưới khi active
                       borderBottomColor:
                         isActiveTab === "banbe"
@@ -202,8 +206,8 @@ const Friend = () => {
                         isActiveTab === "banthan"
                           ? colors.primary[100] // màu chữ khi active
                           : colorScheme === "dark"
-                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                          : colors.light[500], // màu chữ khi không active và trong light mode
+                            ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                            : colors.light[500], // màu chữ khi không active và trong light mode
                       borderBottomWidth: isActiveTab === "banthan" ? 2 : 0, // đường viền dưới khi active
                       borderBottomColor:
                         isActiveTab === "banthan"
@@ -230,8 +234,8 @@ const Friend = () => {
                         isActiveTab === "follower"
                           ? colors.primary[100] // màu chữ khi active
                           : colorScheme === "dark"
-                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                          : colors.light[500], // màu chữ khi không active và trong light mode
+                            ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                            : colors.light[500], // màu chữ khi không active và trong light mode
                       borderBottomWidth: isActiveTab === "follower" ? 2 : 0, // đường viền dưới khi active
                       borderBottomColor:
                         isActiveTab === "follower"
@@ -258,8 +262,8 @@ const Friend = () => {
                         isActiveTab === "block"
                           ? colors.primary[100] // màu chữ khi active
                           : colorScheme === "dark"
-                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                          : colors.light[500], // màu chữ khi không active và trong light mode
+                            ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                            : colors.light[500], // màu chữ khi không active và trong light mode
                       borderBottomWidth: isActiveTab === "block" ? 2 : 0, // đường viền dưới khi active
                       borderBottomColor:
                         isActiveTab === "block"

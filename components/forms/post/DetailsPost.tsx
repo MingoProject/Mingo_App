@@ -374,7 +374,7 @@ const DetailsPost = ({
             </View>
           )}
 
-          <View className="p-4 bg-white dark:bg-black border-t border-gray-300">
+          <View className="p-4 bg-white dark:bg-black border-t border-gray-300 mb-3">
             <View className="flex-row items-center">
               <TextInput
                 value={comment}
