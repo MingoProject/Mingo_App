@@ -44,6 +44,14 @@
           "microphonePermission": "Allow Mingo to access your microphone",
           "recordAudioAndroid": true
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": true
+        }
       ]
     ],
     "experiments": {

@@ -119,7 +119,7 @@ export async function getListChat(): Promise<ItemChat[]> {
             }
           : {
               id: "",
-              text: " Started the chat ",
+              text: " Started the chat",
               timestamp: new Date(),
               createBy: "",
               contentId: fileContent,
