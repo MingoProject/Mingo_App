@@ -6,6 +6,7 @@ import {
   Button,
   ScrollView,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useTheme } from "../../context/ThemeContext";
@@ -89,8 +90,9 @@ const Friend = () => {
         <SearchFriend onClose={handleOnClose} />
       ) : (
         <View
-          className="w-full p-4 h-full pt-12"
+          className="w-full p-4 h-full"
           style={{
+            paddingTop: Platform.OS === "android" ? 14 : 12, // Android: 0, iOS: 12
             backgroundColor:
               colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Use color from colors.js
             flex: 1,
@@ -101,6 +103,8 @@ const Friend = () => {
               <View>
                 <Text
                   style={{
+                    fontSize: 26,
+                    fontWeight: "600",
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]

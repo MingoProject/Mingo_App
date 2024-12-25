@@ -10,6 +10,7 @@ import {
   Dimensions,
   ScrollView,
   TextInput,
+  Platform,
 } from "react-native";
 import {
   ArrowIcon,
@@ -373,8 +374,10 @@ const InfoChat = ({
   return (
     <>
       <ScrollView
-        className="flex-1 pb-10"
         style={{
+          flex: 1,
+          paddingTop: Platform.OS === "android" ? 4 : 4, // Giữ nguyên giá trị pt-4
+          paddingBottom: Platform.OS === "android" ? 10 : 10, // Giữ nguyên giá trị pb-10
           backgroundColor:
             colorScheme === "dark" ? colors.dark[300] : colors.light[700],
         }}
@@ -515,7 +518,7 @@ const InfoChat = ({
               onPress={() => setShowAllImages(true)}
               className="ml-auto"
             >
-              <Text className="text-primary-100 text-sm text-right mr-5">
+              <Text className="text-primary-100 text-sm text-right mr-5 font-mregular">
                 More images
               </Text>
             </TouchableOpacity>
@@ -549,7 +552,7 @@ const InfoChat = ({
               onPress={() => setShowAllVideos(true)}
               className="ml-auto"
             >
-              <Text className="text-primary-100 text-sm text-right mr-5">
+              <Text className="text-primary-100 text-sm text-right font-mregular mr-5">
                 More videos
               </Text>
             </TouchableOpacity>
@@ -599,7 +602,7 @@ const InfoChat = ({
               onPress={() => setShowAllFiles(true)}
               className="ml-auto"
             >
-              <Text className="text-primary-100 text-sm text-right mr-5">
+              <Text className="text-primary-100 text-sm text-right mr-5 font-mregular">
                 More files
               </Text>
             </TouchableOpacity>
@@ -835,7 +838,7 @@ const InfoChat = ({
             />
             <TouchableOpacity
               onPress={() => setShowAllVideos(false)}
-              className="mt-2 bg-primary-100 rounded p-2"
+              className="mt-2 bg-primary-100 rounded p-2 "
             >
               <Text className="text-white text-center font-mmedium">Close</Text>
             </TouchableOpacity>
@@ -932,7 +935,7 @@ const InfoChat = ({
                 colorScheme === "dark" ? colors.dark[300] : colors.light[700],
               flex: 1,
             }}
-            className="px-3 mt-10"
+            className="px-3 mt-0"
           >
             <View className="flex flex-row py-4">
               <TouchableOpacity

@@ -42,15 +42,15 @@ const RenderMessageItem = ({
   const [isRead, setIsRead] = useState(false);
   const { isOnlineChat, setIsOnlineChat } = useChatContext();
 
-  // const markMessagesAsRead = async (chatId: string) => {
-  //   try {
-  //     const userId = await AsyncStorage.getItem("userId");
-  //     await MarkMessageAsRead(chatId.toString(), userId?.toString() || "");
-  //     setIsRead(true);
-  //   } catch (error) {
-  //     console.error("Error marking messages as read:", error);
-  //   }
-  // };
+  const markMessagesAsRead = async (chatId: string) => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      await MarkMessageAsRead(chatId.toString(), userId?.toString() || "");
+      setIsRead(true);
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+    }
+  };
 
   const myChat = async () => {
     try {
@@ -102,9 +102,11 @@ const RenderMessageItem = ({
 
   const handleNewMessage = async (data: ResponseGroupMessageDTO) => {
     if (data.boxId !== item.id) return;
+
     const userId = await AsyncStorage.getItem("userId");
     try {
       if (data.boxId === item.id) {
+        markMessagesAsRead(data.boxId);
       }
     } catch (error) {
       console.error("Error marking message as read:", error);
@@ -381,8 +383,8 @@ const RenderMessageItem = ({
                 <Text
                   className={`${
                     lastMessage.status || !isReceiver
-                      ? "font-normal"
-                      : "font-bold"
+                      ? "font-mregular"
+                      : "font-mmedium"
                   }`}
                   style={{
                     color:
@@ -397,8 +399,8 @@ const RenderMessageItem = ({
                   console.log(lastMessage.contentId?.type?.toLowerCase());
                   const type = lastMessage.contentId?.type?.toLowerCase() || "";
                   const messageStatusClass = lastMessage.status
-                    ? "font-normal"
-                    : "font-bold";
+                    ? "font-mregular"
+                    : "font-msemibold";
 
                   if (lastMessage.text !== "") {
                     return (
@@ -496,7 +498,9 @@ const RenderMessageItem = ({
             ) : (
               <View className="flex flex-row items-center gap-1">
                 <Text
-                  className={`"font-normal"`}
+                  className={`${
+                    lastMessage.status ? "font-mregular" : "font-msemibold"
+                  }`}
                   style={{
                     color:
                       colorScheme === "dark"
@@ -509,8 +513,8 @@ const RenderMessageItem = ({
                 {(() => {
                   const type = lastMessage.contentId?.type?.toLowerCase() || "";
                   const messageStatusClass = lastMessage.status
-                    ? "font-normal"
-                    : "font-normal";
+                    ? "font-mregular"
+                    : "font-msemibold";
 
                   if (lastMessage.text !== "") {
                     return (
@@ -574,7 +578,10 @@ const RenderMessageItem = ({
         <Text
           className=""
           style={{
-            color: colorScheme === "dark" ? colors.dark[100] : "text-gray-500", // Sử dụng giá trị màu từ file colors.js
+            color:
+              colorScheme === "dark"
+                ? colors.dark[100]
+                : "text-gray-500 font-mregular", // Sử dụng giá trị màu từ file colors.js
           }}
         >
           {timeString}

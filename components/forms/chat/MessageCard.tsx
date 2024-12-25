@@ -162,7 +162,7 @@ const MessageCard = ({
     >
       {isFirstMessageOfDay && (
         <View className="mx-auto">
-          <Text className="text-center text-light-600 mb-2">
+          <Text className="text-center font-mmedium text-light-600 mb-2">
             {currentMessageDate.toLocaleDateString()}
           </Text>
         </View>
@@ -267,7 +267,7 @@ const MessageCard = ({
                   >
                     <Text
                       style={{ fontSize: 18, fontWeight: "bold" }}
-                      className="text-primary-100"
+                      className="text-primary-100 font-mmedium"
                     >
                       ×
                     </Text>
@@ -275,13 +275,13 @@ const MessageCard = ({
 
                   {/* Các tùy chọn */}
                   <TouchableOpacity
-                    className="flex items-center justify-center w-full h-[50px] border-b border-gray-200"
+                    className="flex items-center justify-center w-full h-[50px] font-mmedium border-b border-gray-200"
                     onPress={() => {
                       handleRevoke();
                       toggleModal();
                     }}
                   >
-                    <Text className="text-center text-sm text-primary-100">
+                    <Text className="text-center text-sm text-primary-100 font-mmedium">
                       Unsend
                     </Text>
                   </TouchableOpacity>
@@ -293,7 +293,7 @@ const MessageCard = ({
                       toggleModal();
                     }}
                   >
-                    <Text className="text-center text-sm text-primary-100">
+                    <Text className="text-center text-sm text-primary-100 font-mmedium">
                       Delete
                     </Text>
                   </TouchableOpacity>
@@ -307,7 +307,7 @@ const MessageCard = ({
                         toggleModal();
                       }}
                     >
-                      <Text className="text-center text-sm text-primary-100">
+                      <Text className="text-center text-sm text-primary-100 font-mmedium">
                         Edit
                       </Text>
                     </TouchableOpacity>
@@ -322,7 +322,7 @@ const MessageCard = ({
             <Text
               className={`${
                 isCurrentUser ? "text-white" : "text-gray-500"
-              } text-sm italic`}
+              } text-sm italic font-mmedium`}
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -334,7 +334,7 @@ const MessageCard = ({
             <>
               {/* Render message text properly inside Text component */}
               <Text
-                className={`text-sm ${
+                className={`text-sm font-mregular ${
                   isCurrentUser ? "text-white" : "text-black"
                 }`}
               >
@@ -415,6 +415,7 @@ const MessageCard = ({
                             ? colors.dark[100]
                             : colors.light[500],
                       }}
+                      className="font-mregular"
                     >
                       This format is not supported.
                     </Text>

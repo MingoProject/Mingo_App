@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Platform,
 } from "react-native";
 import { ArrowIcon, PlusIcon } from "../components/icons/Icons";
 import React, {
@@ -244,11 +245,12 @@ const Message = () => {
     <View style={{ flex: 1, position: "relative" }}>
       <ScrollView
         style={{
+          marginTop: Platform.OS === "android" ? 0 : 12, // Android: 0, iOS: 10
           backgroundColor:
             colorScheme === "dark" ? colors.dark[300] : colors.light[700],
           flex: 1,
         }}
-        className="px-3 mt-10"
+        className="px-3"
       >
         <View className="flex flex-row items-center w-full px-2 mt-6">
           {/* Nút quay lại */}

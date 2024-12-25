@@ -102,22 +102,6 @@ const CreateGroupChat = ({
         // Điều hướng đến nhóm mới tạo
         router.push(`./chats/${newGroup.newBox.id}`);
       }
-
-      //   if (newGroup) {
-      //     const fetchChats = async () => {
-      //       try {
-      //         const normalChats = await getListChat();
-      //         const groupChats = await getListGroupChat();
-
-      //         const combinedChats = [...normalChats, ...groupChats];
-      //         setAllChat(combinedChats);
-      //         setFilteredChat(combinedChats);
-      //       } catch (error) {
-      //         console.error("Error loading chats:", error);
-      //       }
-      //     };
-      //     fetchChats();
-      //   }
       alert("Group created successfully!");
       onClose();
     } catch (err: any) {
@@ -137,7 +121,7 @@ const CreateGroupChat = ({
       }}
     >
       {/* Header */}
-      <View className="flex flex-row pt-10 justify-between items-center pb-4">
+      <View className="flex  flex-row pt-10 justify-between items-center pb-4">
         <Text
           style={{
             color:
@@ -159,7 +143,7 @@ const CreateGroupChat = ({
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="text-[16px] font-medium"
+          className="text-[16px] font-medium font-msemibold"
         >
           Group name
         </Text>
@@ -179,6 +163,7 @@ const CreateGroupChat = ({
         placeholderTextColor={
           colorScheme === "dark" ? colors.dark[100] : colors.light[500] // Tùy chỉnh màu placeholder
         }
+        className="font-mregular"
       />
 
       <View className="mb-4">
@@ -187,7 +172,7 @@ const CreateGroupChat = ({
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="text-[16px] font-medium"
+          className="text-[16px] font-medium font-msemibold"
         >
           Members
         </Text>
@@ -204,7 +189,7 @@ const CreateGroupChat = ({
                 marginRight: 8,
                 padding: 5,
               }}
-              className="flex-row justify-center items-center mt-3"
+              className="flex-row justify-center items-center mt-3 "
             >
               <Image
                 source={
@@ -220,6 +205,7 @@ const CreateGroupChat = ({
                     ? colors.dark[100]
                     : colors.light[500],
                 }}
+                className="font-mregular"
               >
                 {friend.firstName} {friend.lastName}
               </Text>
@@ -238,7 +224,7 @@ const CreateGroupChat = ({
           backgroundColor: colors.primary[100],
         }}
       >
-        <Text className="text-center text-white  font-bold text-[16px]">
+        <Text className="text-center text-white font-msemibold font-bold text-[16px]">
           Create group
         </Text>
       </TouchableOpacity>

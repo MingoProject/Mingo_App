@@ -541,10 +541,11 @@ const Chat = () => {
 
   return (
     <View
-      className="flex-1 pt-10"
       style={{
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? 8 : 12, // Android: 0, iOS: 10
         backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Màu sắc tùy thuộc vào colorScheme
       }}
     >
       {isCameraOpen ? (
@@ -580,7 +581,7 @@ const Chat = () => {
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
-              className="text-[16px] font-medium"
+              className="text-[16px] font-mmedium"
             >
               {chatItem?.groupName}
             </Text>

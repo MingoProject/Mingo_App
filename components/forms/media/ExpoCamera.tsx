@@ -160,7 +160,7 @@ const ExpoCamera = ({
                 setVideoUri("");
               }}
             >
-              <CancelIcon size={40} color={iconColor} />
+              <CancelIcon size={30} color={"#FFAABB"} />
             </TouchableOpacity>
           </View>
           <View className="absolute bottom-[40px] right-[20px]">
@@ -171,7 +171,7 @@ const ExpoCamera = ({
                   onClose();
                 }}
               >
-                <SendIcon size={40} color={iconColor} />
+                <SendIcon size={40} color={"#FFAABB"} />
               </TouchableOpacity>
             ) : (
               <TouchableOpacity onPress={onClose}>
