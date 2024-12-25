@@ -214,7 +214,7 @@ const DetailImage = ({
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
-                className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg"
+                className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg font-mmedium"
               />
               <TouchableOpacity
                 onPress={handleSendComment}

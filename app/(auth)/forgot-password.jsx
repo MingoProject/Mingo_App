@@ -11,7 +11,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Svg, { Path } from "react-native-svg";
 import { useRouter } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
-import { colors } from "../../styles/colors";
+import { colors } from "@/styles/colors";
 import { findUserByPhoneNumber } from "@/lib/service/user.service";
 import { sendOTP, verifyOTP, resetPassword } from "@/lib/service/auth.service";
 
@@ -143,26 +143,36 @@ const ForgotPassword = () => {
               style={{
                 backgroundColor:
                   colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-                flex: 1,
+                // flex: 1,
               }}
             >
-              <Text
-                className="font-mbold text-[24px] text-center mt-20"
-                style={{
-                  color:
+              <View className="w-full items-center justify-end pb-5 mt-28">
+                <Text
+                  className="font-msemibold text-[36px]"
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[500],
+                  }}
+                >
+                  Forgot Password
+                </Text>
+                <Image
+                  source={
                     colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                }}
-              >
-                Forgot Password
-              </Text>
+                      ? require("../../assets/images/password-dark.png")
+                      : require("../../assets/images/password-light.png")
+                  }
+                  style={{ width: 233, height: 235 }} // Tránh lỗi style
+                />
+              </View>
               <TextInput
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
                 placeholder="Enter phone number"
                 keyboardType="numeric"
-                className="mt-10 border border-gray-200 rounded p-4"
+                className="mt-2 border border-gray-200 rounded-[8px] p-4 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -172,9 +182,16 @@ const ForgotPassword = () => {
               />
               <TouchableOpacity
                 onPress={handlePhoneSubmit}
-                className="mt-4 p-4 bg-primary-100 rounded"
+                className="mt-4 p-[14px] bg-primary-100 rounded-[8px]"
               >
-                <Text className="text-white text-center">Send OTP</Text>
+                <Text
+                  className="text-white text-center text-[16px] font-msemibold"
+                  style={{
+                    color: "#ffffff",
+                  }}
+                >
+                  Send OTP
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -251,7 +268,7 @@ const ForgotPassword = () => {
               </View>
               <TouchableOpacity
                 onPress={handleOtpSubmit}
-                className="mt-4 p-3 bg-primary-100 rounded"
+                className="mt-4 p-3 bg-primary-100 rounded font-mmedium"
               >
                 <Text className="text-white text-center">Verify OTP</Text>
               </TouchableOpacity>
@@ -315,7 +332,7 @@ const ForgotPassword = () => {
                 secureTextEntry
                 value={newPassword}
                 onChangeText={(text) => setNewPassword(text)}
-                className="border border-gray-200 p-4 rounded my-4"
+                className="border border-gray-200 p-4 rounded-[8px] my-4"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -328,7 +345,7 @@ const ForgotPassword = () => {
                 secureTextEntry
                 value={confirmPassword}
                 onChangeText={(text) => setConfirmPassword(text)}
-                className="border p-4 border-gray-200 rounded my-4"
+                className="border p-4 border-gray-200 rounded-[8px] my-4"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -338,9 +355,11 @@ const ForgotPassword = () => {
               />
               <TouchableOpacity
                 onPress={handlePasswordSubmit}
-                className="bg-primary-100 p-3 rounded"
+                className="mt-4 p-[14px] bg-primary-100 rounded-[8px]"
               >
-                <Text className="text-white text-center">Reset Password</Text>
+                <Text className="text-white text-center text-[16px] font-msemibold">
+                  Reset Password
+                </Text>
               </TouchableOpacity>
             </View>
           )}

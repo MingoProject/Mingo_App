@@ -10,6 +10,7 @@ import {
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { useRouter } from "expo-router";
+import { CancelIcon } from "@/components/icons/Icons";
 
 interface TagModalProps {
   tags: { _id: string; firstName: string; lastName: string; avatar?: string }[];
@@ -21,7 +22,10 @@ const TagModal: React.FC<TagModalProps> = ({ tags, isOpen, onClose }) => {
   if (!isOpen) return null;
   const router = useRouter();
   const { colorScheme } = useTheme();
+  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+
   const navigateToUserProfile = (item: any) => {
+    onClose();
     router.push(`/user/${item}`);
   };
   return (
@@ -47,11 +51,12 @@ const TagModal: React.FC<TagModalProps> = ({ tags, isOpen, onClose }) => {
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
+              className="font-mbold text-[20px]"
             >
               Tagged People
             </Text>
             <TouchableOpacity onPress={onClose}>
-              <Text style={styles.closeText}>X</Text>
+              <CancelIcon size={20} color={iconColor} />
             </TouchableOpacity>
           </View>
 
@@ -70,7 +75,7 @@ const TagModal: React.FC<TagModalProps> = ({ tags, isOpen, onClose }) => {
                   }}
                   style={styles.avatar}
                 />
-                <Text style={styles.tagText}>
+                <Text style={styles.tagText} className="font-mmedium">
                   {tag.firstName} {tag.lastName}
                 </Text>
               </TouchableOpacity>

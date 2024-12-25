@@ -242,7 +242,7 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
             {profile.firstName} {profile.lastName}
             {/* Replace with user's name */}
           </Text>
-          <MyDropDown />
+          {/* <MyDropDown /> */}
         </View>
       </View>
 
@@ -260,7 +260,7 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="text-[16px] font-medium"
+          className="text-[16px] font-mmedium"
         >
           Add location
         </Text>
@@ -269,6 +269,7 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
         value={location}
         onChangeText={setLocation}
         placeholder="Location"
+        className="text-[14px] font-mmedium border-gray-200 pt-3"
         style={{
           borderWidth: 1,
           borderColor: colors.primary[100],
@@ -285,7 +286,7 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="text-[16px] font-medium"
+          className="text-[16px] font-mmedium"
         >
           Tag friends
         </Text>
@@ -363,7 +364,7 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
           className="ml-auto"
           onPress={() => setTagFriendsVisible(true)}
         >
-          <Text className="text-primary-100">Add friends</Text>
+          <Text className="text-primary-100 font-mmedium">Add friends</Text>
         </TouchableOpacity>
       </View>
 
@@ -372,7 +373,7 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
           <TouchableOpacity
             key={friend._id}
             onPress={() => toggleTagFriend(friend)}
-            className="bg-gray-300 p-2 rounded-full flex-row"
+            className="bg-gray-200 p-2 px-2 rounded-full flex-row items-center"
             style={{
               backgroundColor:
                 colorScheme === "dark" ? colors.dark[400] : colors.light[800],
@@ -393,7 +394,7 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
               }}
             />
             <Text
-              className="text-sm"
+              className="text-[14px] ml-1 font-mmedium"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -411,7 +412,7 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="text-[16px] font-medium"
+          className="text-[16px] font-mmedium"
         >
           Add to the post
         </Text>
@@ -452,11 +453,14 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
                       ? colors.dark[100]
                       : colors.light[500],
                 }}
+                className="font-mmedium"
               />
               <TouchableOpacity
                 onPress={() => handleDeleteExistingMedia(index)}
               >
-                <Text className="text-primary-100 ml-2">Delete</Text>
+                <Text className="text-primary-100 ml-2 font-mmedium">
+                  Delete
+                </Text>
               </TouchableOpacity>
             </View>
           ))}
@@ -497,12 +501,12 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
         className="mt-3"
       >
         <View
-          className=" p-3 rounded-full"
+          className=" p-3 rounded-[8px]"
           style={{
             backgroundColor: colors.primary[100],
           }}
         >
-          <Text className="text-white text-center">
+          <Text className="text-white text-center font-msemibold">
             {loading ? "Updating..." : "Update Post"}
           </Text>
         </View>

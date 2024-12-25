@@ -18,21 +18,42 @@ const UserCard = ({ item }: any) => {
       ]}
     >
       <Image
-        source={{ uri: item.avatar }}
+        source={{
+          uri:
+            item.avatar ||
+            "https://i.pinimg.com/736x/53/fa/f6/53faf62829a9c44c082d15460c2b1c65.jpg",
+        }}
         style={styles.avatar}
         resizeMode="cover"
       />
-      <Text
-        style={[
-          styles.name,
-          {
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          },
-        ]}
-      >
-        {item.firstName} {item.lastName}
-      </Text>
+      <View>
+        <Text
+          style={[
+            styles.name,
+            {
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            },
+          ]}
+          className="font-mmedium text-sm"
+        >
+          {item.firstName} {item.lastName}
+        </Text>
+        {item.nickName ? (
+          <Text
+            style={[
+              styles.name,
+              {
+                fontStyle: "italic",
+                color: colors.primary[100],
+              },
+            ]}
+            className="font-mmedium text-sm mt-1"
+          >
+            {item.nickName}
+          </Text>
+        ) : null}
+      </View>
     </View>
   );
 };
@@ -56,7 +77,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   name: {
-    fontSize: 16,
+    // fontSize: 16,
     fontWeight: "bold",
     color: "#333",
   },

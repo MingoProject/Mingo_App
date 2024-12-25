@@ -67,8 +67,9 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               paddingTop={undefined}
               paddingBottom={undefined}
               borderColor={undefined}
+              fontSize={13}
               fontWeight={undefined}
-              fontFamily={undefined}
+              fontFamily="Montserrat-Medium"
             />
             <MyButton
               title="Unfriend"
@@ -81,11 +82,12 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               }
               onPress={() => handleAction("unfriend")}
               padding={undefined}
+              fontSize={13}
               paddingTop={undefined}
               paddingBottom={undefined}
               borderColor={undefined}
               fontWeight={undefined}
-              fontFamily={undefined}
+              fontFamily="Montserrat-Medium"
               isActive={undefined}
             />
           </>
@@ -100,6 +102,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               isActive={"banbe"}
               paddingLeft={10}
               paddingRight={10}
+              fontSize={13}
               backgroundColor={colors.primary[100]}
               onPress={undefined}
               padding={undefined}
@@ -107,7 +110,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               paddingBottom={undefined}
               borderColor={undefined}
               fontWeight={undefined}
-              fontFamily={undefined}
+              fontFamily="Montserrat-Medium"
             />
             <MyButton
               title="Unbestfriend"
@@ -115,6 +118,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               height={35}
               paddingLeft={10}
               paddingRight={10}
+              fontSize={13}
               backgroundColor={
                 colorScheme === "dark" ? colors.dark[400] : colors.light[800]
               }
@@ -124,7 +128,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               paddingBottom={undefined}
               borderColor={undefined}
               fontWeight={undefined}
-              fontFamily={undefined}
+              fontFamily="Montserrat-Medium"
               isActive={undefined}
             />
           </>
@@ -139,6 +143,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               isActive={"banbe"}
               paddingLeft={10}
               paddingRight={10}
+              fontSize={13}
               backgroundColor={colors.primary[100]}
               onPress={undefined}
               padding={undefined}
@@ -146,7 +151,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               paddingBottom={undefined}
               borderColor={undefined}
               fontWeight={undefined}
-              fontFamily={undefined}
+              fontFamily="Montserrat-Medium"
             />
             <MyButton
               title="Unfollow"
@@ -154,6 +159,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               height={35}
               paddingLeft={10}
               paddingRight={10}
+              fontSize={13}
               backgroundColor={
                 colorScheme === "dark" ? colors.dark[400] : colors.light[800]
               }
@@ -163,7 +169,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               paddingBottom={undefined}
               borderColor={undefined}
               fontWeight={undefined}
-              fontFamily={undefined}
+              fontFamily="Montserrat-Medium"
               isActive={undefined}
             />
           </>
@@ -178,6 +184,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               isActive={"banbe"}
               paddingLeft={10}
               paddingRight={10}
+              fontSize={13}
               backgroundColor={colors.primary[100]}
               onPress={() => handleAction("accept")}
               padding={undefined}
@@ -185,13 +192,14 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               paddingBottom={undefined}
               borderColor={undefined}
               fontWeight={undefined}
-              fontFamily={undefined}
+              fontFamily="Montserrat-Medium"
             />
             <MyButton
               title="Refuse"
               width={125}
               height={35}
               paddingLeft={10}
+              fontSize={13}
               paddingRight={10}
               backgroundColor={
                 colorScheme === "dark" ? colors.dark[400] : colors.light[800]
@@ -202,7 +210,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
               paddingBottom={undefined}
               borderColor={undefined}
               fontWeight={undefined}
-              fontFamily={undefined}
+              fontFamily="Montserrat-Medium"
               isActive={undefined}
             />
           </>
@@ -213,6 +221,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
             title="Unblock"
             width={125}
             height={35}
+            fontSize={13}
             paddingLeft={10}
             paddingRight={10}
             backgroundColor={
@@ -224,7 +233,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
             paddingBottom={undefined}
             borderColor={undefined}
             fontWeight={undefined}
-            fontFamily={undefined}
+            fontFamily="Montserrat-Medium"
             isActive={undefined}
           />
         );
@@ -390,14 +399,14 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
                 style={{
                   color: colorScheme === "dark" ? colors.dark[100] : "#92898A", // Sử dụng giá trị màu từ file colors.js
                 }}
-                className={`text-lg`}
+                className={`text-base font-mmedium`}
               >
                 {`${item.firstName} ${item.lastName}`}
               </Text>
             </View>
 
             <View>
-              {isLoiMoi ? (
+              {/* {isLoiMoi ? (
                 <Text
                   style={{
                     color:
@@ -409,7 +418,7 @@ const Card = ({ item, actionButton, isLoiMoi, setData }: any) => {
                 </Text>
               ) : (
                 <ThreeDot size={20} color={iconColor} />
-              )}
+              )} */}
             </View>
           </View>
         </View>

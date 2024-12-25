@@ -8,7 +8,7 @@ import {
   TextInput,
   Modal,
 } from "react-native";
-import { ArrowRightIcon } from "@/components/icons/Icons";
+import { ArrowRightIcon, CancelIcon } from "@/components/icons/Icons";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { getTimestamp } from "@/lib/utils";
@@ -262,7 +262,7 @@ const ReplyCard = ({
               )}
             </Text>
             <Text
-              className="text-sm mt-1 border-gray-400"
+              className="text-sm mt-1 border-gray-400 font-mmedium"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -272,7 +272,7 @@ const ReplyCard = ({
             </Text>
             <View className="flex-row">
               <Text
-                className="text-xs"
+                className="text-xs font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -297,11 +297,11 @@ const ReplyCard = ({
               value={newComment}
               onChangeText={setNewComment}
               placeholder="Write a reply..."
-              className="border w-52 border-gray-300 rounded-lg p-2 text-sm"
+              className="border w-[200px] border-gray-300 rounded-lg p-2 text-sm font-mmedium"
             />
             <TouchableOpacity
               onPress={handleReplyComment}
-              className="bg-blue-500  rounded-lg ml-2 px-3 py-2 flex-row justify-center items-center"
+              className="bg-primary-100  rounded-lg ml-2 px-3 py-2 flex-row justify-center items-center font-mbold"
             >
               <Text className="text-white text-sm">Reply</Text>
             </TouchableOpacity>
@@ -309,7 +309,7 @@ const ReplyCard = ({
               onPress={() => setReplyingTo(null)}
               className=" rounded-lg ml-2 py-2 flex-row justify-center items-center"
             >
-              <Text className="text-sm">X</Text>
+              <CancelIcon size={20} color={iconColor} />
             </TouchableOpacity>
           </View>
         )}
