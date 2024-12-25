@@ -29,6 +29,7 @@ const TabIcon = ({ SvgIcon, color, name, focused }) => {
           marginTop: 2, // Khoảng cách giữa icon và text
           color: color,
         }}
+        className="font-mregular"
       >
         {name}
       </Text>
@@ -36,7 +37,6 @@ const TabIcon = ({ SvgIcon, color, name, focused }) => {
   );
 };
 
-// Các biểu tượng SVG từ Iconify
 const HomeIcon = ({ color = "currentColor", width = 24, height = 24 }) => (
   <Svg width={width} height={height} viewBox="0 0 512 512" fill="none">
     <Path
@@ -171,14 +171,13 @@ const TabsLayout = () => {
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#FFAABB",
         tabBarInactiveTintColor: "#92898A",
-
         tabBarStyle: {
           backgroundColor: colorScheme === "dark" ? "#252525" : "#FFFFFF", // Chỉnh màu nền ở đây
-          borderTopWidth: 5, // Độ dày viền
-          borderTopColor: "transparent", // Màu viền tùy theo chế độ
+          borderTopWidth: 5,
+          borderTopColor: "transparent",
         },
         tabBarItemStyle: {
-          flex: 1, // Chia đều kích thước cho các tab
+          flex: 1,
         },
       }}
     >

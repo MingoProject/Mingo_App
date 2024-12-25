@@ -15,7 +15,7 @@ import DetailsPost from "@/components/forms/post/DetailsPost";
 import PostAction from "@/components/forms/post/PostAction";
 import { useRouter } from "expo-router";
 import { Video, ResizeMode } from "expo-av";
-import { ThreeDot } from "@/components/icons/Icons";
+import { FriendIcon, LocationIcon, ThreeDot } from "@/components/icons/Icons";
 import { useAuth } from "@/context/AuthContext";
 import PostMenu from "@/components/forms/post/PostMenu";
 import TagModal from "@/components/forms/post/TagsModal";
@@ -137,9 +137,10 @@ const PostCard = ({ item, setPostsData }: any) => {
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-                fontSize: 17,
+                fontSize: 16,
                 fontWeight: "600",
               }}
+              className="font-msemibold"
             >
               {item.author?.firstName || ""} {item.author?.lastName || ""}{" "}
             </Text>
@@ -149,17 +150,21 @@ const PostCard = ({ item, setPostsData }: any) => {
                   flexDirection: "row",
                   alignItems: "center",
                 }}
+                className="flex"
               >
+                <Text> {"- "}</Text>
+                <LocationIcon size={14} color={iconColor} />
                 {/* <Icon name="mi:location" size={18} color={iconColor} /> */}
                 <Text
                   style={{
+                    fontSize: 16,
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
                         : colors.light[500],
                   }}
+                  className="font-mregular ml-1"
                 >
-                  {"- "}
                   {item.location}
                 </Text>
               </View>
@@ -170,36 +175,29 @@ const PostCard = ({ item, setPostsData }: any) => {
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-                fontSize: 17,
-                marginBottom: 5,
+                fontSize: 16,
               }}
+              className="font-mmedium w-40"
+              numberOfLines={1} // Hiển thị tối đa 1 dòng
+              ellipsizeMode="tail"
             >
-              {"with "}
-              {item.tags?.slice(0, 1).map((tag, index) => (
-                <Text
-                  key={tag._id}
-                  style={{
-                    color: colors.primary[100],
-                    fontSize: 17,
-                    // fontWeight: "600",
-                  }}
-                >
-                  {tag?.firstName}
-                  {index < item.tags?.slice(0, 1).length - 1 ? ", " : ""}
-                </Text>
-              ))}
-              {item.tags?.length > 1 && (
+              <FriendIcon size={18} color={iconColor} />
+
+              {item.tags?.length > 0 && (
                 <TouchableOpacity
                   onPress={handleTagsModalToggle}
-                  className="mt-[9px]"
+                  // className="mt-[10px]"
                 >
                   <Text
                     style={{
                       color: colors.primary[100],
-                      fontSize: 17,
+                      fontSize: 16,
                     }}
+                    className="font-mregular"
+                    numberOfLines={1} // Hiển thị tối đa 1 dòng
+                    ellipsizeMode="tail"
                   >
-                    {` and ${item.tags.length - 1} others`}
+                    {` with ${item.tags.length} others`}
                   </Text>
                 </TouchableOpacity>
               )}

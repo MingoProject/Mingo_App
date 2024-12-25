@@ -58,8 +58,8 @@ const Friend = () => {
 
   const renderContent = () => {
     switch (isActiveTab) {
-      case "follower":
-        return <Follower />;
+      // case "follower":
+      //   return <Follower />;
       case "loimoi":
         return <Following />;
       case "banbe":
@@ -131,172 +131,147 @@ const Friend = () => {
                 gap: 8, // Add space between buttons
               }}
               showsHorizontalScrollIndicator={false}
-              className="pb-2"
+              className="pb-2 mt-3"
             >
-              <MyButton
-                title="Follower"
-                onPress={() => setIsActiveTab("follower")}
-                paddingLeft={20}
-                paddingRight={20}
-                width={130}
-                height={40}
-                borderRadius={30}
-                fontSize={16}
-                isShadow={true}
-                isActive={isActiveTab === "follower"}
-                backgroundColor={
-                  isActiveTab === "follower"
-                    ? colors.primary[100]
-                    : colorScheme === "dark"
-                    ? colors.dark[400]
-                    : colors.light[800]
-                }
-                titleStyle={{
-                  color:
-                    isActiveTab === "follower"
-                      ? colors.light[100]
-                      : colorScheme === "dark"
-                      ? colors.light[300]
-                      : colors.dark[700],
-                }}
-              />
-              <MyButton
-                title="Followings"
-                onPress={() => setIsActiveTab("loimoi")}
-                paddingLeft={20}
-                paddingRight={20}
-                width={130}
-                height={40}
-                borderRadius={30}
-                fontSize={16}
-                isShadow={true}
-                isActive={isActiveTab === "loimoi"}
-                backgroundColor={
-                  isActiveTab === "loimoi"
-                    ? colors.primary[100]
-                    : colorScheme === "dark"
-                    ? colors.dark[400]
-                    : colors.light[800]
-                }
-                titleStyle={{
-                  color:
-                    isActiveTab === "loimoi"
-                      ? colors.light[100]
-                      : colorScheme === "dark"
-                      ? colors.light[300]
-                      : colors.dark[700],
-                }}
-              />
-              <MyButton
-                title="Friends"
-                onPress={() => setIsActiveTab("banbe")}
-                paddingLeft={20}
-                paddingRight={20}
-                width={100}
-                height={40}
-                borderRadius={30}
-                fontSize={16}
-                isShadow={true}
-                isActive={isActiveTab === "banbe"}
-                backgroundColor={
-                  isActiveTab === "banbe"
-                    ? colors.primary[100]
-                    : colorScheme === "dark"
-                    ? colors.dark[400]
-                    : colors.light[800]
-                }
-                titleStyle={{
-                  color:
-                    isActiveTab === "banbe"
-                      ? colors.light[100]
-                      : colorScheme === "dark"
-                      ? colors.light[300]
-                      : colors.dark[700],
-                }}
-              />
-              <MyButton
-                title="Best Friends"
-                onPress={() => setIsActiveTab("banthan")}
-                paddingLeft={20}
-                paddingRight={20}
-                width={135}
-                height={40}
-                borderRadius={30}
-                fontSize={16}
-                isShadow={true}
-                isActive={isActiveTab === "banthan"}
-                backgroundColor={
-                  isActiveTab === "banthan"
-                    ? colors.primary[100]
-                    : colorScheme === "dark"
-                    ? colors.dark[400]
-                    : colors.light[800]
-                }
-                titleStyle={{
-                  color:
-                    isActiveTab === "banthan"
-                      ? colors.light[100]
-                      : colorScheme === "dark"
-                      ? colors.light[300]
-                      : colors.dark[700],
-                }}
-              />
+              <View className="w-32">
+                <TouchableOpacity
+                  className="mx-auto"
+                  onPress={() => setIsActiveTab("loimoi")}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
 
-              <MyButton
-                title="Followers"
-                onPress={() => setIsActiveTab("follower")}
-                paddingLeft={20}
-                paddingRight={20}
-                width={130}
-                height={40}
-                borderRadius={30}
-                fontSize={16}
-                isShadow={true}
-                isActive={isActiveTab === "follower"}
-                backgroundColor={
-                  isActiveTab === "follower"
-                    ? colors.primary[100]
-                    : colorScheme === "dark"
-                    ? colors.dark[400]
-                    : colors.light[800]
-                }
-                titleStyle={{
-                  color:
-                    isActiveTab === "follower"
-                      ? colors.light[100]
-                      : colorScheme === "dark"
-                      ? colors.light[300]
-                      : colors.dark[700],
-                }}
-              />
+                      color:
+                        isActiveTab === "loimoi"
+                          ? colors.primary[100] // màu chữ khi active
+                          : colorScheme === "dark"
+                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                          : colors.light[500], // màu chữ khi không active và trong light mode
+                      borderBottomWidth: isActiveTab === "loimoi" ? 2 : 0, // đường viền dưới khi active
+                      borderBottomColor:
+                        isActiveTab === "loimoi"
+                          ? colors.primary[100]
+                          : "transparent", // màu đường viền dưới
+                    }}
+                    className="text-[16px] font-mregular "
+                  >
+                    Following
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-              <MyButton
-                title="Block"
-                onPress={() => setIsActiveTab("block")}
-                paddingLeft={20}
-                paddingRight={20}
-                width={100}
-                height={40}
-                borderRadius={30}
-                fontSize={16}
-                isShadow={true}
-                isActive={isActiveTab === "block"}
-                backgroundColor={
-                  isActiveTab === "block"
-                    ? colors.primary[100]
-                    : colorScheme === "dark"
-                    ? colors.dark[400]
-                    : colors.light[800]
-                }
-                titleStyle={{
-                  color:
-                    isActiveTab === "block"
-                      ? colors.light[100]
-                      : colorScheme === "dark"
-                      ? colors.light[300]
-                      : colors.dark[700],
-                }}
-              />
+              <View className="w-28">
+                <TouchableOpacity
+                  className="mx-auto"
+                  onPress={() => setIsActiveTab("banbe")}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+
+                      color:
+                        isActiveTab === "banbe"
+                          ? colors.primary[100] // màu chữ khi active
+                          : colorScheme === "dark"
+                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                          : colors.light[500], // màu chữ khi không active và trong light mode
+                      borderBottomWidth: isActiveTab === "banbe" ? 2 : 0, // đường viền dưới khi active
+                      borderBottomColor:
+                        isActiveTab === "banbe"
+                          ? colors.primary[100]
+                          : "transparent", // màu đường viền dưới
+                    }}
+                    className="text-[16px] font-mregular "
+                  >
+                    Friend
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="w-32">
+                <TouchableOpacity
+                  className="mx-auto"
+                  onPress={() => setIsActiveTab("banthan")}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+
+                      color:
+                        isActiveTab === "banthan"
+                          ? colors.primary[100] // màu chữ khi active
+                          : colorScheme === "dark"
+                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                          : colors.light[500], // màu chữ khi không active và trong light mode
+                      borderBottomWidth: isActiveTab === "banthan" ? 2 : 0, // đường viền dưới khi active
+                      borderBottomColor:
+                        isActiveTab === "banthan"
+                          ? colors.primary[100]
+                          : "transparent", // màu đường viền dưới
+                    }}
+                    className="text-[16px] font-mregular "
+                  >
+                    Bestfriend
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="w-28">
+                <TouchableOpacity
+                  className="mx-auto"
+                  onPress={() => setIsActiveTab("follower")}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+
+                      color:
+                        isActiveTab === "follower"
+                          ? colors.primary[100] // màu chữ khi active
+                          : colorScheme === "dark"
+                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                          : colors.light[500], // màu chữ khi không active và trong light mode
+                      borderBottomWidth: isActiveTab === "follower" ? 2 : 0, // đường viền dưới khi active
+                      borderBottomColor:
+                        isActiveTab === "follower"
+                          ? colors.primary[100]
+                          : "transparent", // màu đường viền dưới
+                    }}
+                    className="text-[16px] font-mregular "
+                  >
+                    Follower
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="w-28">
+                <TouchableOpacity
+                  className="mx-auto"
+                  onPress={() => setIsActiveTab("block")}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+
+                      color:
+                        isActiveTab === "block"
+                          ? colors.primary[100] // màu chữ khi active
+                          : colorScheme === "dark"
+                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
+                          : colors.light[500], // màu chữ khi không active và trong light mode
+                      borderBottomWidth: isActiveTab === "block" ? 2 : 0, // đường viền dưới khi active
+                      borderBottomColor:
+                        isActiveTab === "block"
+                          ? colors.primary[100]
+                          : "transparent", // màu đường viền dưới
+                    }}
+                    className="text-[16px] font-mregular "
+                  >
+                    Block
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </ScrollView>
 
             <View>{renderContent()}</View>

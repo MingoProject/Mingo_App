@@ -250,7 +250,7 @@ const AddPost = ({ onClose }: any) => {
             {profile.firstName} {profile.lastName}
             {/* Replace with user's name */}
           </Text>
-          <MyDropDown />
+          {/* <MyDropDown /> */}
         </View>
       </View>
 
@@ -268,7 +268,7 @@ const AddPost = ({ onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="text-[16px] font-medium"
+          className="text-[16px] font-mmedium"
         >
           Add location
         </Text>
@@ -277,12 +277,13 @@ const AddPost = ({ onClose }: any) => {
         value={location}
         onChangeText={setLocation}
         placeholder="Location"
+        className="text-[14px] font-mmedium border-gray-200 pt-3"
         style={{
           borderWidth: 1,
-          borderColor: colors.primary[100],
           borderRadius: 8,
           padding: 10,
           marginVertical: 12,
+          color: colorScheme === "dark" ? colors.dark[100] : colors.light[500],
         }}
       />
 
@@ -292,7 +293,7 @@ const AddPost = ({ onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="text-[16px] font-medium"
+          className="text-[16px] font-mmedium"
         >
           Tag friends
         </Text>
@@ -304,15 +305,19 @@ const AddPost = ({ onClose }: any) => {
               style={{
                 backgroundColor: taggedFriends.includes(friend)
                   ? colors.primary[100]
-                  : colors.light[600],
+                  : colors.light[800],
                 borderRadius: 20,
                 marginRight: 8,
                 padding: 5,
               }}
-              className="flex-row justify-center items-center mt-3"
+              className="flex-row justify-center items-center mt-3 px-2"
             >
               <Image
-                source={{ uri: friend.avatar }} // Avatar from profile
+                source={{
+                  uri:
+                    friend.avatar ||
+                    "https://i.pinimg.com/736x/57/36/f0/5736f06013a35c48586c3067bef8c2c1.jpg",
+                }} // Avatar from profile
                 className="w-9 h-9 rounded-full"
               />
               <Text
@@ -321,6 +326,7 @@ const AddPost = ({ onClose }: any) => {
                     ? colors.dark[100]
                     : colors.light[500],
                 }}
+                className="text-[14px] ml-1 font-mmedium"
               >
                 {friend.firstName} {friend.lastName}
               </Text>
@@ -353,8 +359,10 @@ const AddPost = ({ onClose }: any) => {
               style={{
                 padding: 5,
                 marginTop: 8,
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
-              className="w-72"
+              className="w-72 font-mregular"
             />
             <TouchableOpacity
               onPress={() => handleDeleteFile(index)}
@@ -373,7 +381,7 @@ const AddPost = ({ onClose }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
           }}
-          className="text-[16px] font-medium"
+          className="text-[16px] font-mmedium"
         >
           Add to the post
         </Text>
@@ -390,12 +398,12 @@ const AddPost = ({ onClose }: any) => {
       {/* Submit Button */}
       <TouchableOpacity
         onPress={handleSubmit}
-        className="w-full py-3 mt-4 rounded-md mb-10"
+        className="w-full py-3 mt-4 rounded-[8px] mb-10"
         style={{
           backgroundColor: colors.primary[100],
         }}
       >
-        <Text className="text-center text-white font-bold text-[16px]">
+        <Text className="text-center text-white font-msemibold">
           Create post
         </Text>
       </TouchableOpacity>

@@ -22,10 +22,10 @@ const Background = ({ profileUser, setProfile }: any) => {
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
 
   useEffect(() => {
-    if (profile._id && profile._id === profileUser._id) {
+    if (profile?._id && profile?._id === profileUser?._id) {
       setIsMe(true);
     }
-  }, [profileUser._id]);
+  }, [profileUser?._id]);
 
   const uploadUserBackGround = async (file: File) => {
     if (!file) return;
@@ -78,7 +78,7 @@ const Background = ({ profileUser, setProfile }: any) => {
         <Image
           source={{
             uri:
-              profileUser.background ||
+              profileUser?.background ||
               "https://i.pinimg.com/1200x/50/51/d4/5051d41e6bf1a0b3806f4ce4cc267cac.jpg",
           }}
           className="w-full h-[152px] rounded-lg"

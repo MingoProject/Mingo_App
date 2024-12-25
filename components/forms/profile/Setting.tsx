@@ -17,9 +17,11 @@ import SavedPosts from "./SavedPosts";
 import LikedPosts from "./LikedPosts";
 import ChangePassword from "./ChangePassword";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "expo-router";
 
 const Setting = ({ setSetting }: any) => {
   const { logout } = useAuth();
+  const router = useRouter();
   const { colorScheme, toggleColorScheme } = useTheme();
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isSavedPostModalVisible, setSavedPostModalVisible] = useState(false);
@@ -39,6 +41,8 @@ const Setting = ({ setSetting }: any) => {
 
   const handleLogout = () => {
     try {
+      setSetting(false);
+      router.push("/signin");
       logout();
     } catch (error) {
       console.error("Error logout:", error);
@@ -203,12 +207,14 @@ const Setting = ({ setSetting }: any) => {
               </Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => setSetting(false)}
-            className="mt-2 bg-primary-100 rounded p-2"
+            className="mt-2 py-3 bg-primary-100 rounded p-2"
           >
-            <Text className="text-white text-center font-mmedium">Close</Text>
-          </TouchableOpacity>
+            <Text className="text-white text-[16px] text-center font-msemibold">
+              Close
+            </Text>
+          </TouchableOpacity> */}
         </View>
       </View>
       <Modal

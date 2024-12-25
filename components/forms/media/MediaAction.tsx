@@ -108,7 +108,7 @@ const MediaAction = ({
       >
         <LikeIcon size={25} color={isLiked ? colors.primary[100] : iconColor} />
         <Text
-          className="ml-1"
+          className="ml-1 font-mmedium"
           style={{
             color: isLiked
               ? colors.primary[100]
@@ -127,7 +127,7 @@ const MediaAction = ({
       >
         <CommentIcon size={25} color={iconColor} />
         <Text
-          className="ml-1 text-gray-700"
+          className="ml-1 text-gray-700 font-mmedium"
           style={{
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],
@@ -140,7 +140,7 @@ const MediaAction = ({
       <TouchableOpacity className="flex-row items-center">
         <ShareIcon size={25} color={iconColor} />
         <Text
-          className="ml-1 text-gray-700"
+          className="ml-1 text-gray-700 font-mmedium"
           style={{
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],

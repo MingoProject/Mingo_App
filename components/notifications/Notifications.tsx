@@ -555,7 +555,7 @@ const Notifications = ({ notifications, setNotifications }: any) => {
               onPress={() => handleClick(notification)}
             >
               <Text
-                className="text-base font-medium mt-1 "
+                className="text-sm font-mmedium mt-1 "
                 style={{
                   color:
                     colorScheme === "dark"
@@ -582,7 +582,7 @@ const Notifications = ({ notifications, setNotifications }: any) => {
                         backgroundColor: colors.primary[100], // Sử dụng giá trị màu từ file colors.js
                       }}
                     >
-                      <Text className="text-white font-semibold">Accept</Text>
+                      <Text className="text-white font-msemibold">Accept</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() =>
@@ -601,7 +601,7 @@ const Notifications = ({ notifications, setNotifications }: any) => {
                       }}
                     >
                       <Text
-                        className=" font-semibold"
+                        className=" font-msemibold"
                         style={{
                           color:
                             colorScheme === "dark"
@@ -629,7 +629,7 @@ const Notifications = ({ notifications, setNotifications }: any) => {
                         backgroundColor: colors.primary[100], // Sử dụng giá trị màu từ file colors.js
                       }}
                     >
-                      <Text className="text-white font-semibold">Accept</Text>
+                      <Text className="text-white font-msemibold">Accept</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() =>
@@ -648,7 +648,7 @@ const Notifications = ({ notifications, setNotifications }: any) => {
                       }}
                     >
                       <Text
-                        className=" font-semibold"
+                        className=" font-msemibold"
                         style={{
                           color:
                             colorScheme === "dark"
@@ -663,7 +663,7 @@ const Notifications = ({ notifications, setNotifications }: any) => {
                 )}
               </View>
               <View className="flex flex-row justify-between items-center">
-                <Text className="text-gray-400 font-semibold text-xs">
+                <Text className="text-gray-400 font-mregular text-xs mt-1">
                   {getTimestamp(notification?.createAt)}
                 </Text>
               </View>

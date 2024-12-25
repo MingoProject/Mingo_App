@@ -87,6 +87,7 @@ const MyButton = ({
           textAligh: textAligh,
           fontFamily: fontFamily,
         }}
+        // className="font-mbold"
       >
         {title}
       </Text>

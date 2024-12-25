@@ -138,7 +138,7 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
     <View className="flex-row">
       <TouchableOpacity onPress={toggleLike}>
         <Text
-          className="ml-2 text-xs"
+          className="ml-2 text-xs font-mmedium"
           style={{
             color: isLiked
               ? colors.primary[100]
@@ -152,7 +152,7 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
       </TouchableOpacity>
       <TouchableOpacity>
         <Text
-          className="ml-1 text-xs"
+          className="ml-1 text-xs font-mmedium"
           style={{
             color: isLiked
               ? colors.primary[100]
@@ -166,7 +166,7 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
       </TouchableOpacity>
       <TouchableOpacity onPress={() => setReplyingTo(comment._id)}>
         <Text
-          className="ml-2 text-xs"
+          className="ml-2 text-xs font-mmedium"
           style={{
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[500],

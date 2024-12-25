@@ -47,10 +47,11 @@ const MyInput = ({
   return (
     <View style={styles.inputContainer}>
       <TextInput
+        className="font-mregular"
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"} // Placeholder color
+        placeholderTextColor={colorScheme === "dark" ? "#aaa" : "#888"}
         secureTextEntry={secureTextEntry}
         style={styles.input}
         onSubmitEditing={onSubmit}

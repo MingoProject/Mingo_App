@@ -1,4 +1,10 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import React, { useState } from "react";
 import MyInput from "../../components/share/MyInput";
 import Svg, { Path } from "react-native-svg";
@@ -90,176 +96,183 @@ const SignIn = () => {
   };
 
   return (
-    <View
-      className="w-full h-full p-4 bg-white flex flex-col justify-between"
-      style={{
-        backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-        flex: 1,
-      }}
-    >
-      {/* Các thành phần khác */}
-      <View className="w-full flex-grow flex flex-col">
-        <View className="w-full items-center justify-end pb-10 mt-40">
-          <Text
-            className="font-msemibold text-[36px] text-light-500"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            Login
-          </Text>
-        </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View
+        className="w-full h-full p-4 bg-white flex flex-col justify-between"
+        style={{
+          backgroundColor:
+            colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+          // flex: 1,
+        }}
+      >
+        <View className="w-full flex-grow flex flex-col">
+          <View className="w-full items-center justify-end pb-10 mt-40">
+            <Text
+              className="font-msemibold text-[36px] text-light-500"
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+            >
+              Login
+            </Text>
+          </View>
 
-        <View className="w-full">
-          <View className="flex flex-col gap-6">
-            <View className="relative">
-              <View
-                className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
-                style={{
-                  backgroundColor:
-                    colorScheme === "dark"
-                      ? colors.dark[300]
-                      : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-                  flex: 1,
-                }}
-              >
-                <Text
-                  className="font-mregular text-[12px]"
+          <View className="w-full">
+            <View className="flex flex-col gap-6">
+              <View className="relative">
+                <View
+                  className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
                   style={{
-                    color:
+                    backgroundColor:
                       colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[500],
+                        ? colors.dark[300]
+                        : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                    flex: 1,
                   }}
                 >
-                  Phone Number
-                </Text>
-                <View className="ml-1 pb-1">
-                  <PlusIcon />
+                  <Text
+                    className="font-mregular text-[12px]"
+                    style={{
+                      color:
+                        colorScheme === "dark"
+                          ? colors.dark[100]
+                          : colors.light[500],
+                    }}
+                  >
+                    Phone Number
+                  </Text>
+                  <View className="ml-1 pb-1">
+                    <PlusIcon />
+                  </View>
                 </View>
+                <MyInput
+                  value={phoneNumber}
+                  onChangeText={setPhoneNumber}
+                  placeholder="Phone Number"
+                  fontFamily="Montserrat-Regular"
+                  borderRadius={8}
+                  height={56}
+                  fontSize={14}
+                  style={{ zIndex: 1 }}
+                />
               </View>
-              <MyInput
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-                placeholder="Phone Number"
-                borderRadius={8}
-                height={56}
-                fontSize={14}
-                style={{ zIndex: 1 }}
-              />
-            </View>
 
-            <View className="relative">
-              <View
-                className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
-                style={{
-                  backgroundColor:
-                    colorScheme === "dark"
-                      ? colors.dark[300]
-                      : colors.light[700], // Sử dụng giá trị màu từ file colors.js
-                  flex: 1,
-                }}
-              >
-                <Text
-                  className="font-mregular text-[12px]"
+              <View className="relative">
+                <View
+                  className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
                   style={{
-                    color:
+                    backgroundColor:
                       colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[500],
+                        ? colors.dark[300]
+                        : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                    flex: 1,
                   }}
                 >
-                  Password
-                </Text>
-                <View className="ml-1 pb-1">
-                  <PlusIcon />
+                  <Text
+                    className="font-mregular text-[12px]"
+                    style={{
+                      color:
+                        colorScheme === "dark"
+                          ? colors.dark[100]
+                          : colors.light[500],
+                    }}
+                  >
+                    Password
+                  </Text>
+                  <View className="ml-1 pb-1">
+                    <PlusIcon />
+                  </View>
                 </View>
+                <MyInput
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Password"
+                  borderRadius={8}
+                  fontFamily="Montserrat-Regular"
+                  height={56}
+                  fontSize={14}
+                  style={{ zIndex: 1 }}
+                />
               </View>
-              <MyInput
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Password"
-                borderRadius={8}
-                height={56}
-                fontSize={14}
-                style={{ zIndex: 1 }}
-              />
-            </View>
 
-            <View>
-              <MyButton
-                title="Login"
-                borderRadius={12}
-                backgroundColor="#FFAABB"
-                fontSize={16}
-                color="white"
-                fontFamily="Montserrat-Bold"
-                onPress={handleSubmit}
-              />
-            </View>
+              <View>
+                <MyButton
+                  title="Login"
+                  borderRadius={8}
+                  backgroundColor="#FFAABB"
+                  fontSize={16}
+                  color="white"
+                  fontFamily="Montserrat-SemiBold"
+                  onPress={handleSubmit}
+                />
+              </View>
 
-            <View className="px-2 flex flex-row justify-between items-center">
-              <TouchableOpacity
-                onPressIn={() => {
-                  setIsPressed(true);
-                  router.push("forgot-password");
-                }}
-                onPressOut={() => setIsPressed(false)}
-              >
-                <Text
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[500],
+              <View className="px-2 flex flex-row justify-between items-center">
+                <TouchableOpacity
+                  onPressIn={() => {
+                    setIsPressed(true);
+                    router.push("forgot-password");
                   }}
+                  onPressOut={() => setIsPressed(false)}
                 >
-                  Forget password?
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    className="font-mregular text-[14px]"
+                    style={{
+                      color:
+                        colorScheme === "dark"
+                          ? colors.dark[100]
+                          : colors.light[500],
+                      fontFamily: "Montserrat-Regular",
+                    }}
+                  >
+                    Forgot password?
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
-      </View>
 
-      {/* Phần này sẽ luôn nằm cách đáy 16px */}
-      <View className="w-full mb-10">
-        <View className="flex flex-row items-center justify-center">
-          <Text
-            className="font-mbold text-light-500 text-[16px]"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            Or
-          </Text>
-        </View>
-        <View className="mt-4 w-full flex flex-row items-center justify-center">
-          <Text
-            className="font-mregular text-[16px] text-light-500"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          >
-            You don't have an account yet?{" "}
+        {/* Phần này sẽ luôn nằm cách đáy 16px */}
+        <View className="w-full mb-10">
+          <View className="flex flex-row items-center justify-center">
             <Text
-              onPress={() => router.push("signup")}
               className="font-mbold text-light-500 text-[16px]"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[500],
               }}
             >
-              Sign up
+              Or
             </Text>
-          </Text>
+          </View>
+          <View className="mt-4 w-full flex flex-row items-center justify-center">
+            <Text
+              className="font-mregular text-[16px] text-light-500"
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              }}
+            >
+              You don't have an account yet?{" "}
+              <Text
+                onPress={() => router.push("signup")}
+                className="font-mbold text-light-500 text-[16px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[500],
+                }}
+              >
+                Sign up
+              </Text>
+            </Text>
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
