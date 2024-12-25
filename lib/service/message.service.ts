@@ -704,8 +704,9 @@ export async function IsOnline(userId: string) {
   }
 }
 
-export async function IsOffline(userId: string) {
+export async function IsOffline() {
   const token = await AsyncStorage.getItem("token");
+  const userId = await AsyncStorage.getItem("userId");
   if (!token) {
     console.error("No token found");
     throw new Error("Authentication token is missing.");
@@ -713,7 +714,7 @@ export async function IsOffline(userId: string) {
 
   try {
     const response = await fetch(
-      `${BASE_URL}/message/IsOffline?userId=${userId}`,
+      `${BASE_URL}/message/isOfflineStatus?userId=${userId}`,
       {
         method: "POST",
         headers: {

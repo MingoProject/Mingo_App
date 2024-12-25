@@ -452,6 +452,7 @@ const Chat = () => {
     // console.log(messages, "this is message");
     const handleNewMessage = async (data: ResponseGroupMessageDTO) => {
       if (id !== data.boxId) return; // Kiểm tra đúng kênh
+      const userId = await AsyncStorage.getItem("userId");
 
       setMessages((prevMessages) => {
         return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
@@ -465,16 +466,19 @@ const Chat = () => {
       }
 
       // Lên lịch thông báo
-      const rs = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "New Message", // Tiêu đề thông báo
-          body: `${data.createName}: ${data.text}`, // Nội dung tin nhắn
-          sound: "default", // Âm thanh mặc định
-        },
-        trigger: new Date(Date.now() + 1 * 1000), // Thông báo sẽ hiển thị ngay lập tức (hoặc bạn có thể thay đổi thời gian)
-      });
 
-      console.log(rs, "Notification scheduled");
+      if (data.createBy !== userId) {
+        const rs = await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "New Message", // Tiêu đề thông báo
+            body: `${data.createName}: ${data.text}`, // Nội dung tin nhắn
+            sound: "default", // Âm thanh mặc định
+          },
+          trigger: new Date(Date.now() + 1 * 1000), // Thông báo sẽ hiển thị ngay lập tức (hoặc bạn có thể thay đổi thời gian)
+        });
+
+        console.log(rs, "Notification scheduled");
+      }
     };
 
     const handleDeleteMessage = ({ id: messageId }: PusherDelete) => {
@@ -506,12 +510,6 @@ const Chat = () => {
       console.log(`Unsubscribed from private-${id} channel`);
     };
   }, [permissionGreanted]); // Re-run if boxId or setMessages changes
-
-  const handleIconPress = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
 
   const handleUnBlockChat = async (relation: string) => {
     const userId = await AsyncStorage.getItem("userId");
@@ -616,7 +614,7 @@ const Chat = () => {
       {isCameraOpen ? (
         <ExpoCamera
           onClose={() => setIsCameraOpen(false)}
-          onSend={handleSend}
+          onSend={handleSendMultipleFiles}
           setSelectedMedia={(uri: string, type: string, name: string) =>
             setSelectedMedia([{ uri: uri, type: type, name: name }])
           }
