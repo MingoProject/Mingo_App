@@ -20,6 +20,7 @@ import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { useChatContext } from "../../context/ChatContext";
 import {
   getGroupAllChat,
+  MarkMessageAsRead,
   sendMessage,
 } from "../../lib/service/message.service";
 import {
@@ -61,7 +62,7 @@ import * as Device from "expo-device";
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
+    shouldPlaySound: true,
     shouldSetBadge: false,
   }),
 });
@@ -228,6 +229,20 @@ const Chat = () => {
     setCurrentContentType("text");
   };
 
+  const handleMarkAsRead = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+
+      const mark = await MarkMessageAsRead(
+        id?.toString() || "",
+        userId?.toString() || ""
+      );
+      // console.log(mark, "this is mark");
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+    }
+  };
+
   const resetContent = () => {
     setValue("");
     setSelectedMedia([]);
@@ -371,28 +386,10 @@ const Chat = () => {
     }
   };
 
-  useEffect(() => {
-    const requestPermissions = async () => {
-      if (Device.isDevice) {
-        const { status: existingStatus } =
-          await Notifications.getPermissionsAsync();
-        let finalStatus = existingStatus;
-        if (existingStatus !== "granted") {
-          const { status } = await Notifications.requestPermissionsAsync();
-          finalStatus = status;
-        }
-        setPermissionGranted(finalStatus === "granted");
-      } else {
-        console.log("Must use a physical device for Push Notifications");
-      }
-    };
-    requestPermissions();
-  }, []);
-
   const handleSendTextMessage = async () => {
     if (!value.trim()) return;
 
-    // handleMarkAsRead();
+    handleMarkAsRead();
     // Tạo đối tượng SegmentMessageDTO
     const messageData = {
       boxId: id.toString(),
@@ -429,6 +426,24 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    const requestPermissions = async () => {
+      if (Device.isDevice) {
+        const { status: existingStatus } =
+          await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== "granted") {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+        setPermissionGranted(finalStatus === "granted");
+      } else {
+        console.log("Must use a physical device for Push Notifications");
+      }
+    };
+    requestPermissions();
+  }, []);
+
+  useEffect(() => {
     if (!id) {
       console.error("boxId is missing or invalid");
       return;
@@ -437,10 +452,12 @@ const Chat = () => {
     // console.log(messages, "this is message");
     const handleNewMessage = async (data: ResponseGroupMessageDTO) => {
       if (id !== data.boxId) return; // Kiểm tra đúng kênh
+      const userId = await AsyncStorage.getItem("userId");
 
       setMessages((prevMessages) => {
         return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
       });
+      // Kiểm tra quyền thông báo
       if (!permissionGreanted) {
         console.log(
           "Notifications not granted. Please enable them in settings."
@@ -448,16 +465,20 @@ const Chat = () => {
         return;
       }
 
-      const rs = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "New messsage",
-          body: `${data.createName}: ${value}`,
-          sound: "default",
-        },
-        trigger: new Date(Date.now() + 30 * 1000),
-      });
+      // Lên lịch thông báo
 
-      console.log(rs, "rs mess notifi");
+      if (data.createBy !== userId) {
+        const rs = await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "New Message", // Tiêu đề thông báo
+            body: `${data.createName}: ${data.text}`, // Nội dung tin nhắn
+            sound: "default", // Âm thanh mặc định
+          },
+          trigger: new Date(Date.now() + 1 * 1000), // Thông báo sẽ hiển thị ngay lập tức (hoặc bạn có thể thay đổi thời gian)
+        });
+
+        console.log(rs, "Notification scheduled");
+      }
     };
 
     const handleDeleteMessage = ({ id: messageId }: PusherDelete) => {
@@ -488,13 +509,7 @@ const Chat = () => {
       pusherClient.unbind("revoke-message", handleRevokeMessage);
       console.log(`Unsubscribed from private-${id} channel`);
     };
-  }, []); // Re-run if boxId or setMessages changes
-
-  const handleIconPress = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  }, [permissionGreanted]); // Re-run if boxId or setMessages changes
 
   const handleUnBlockChat = async (relation: string) => {
     const userId = await AsyncStorage.getItem("userId");
@@ -599,7 +614,7 @@ const Chat = () => {
       {isCameraOpen ? (
         <ExpoCamera
           onClose={() => setIsCameraOpen(false)}
-          onSend={handleSend}
+          onSend={handleSendMultipleFiles}
           setSelectedMedia={(uri: string, type: string, name: string) =>
             setSelectedMedia([{ uri: uri, type: type, name: name }])
           }

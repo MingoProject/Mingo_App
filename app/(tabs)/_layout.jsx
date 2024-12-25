@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, AppState } from "react-native";
 import { Tabs } from "expo-router";
 import Svg, { Path } from "react-native-svg";
@@ -96,24 +96,21 @@ const TabsLayout = () => {
   const { colorScheme } = useTheme();
   const { setIsOnlineChat, isOnlineChat } = useChatContext();
   const { allChat } = useChatItemContext();
+  const [id, setId] = useState("");
 
   const checkOnlineStatus = async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
-      const token = await AsyncStorage.getItem("token");
-      if (!token) return;
       const result = await IsOnline(userId?.toString() || "");
       console.log("User online status:", result);
     } catch (error) {
       console.error("Error checking online status:", error);
     }
   };
+
   const setOfflineStatus = async () => {
     try {
-      const userId = await AsyncStorage.getItem("userId");
-      const token = await AsyncStorage.getItem("token");
-      if (!token) return;
-      await IsOffline(userId?.toString() || "");
+      await IsOffline();
       console.log("User is offline");
     } catch (error) {
       console.error("Error setting offline status:", error);
