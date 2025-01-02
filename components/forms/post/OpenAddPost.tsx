@@ -43,12 +43,12 @@ const OpenAddPost = ({ handleAddPost }: any) => {
               Video
             </Text>
           </View>
-          <View className="flex flex-row items-center">
+          {/* <View className="flex flex-row items-center">
             <EmotionIcon size={20} color={iconColor} />
             <Text className="ml-2 text-sm text-primary-100 font-mregular">
               Emotion
             </Text>
-          </View>
+          </View> */}
         </View>
       </View>
 
