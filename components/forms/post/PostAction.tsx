@@ -109,8 +109,8 @@ const PostAction = ({
             color: isLiked
               ? colors.primary[100]
               : colorScheme === "dark"
-              ? colors.dark[100]
-              : colors.light[500],
+                ? colors.dark[100]
+                : colors.light[500],
           }}
         >
           {isLiked ? "Liked" : "Like"} {numberOfLikes}
@@ -133,7 +133,7 @@ const PostAction = ({
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity className="flex-row items-center">
+      {/* <TouchableOpacity className="flex-row items-center">
         <LinkIcon size={25} color={iconColor} />
         <Text
           className="ml-1 font-mmedium"
@@ -144,7 +144,7 @@ const PostAction = ({
         >
           {post.shares.length} Shares
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

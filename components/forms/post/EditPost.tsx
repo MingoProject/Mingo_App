@@ -24,6 +24,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getMyBffs, getMyFriends } from "@/lib/service/user.service";
 import * as ImagePicker from "expo-image-picker";
 import MyDropDown from "@/components/share/MyDropDown";
+import { Video } from "expo-av";
 
 const EditPost = ({ post, onClose, setPostsData }: any) => {
   const { colorScheme } = useTheme();
@@ -433,10 +434,18 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
               key={mediaItem._id}
               className="flex flex-row items-center mb-2"
             >
-              <Image
-                source={{ uri: mediaItem.url }}
-                style={{ width: 100, height: 100, borderRadius: 8 }}
-              />
+              {mediaItem.type === "image" ? (
+                <Image
+                  source={{ uri: mediaItem.url }}
+                  style={{ width: 100, height: 100, borderRadius: 8 }}
+                />
+              ) : mediaItem.type === "video" ? (
+                <Video
+                  source={{ uri: mediaItem.url }}
+                  style={{ width: 100, height: 100, borderRadius: 8 }}
+                  // controls
+                />
+              ) : null}
               <TextInput
                 value={mediaItem.caption || ""} // Hiển thị caption từ mediaItem
                 onChangeText={(text) => handleCaptionChange(index, text)} // Cập nhật caption khi thay đổi
@@ -469,11 +478,21 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
 
       {files.map((file, index) => (
         <View key={index} className="flex flex-row items-center mb-2">
-          <Image
-            source={{ uri: file.uri }}
-            style={{ width: 100, height: 100, marginRight: 8 }}
-            className="rounded-lg"
-          />
+          {file.type?.includes("video") || file.uri?.endsWith(".mp4") ? (
+            <Video
+              source={{ uri: file.uri }}
+              style={{ width: 100, height: 100, marginRight: 8 }}
+              // resizeMode="cover"
+              // controls={true} // Hiển thị nút điều khiển video
+              className="rounded-lg size-20 object-cover"
+            />
+          ) : (
+            <Image
+              source={{ uri: file.uri }}
+              style={{ width: 100, height: 100, marginRight: 8 }}
+              className="rounded-lg"
+            />
+          )}
           <TextInput
             value={file.caption}
             onChangeText={(text) => handleCaptionChange(index, text)}
@@ -498,7 +517,7 @@ const EditPost = ({ post, onClose, setPostsData }: any) => {
       <TouchableOpacity
         onPress={handleSubmit}
         disabled={loading}
-        className="mt-3"
+        className="mt-3 mb-8"
       >
         <View
           className=" p-3 rounded-[8px]"

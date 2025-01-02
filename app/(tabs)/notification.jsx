@@ -127,7 +127,7 @@ const Notification = () => {
         >
           Notifications
         </Text>
-        <SearchIcon size={28} color={iconColor} onPress={() => {}} />
+        {/* <SearchIcon size={28} color={iconColor} onPress={() => {}} /> */}
       </View>
       <ScrollView className="h-80">
         <Notifications

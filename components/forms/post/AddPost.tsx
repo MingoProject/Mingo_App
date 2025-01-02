@@ -25,6 +25,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "@/context/AuthContext";
 import { getMyBffs, getMyFriends } from "@/lib/service/user.service";
 import * as ImagePicker from "expo-image-picker";
+import { Video } from "expo-av";
 
 const AddPost = ({ onClose, setPostsData }: any) => {
   const { colorScheme } = useTheme();
@@ -347,12 +348,21 @@ const AddPost = ({ onClose, setPostsData }: any) => {
               borderRadius: 8,
             }}
           >
-            {/* Hiển thị ảnh */}
-            <Image
-              source={{ uri: file.uri }}
-              className="w-full h-20 rounded-lg"
-            />
-            {/* Input để nhập caption */}
+            {file.type?.includes("video") || file.uri?.endsWith(".mp4") ? (
+              <Video
+                source={{ uri: file.uri }}
+                style={{ width: 100, height: 100, marginRight: 8 }}
+                // resizeMode="cover"
+                // controls={true} // Hiển thị nút điều khiển video
+                className="rounded-lg size-20 object-cover"
+              />
+            ) : (
+              <Image
+                source={{ uri: file.uri }}
+                style={{ width: 100, height: 100, marginRight: 8 }}
+                className="rounded-lg"
+              />
+            )}
             <TextInput
               value={captions[index]}
               onChangeText={(value) => handleCaptionChange(index, value)}
