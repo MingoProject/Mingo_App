@@ -376,7 +376,7 @@ const InfoChat = ({
       <ScrollView
         style={{
           flex: 1,
-          paddingTop: Platform.OS === "android" ? 4 : 4, // Giữ nguyên giá trị pt-4
+          paddingTop: Platform.OS === "android" ? 4 : 32, // Giữ nguyên giá trị pt-4
           paddingBottom: Platform.OS === "android" ? 10 : 10, // Giữ nguyên giá trị pb-10
           backgroundColor:
             colorScheme === "dark" ? colors.dark[300] : colors.light[700],
@@ -931,6 +931,8 @@ const InfoChat = ({
         <View style={{ flex: 1, position: "relative" }}>
           <ScrollView
             style={{
+              paddingTop: Platform.OS === "android" ? 4 : 32, // Giữ nguyên giá trị pt-4
+              paddingBottom: Platform.OS === "android" ? 10 : 10,
               backgroundColor:
                 colorScheme === "dark" ? colors.dark[300] : colors.light[700],
               flex: 1,
