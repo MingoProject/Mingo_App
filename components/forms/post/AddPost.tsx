@@ -29,7 +29,8 @@ import { Video } from "expo-av";
 
 const AddPost = ({ onClose, setPostsData }: any) => {
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const iconColor =
+    colorScheme === "dark" ? colors.dark[100] : colors.light[100];
   const [content, setContent] = useState("");
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);

@@ -274,3 +274,24 @@ export async function unblock(params: FriendRequestDTO, token: string | null) {
     throw error;
   }
 } //
+
+export async function suggestFriends(token: string | null) {
+  try {
+    const response = await fetch(`${BASE_URL}/friend/suggest-friends`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error fetching suggestFriend");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to unfriend:", error);
+    throw error;
+  }
+}

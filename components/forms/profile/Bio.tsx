@@ -55,7 +55,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
           <Text
             style={{
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
             }}
             className="font-mbold text-[16px] "
           >
@@ -68,7 +68,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
         <Text
           style={{
             color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           }}
           className="font-mregular text-[14px] mt-3"
         >
@@ -92,7 +92,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
         <View
           style={{
             backgroundColor:
-              colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+              colorScheme === "dark" ? colors.dark[300] : colors.light[300],
             flex: 1,
           }}
           className="pt-10"
@@ -102,7 +102,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
               className="mt-4 py-4 "
               style={{
                 backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[300],
                 flex: 1,
               }}
             >
@@ -113,7 +113,7 @@ const Bio = ({ profileUser, setProfile }: any) => {
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
-                        : colors["title-pink"],
+                        : colors.light[100],
                   }}
                   className="text-[20px] font-mbold"
                 >
@@ -133,17 +133,17 @@ const Bio = ({ profileUser, setProfile }: any) => {
                   backgroundColor:
                     colorScheme === "dark"
                       ? colors.dark[300]
-                      : colors.light[700],
+                      : colors.light[300],
                   padding: 10,
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                   marginBottom: 15,
                 }}
                 placeholder="Enter your new bio"
                 placeholderTextColor={
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500]
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100]
                 }
                 className="border mt-5 border-gray-200 rounded-lg px-2 py-3 mx-5 font-mmedium"
               />

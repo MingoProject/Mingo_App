@@ -57,7 +57,6 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
   const [isMe, setIsMe] = useState(false);
   const { profile } = useAuth();
   const { colorScheme, toggleColorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
 
   useEffect(() => {
     if (profile?._id && profile?._id === profileUser?._id) {
@@ -81,7 +80,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
             className="text-dark100_light500 mt-4 font-mregular"
             style={{
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
             }}
           >
             Job:
@@ -89,7 +88,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
               className="font-msemibold"
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
             >
               {" "}
@@ -101,10 +100,10 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
         {profileUser?.address && (
           <View className="mt-4">
             <Text
-              className="text-dark100_light500 font-mregular"
+              className="text-dark100_light100 font-mregular"
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
             >
               Address:
@@ -114,7 +113,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 {" "}
@@ -127,10 +126,10 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
         {profileUser?.hobbies?.length > 0 && (
           <View className="mt-4">
             <Text
-              className="text-dark100_light500 font-mregular"
+              className="text-dark100_light100 font-mregular"
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
             >
               Hobbies:
@@ -152,7 +151,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                         color:
                           colorScheme === "dark"
                             ? colors.dark[100]
-                            : colors.light[500],
+                            : colors.light[100],
                       }}
                     >
                       {hobby}
@@ -166,10 +165,10 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
 
         {profileUser?.relationShip && (
           <Text
-            className="mt-4 text-dark100_light500 font-mregular"
+            className="mt-4 text-dark100_light100 font-mregular"
             style={{
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
             }}
           >
             Relationship:
@@ -177,7 +176,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
               className="font-msemibold"
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
             >
               {" "}
@@ -190,12 +189,12 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
           <>
             {profileUser?.birthDay && (
               <Text
-                className="mt-4 text-dark100_light500 font-mregular"
+                className="mt-4 text-dark100_light100 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Birthday:
@@ -205,7 +204,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
-                        : colors.light[500],
+                        : colors.light[100],
                   }}
                 >
                   {" "}
@@ -215,12 +214,12 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
             )}
             {profileUser?.gender !== undefined && (
               <Text
-                className="mt-4 text-dark100_light500 font-mregular"
+                className="mt-4 text-dark100_light100 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Gender:
@@ -230,7 +229,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
-                        : colors.light[500],
+                        : colors.light[100],
                   }}
                 >
                   {" "}
@@ -240,12 +239,12 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
             )}
             {profileUser?.attendDate && (
               <Text
-                className="mt-4 text-dark100_light500 font-mregular"
+                className="mt-4 text-dark100_light100 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Attend date:
@@ -255,7 +254,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
-                        : colors.light[500],
+                        : colors.light[100],
                   }}
                 >
                   {" "}
@@ -265,12 +264,12 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
             )}
             {profileUser?.phoneNumber && (
               <Text
-                className="mt-4 text-dark100_light500 font-mregular"
+                className="mt-4 text-dark100_light100 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Phone number:
@@ -280,7 +279,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
-                        : colors.light[500],
+                        : colors.light[100],
                   }}
                 >
                   {" "}
@@ -290,7 +289,7 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
             )}
             {profileUser?.email && (
               <Text
-                className="mt-4 text-dark100_light500 font-mregular"
+                className="mt-4 text-dark100_light100 font-mregular"
                 style={{
                   color:
                     colorScheme === "dark"

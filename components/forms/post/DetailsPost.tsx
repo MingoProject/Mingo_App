@@ -22,7 +22,7 @@ import PostAction from "./PostAction";
 import CommentCard from "@/components/card/comment/CommentCard";
 import { ResizeMode, Video } from "expo-av";
 import { FriendIcon, LocationIcon, ThreeDot } from "@/components/icons/Icons";
-import TagModal from "./TagsModal";
+import TagModal from "../../modal/post/TagsModal";
 import PostMenu from "./PostMenu";
 import { useRouter } from "expo-router";
 
@@ -253,9 +253,9 @@ const DetailsPost = ({
                 </Text>
               )}
 
-              <Text className="text-[#D9D9D9] font-mregular text-sm">
+              {/* <Text className="text-[#D9D9D9] font-mregular text-sm">
                 {getTimestamp(post.createAt)}
-              </Text>
+              </Text> */}
             </View>
             <TagModal
               tags={post.tags}

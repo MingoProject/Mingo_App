@@ -98,7 +98,7 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
               ? colors.primary[100]
               : colorScheme === "dark"
                 ? colors.dark[100]
-                : colors.light[500],
+                : colors.light[100],
           }}
         >
           Like
@@ -112,7 +112,7 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
               ? colors.primary[100]
               : colorScheme === "dark"
                 ? colors.dark[100]
-                : colors.light[500],
+                : colors.light[100],
           }}
         >
           {numberOfLikes}
@@ -123,7 +123,7 @@ const CommentAction = ({ comment, setReplyingTo, postId, mediaId }: any) => {
           className="ml-2 text-xs font-mmedium"
           style={{
             color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           }}
         >
           Reply

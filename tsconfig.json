@@ -3,7 +3,9 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
   },
   "include": [
@@ -13,9 +15,6 @@
     "expo-env.d.ts",
     "app/_layout.jsx",
     "app/(tabs)/home.jsx",
-    "app/(tabs)/profile.jsx",
-    "app/(tabs)/friend.jsx",
-    "app/message.tsx",
-    "app/chat.jsx"
+    "nativewind-env.d.ts"
   ]
 }
