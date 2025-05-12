@@ -23,7 +23,8 @@ const Setting = ({ setSetting }: any) => {
   const { logout } = useAuth();
   const router = useRouter();
   const { colorScheme, toggleColorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const iconColor =
+    colorScheme === "dark" ? colors.dark[100] : colors.light[100];
   const [isSavedPostModalVisible, setSavedPostModalVisible] = useState(false);
   const [isLikedPostModalVisible, setLikedPostModalVisible] = useState(false);
 
@@ -54,7 +55,7 @@ const Setting = ({ setSetting }: any) => {
         className="flex-1 "
         style={{
           backgroundColor:
-            colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+            colorScheme === "dark" ? colors.dark[200] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
           flex: 1,
         }}
       >
@@ -62,7 +63,7 @@ const Setting = ({ setSetting }: any) => {
           className="flex-1 rounded-t-lg p-4"
           style={{
             backgroundColor:
-              colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+              colorScheme === "dark" ? colors.dark[200] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
             flex: 1,
           }}
         >
@@ -70,7 +71,7 @@ const Setting = ({ setSetting }: any) => {
             className="flex flex-row pt-5 max-h-16"
             style={{
               backgroundColor:
-                colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[200] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
               flex: 1,
             }}
           >
@@ -94,7 +95,7 @@ const Setting = ({ setSetting }: any) => {
               className=" font-mbold mt-6"
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
             >
               Dark mode
@@ -114,7 +115,7 @@ const Setting = ({ setSetting }: any) => {
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Activities
@@ -132,7 +133,7 @@ const Setting = ({ setSetting }: any) => {
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Saved post
@@ -150,7 +151,7 @@ const Setting = ({ setSetting }: any) => {
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Liked posts
@@ -164,7 +165,7 @@ const Setting = ({ setSetting }: any) => {
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Account
@@ -183,7 +184,7 @@ const Setting = ({ setSetting }: any) => {
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Change password
@@ -200,7 +201,7 @@ const Setting = ({ setSetting }: any) => {
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Logout
@@ -233,7 +234,7 @@ const Setting = ({ setSetting }: any) => {
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className="font-msemibold text-lg ml-3"
             >
@@ -274,7 +275,7 @@ const Setting = ({ setSetting }: any) => {
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className="font-msemibold text-lg ml-3"
             >
@@ -315,7 +316,7 @@ const Setting = ({ setSetting }: any) => {
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className="font-msemibold text-lg ml-3"
             >

@@ -10,58 +10,50 @@ import {
 } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
-import { getTimestamp } from "@/lib/utils";
 import DetailsPost from "@/components/forms/post/DetailsPost";
 import PostAction from "@/components/forms/post/PostAction";
-import { useRouter } from "expo-router";
 import { Video, ResizeMode } from "expo-av";
-import { FriendIcon, LocationIcon, ThreeDot } from "@/components/icons/Icons";
+import { LocationIcon, ThreeDot } from "@/components/icons/Icons";
 import { useAuth } from "@/context/AuthContext";
 import PostMenu from "@/components/forms/post/PostMenu";
-import TagModal from "@/components/forms/post/TagsModal";
-import { getCommentByCommentId } from "@/lib/service/comment.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PostResponseDTO } from "@/dtos/PostDTO";
+import { UserBasicInfo } from "@/dtos/UserDTO";
+import PostHeader from "@/components/share/post/PostHeader";
+import TagModal from "@/components/modal/post/TagsModal";
+import PostDetailCard from "./PostDetailCard";
+import { getCommentByCommentId } from "@/lib/service/comment.service";
+import { CommentResponseDTO } from "@/dtos/CommentDTO";
+import Input from "@/components/share/ui/input";
+import Button from "@/components/share/ui/button";
 
-const PostCard = ({ item, setPostsData }: any) => {
-  const router = useRouter();
+interface PostCardProps {
+  post: PostResponseDTO;
+  setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
+}
+
+const PostCard = ({ post, setPostsData }: PostCardProps) => {
   const { colorScheme } = useTheme();
-  const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const iconColor =
+    colorScheme === "dark" ? colors.dark[100] : colors.light[100];
   const [isModalVisible, setModalVisible] = useState(false);
   const [isMenuVisible, setMenuVisible] = useState(false);
   const { profile } = useAuth();
+  const profileBasic: UserBasicInfo = {
+    _id: profile?._id,
+    avatar: profile?.avatar,
+    firstName: profile?.firstName,
+    lastName: profile?.lastName,
+  };
   const menuRef = useRef<TouchableOpacity | null>(null);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  const isAuthor = profile?._id === item.author._id;
+  const isAuthor = profile?._id === post.author._id;
   const [commentsData, setCommentsData] = useState<any[]>([]);
-  const [numberOfLikes, setNumberOfLikes] = useState(item.likes.length);
+  const [numberOfLikes, setNumberOfLikes] = useState(post.likes.length);
   const [numberOfComments, setNumberOfComments] = useState(
-    item.comments.length
+    post.comments.length
   );
   const [isLiked, setIsLiked] = useState(false);
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [isError, setIsError] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-    const getComments = async () => {
-      const detailsComments = await Promise.all(
-        item.comments.map(async (comment: any) => {
-          return await getCommentByCommentId(comment);
-        })
-      );
-
-      if (isMounted) {
-        setCommentsData(detailsComments);
-      }
-    };
-
-    getComments();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [item.comments]);
 
   useEffect(() => {
     let isMounted = true;
@@ -69,7 +61,7 @@ const PostCard = ({ item, setPostsData }: any) => {
       const userId: string | null = await AsyncStorage.getItem("userId");
       if (userId) {
         try {
-          const isUserLiked = item.likes.some((like: any) => like === userId);
+          const isUserLiked = post.likes.some((like: any) => like === userId);
           if (isMounted) {
             setIsLiked(isUserLiked);
           }
@@ -84,153 +76,44 @@ const PostCard = ({ item, setPostsData }: any) => {
     };
   }, []);
 
-  const handleTagsModalToggle = () => {
-    setIsTagsModalOpen(!isTagsModalOpen);
-  };
-  const navigateToUserProfile = (item: any) => {
-    if (item === profile._id) {
-      router.push(`/profile`);
-    } else {
-      router.push(`/user/${item}`);
+  const openModal = async () => {
+    setModalVisible(true);
+    try {
+      const detailsComments: CommentResponseDTO[] = await Promise.all(
+        post?.comments.map(async (comment: any) => {
+          return await getCommentByCommentId(comment);
+        })
+      );
+      setCommentsData(detailsComments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
     }
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //       <ActivityIndicator size="large" color="#0000ff" />
-  //       <Text>Loading...</Text>
-  //     </View>
-  //   );
-  // }
-
-  // if (isError) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //       <Text>Error fetching posts. Please try again later.</Text>
-  //     </View>
-  //   );
-  // }
-
   return (
-    <View className="p-4 bg-transparent">
+    <View
+      style={{
+        backgroundColor:
+          colorScheme === "dark" ? colors.dark[200] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
+      }}
+      className="p-[10px] rounded-[10px] flex flex-col"
+    >
       <View className="flex-row items-center mb-2">
-        <TouchableOpacity
-          onPress={() => navigateToUserProfile(item.author._id)}
-        >
-          <Image
-            source={{
-              uri:
-                item.author.avatar ||
-                "https://i.pinimg.com/236x/88/bd/6b/88bd6bd828ec509f4bda0d9f9450824d.jpg",
-            }}
-            className="w-14 h-14 rounded-full"
-          />
-        </TouchableOpacity>
-
-        <View className="ml-4">
-          <View
-            style={{ flexDirection: "row", alignItems: "center" }}
-            className="mb-2"
-          >
-            <Text
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-                fontSize: 16,
-                fontWeight: "600",
-              }}
-              className="font-msemibold"
-            >
-              {item.author?.firstName || ""} {item.author?.lastName || ""}{" "}
-            </Text>
-            {item.location && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}
-                className="flex"
-              >
-                <Text
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[500],
-                  }}
-                >
-                  {" "}
-                  {"- "}
-                </Text>
-                <LocationIcon size={14} color={iconColor} />
-                {/* <Icon name="mi:location" size={18} color={iconColor} /> */}
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[500],
-                  }}
-                  className="font-mregular ml-1"
-                >
-                  {item.location}
-                </Text>
-              </View>
-            )}
-          </View>
-          {item.tags?.length > 0 && (
-            <Text
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-                fontSize: 16,
-              }}
-              className="font-mmedium w-40"
-              numberOfLines={1} // Hiển thị tối đa 1 dòng
-              ellipsizeMode="tail"
-            >
-              <FriendIcon size={18} color={iconColor} />
-
-              {item.tags?.length > 0 && (
-                <TouchableOpacity
-                  onPress={handleTagsModalToggle}
-                  // className="mt-[10px]"
-                >
-                  <Text
-                    style={{
-                      color: colors.primary[100],
-                      fontSize: 16,
-                    }}
-                    className="font-mregular"
-                    numberOfLines={1} // Hiển thị tối đa 1 dòng
-                    ellipsizeMode="tail"
-                  >
-                    {` with ${item.tags.length} others`}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </Text>
-          )}
-
-          <Text className="text-[#D9D9D9] font-mregular text-sm">
-            {getTimestamp(item.createAt)}
-          </Text>
-        </View>
-        <TagModal
-          tags={item.tags}
-          isOpen={isTagsModalOpen}
-          onClose={handleTagsModalToggle}
+        <PostHeader
+          post={post}
+          setPostsData={setPostsData}
+          profileBasic={profileBasic}
         />
 
         <TouchableOpacity
           ref={menuRef}
           className="ml-auto mb-2"
           onPress={() => {
-            menuRef.current?.measure((fx, fy, width, height, px, py) => {
-              setMenuPosition({ x: px, y: py + height }); // Lấy vị trí dưới dấu `...`
-            });
+            menuRef.current?.measure(
+              (fx: any, fy: any, width: any, height: any, px: any, py: any) => {
+                setMenuPosition({ x: px, y: py + height }); // Lấy vị trí dưới dấu `...`
+              }
+            );
             setMenuVisible(true);
           }}
         >
@@ -242,9 +125,11 @@ const PostCard = ({ item, setPostsData }: any) => {
           visible={isModalVisible}
           onRequestClose={() => setModalVisible(false)}
         >
-          <DetailsPost
+          <PostDetailCard
+            isModalVisible={isModalVisible}
             setModalVisible={setModalVisible}
-            post={item}
+            post={post}
+            profileBasic={profileBasic}
             setPostsData={setPostsData}
             numberOfLikes={numberOfLikes}
             setNumberOfLikes={setNumberOfLikes}
@@ -279,7 +164,7 @@ const PostCard = ({ item, setPostsData }: any) => {
             >
               <PostMenu
                 isAuthor={isAuthor}
-                item={item}
+                item={post}
                 setMenuVisible={setMenuVisible}
                 setPostsData={setPostsData}
               />
@@ -290,17 +175,37 @@ const PostCard = ({ item, setPostsData }: any) => {
 
       <Text
         style={{
-          color: colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+          color: colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           flex: 1,
         }}
-        className="mb-4 font-mregular mt-3 text-[15px]"
+        className="font-mregular text-[16px] mb-2"
       >
-        {item.content}
+        {post.content}
       </Text>
-
-      {item.media && (
+      {post.location && (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+          className="flex mb-2"
+        >
+          <LocationIcon size={14} color={colors.primary[100]} />
+          <Text> </Text>
+          <Text
+            style={{
+              fontSize: 16,
+              color: colors.primary[100],
+            }}
+            className="font-mregular"
+          >
+            {post.location}
+          </Text>
+        </View>
+      )}
+      {post.media && (
         <FlatList
-          data={item.media}
+          data={post.media}
           horizontal
           keyExtractor={(media) => media._id}
           renderItem={({ item: media }) => (
@@ -320,24 +225,13 @@ const PostCard = ({ item, setPostsData }: any) => {
         />
       )}
       <PostAction
-        post={item}
-        isModalVisible={isModalVisible}
-        setModalVisible={setModalVisible}
+        post={post}
+        openModal={openModal}
         numberOfLikes={numberOfLikes}
         setNumberOfLikes={setNumberOfLikes}
         isLiked={isLiked}
         setIsLiked={setIsLiked}
         numberOfComments={numberOfComments}
-      />
-
-      <View
-        style={{
-          height: 1,
-          backgroundColor: "#D9D9D9",
-          width: "100%",
-          marginVertical: 5,
-        }}
-        className="mt-5"
       />
     </View>
   );

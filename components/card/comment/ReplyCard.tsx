@@ -221,11 +221,11 @@ const ReplyCard = ({
   return (
     <View>
       <TouchableOpacity onLongPress={handleLongPress}>
-        <View className="flex-row items-center my-2">
+        <View className="flex-row my-2">
           <Image
             source={{
               uri:
-                reply?.userId.avatar ||
+                reply?.author.avatar ||
                 "https://i.pinimg.com/736x/9a/00/82/9a0082d8f710e7b626a114657ec5b781.jpg",
             }}
             className="w-11 h-11 rounded-full"
@@ -234,11 +234,11 @@ const ReplyCard = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
-              className="font-msemibold text-sm"
+              className="font-mmedium text-[16px]"
             >
-              {reply?.userId.firstName} {reply?.userId.lastName}{" "}
+              {reply?.author.firstName} {reply?.author.lastName}{" "}
               {detailsComment?.parentId?._id !==
                 detailsComment?.originalCommentId && (
                 <>
@@ -251,34 +251,45 @@ const ReplyCard = ({
                       color:
                         colorScheme === "dark"
                           ? colors.dark[100]
-                          : colors.light[500],
+                          : colors.light[100],
                     }}
                     className="font-msemibold  text-sm"
                   >
-                    {parentComment?.userId.firstName || ""}{" "}
+                    {parentComment?.userId.firstName || ""}
                     {parentComment?.userId.lastName || ""}
                   </Text>
                 </>
               )}
             </Text>
-            <Text
-              className="text-sm mt-1 border-gray-400 font-mmedium"
+            <View
+              className=" rounded-r-[20px] rounded-bl-[20px] px-[15px] py-[10px]  self-start"
               style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[400] : colors.light[400],
               }}
             >
-              {reply.content}
-            </Text>
-            <View className="flex-row">
               <Text
-                className="text-xs font-mregular"
+                className="text-[16px] font-normal inline-block"
                 style={{
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
+              >
+                {reply.content}
+              </Text>
+            </View>
+            <View className="flex-row">
+              <Text
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[300]
+                      : colors.light[300],
+                  fontSize: 12,
+                }}
+                className="font-mregular"
               >
                 {getTimestamp(reply.createAt)}
               </Text>

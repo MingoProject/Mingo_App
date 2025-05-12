@@ -247,7 +247,7 @@ const Message = () => {
         style={{
           paddingTop: Platform.OS === "android" ? 0 : 40, // Android: 0, iOS: 10
           backgroundColor:
-            colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+            colorScheme === "dark" ? colors.dark[300] : colors.light[300],
           flex: 1,
         }}
         className="px-3"
@@ -302,7 +302,7 @@ const Message = () => {
             right: 0,
             bottom: 0,
             backgroundColor:
-              colorScheme === "dark" ? colors.dark[200] : colors.light[700],
+              colorScheme === "dark" ? colors.dark[200] : colors.light[300],
             zIndex: 10,
             padding: 16,
           }}

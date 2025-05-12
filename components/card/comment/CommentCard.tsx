@@ -26,6 +26,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ReplyCard from "./ReplyCard";
 import CommentMenu from "@/components/forms/comment/CommentMenu";
 import { CancelIcon } from "@/components/icons/Icons";
+import { CommentResponseDTO } from "@/dtos/CommentDTO";
 
 const CommentCard = ({
   comment,
@@ -49,37 +50,27 @@ const CommentCard = ({
   );
   const { profile } = useAuth();
 
-  useEffect(() => {
-    let isMounted = true;
+  const toggleShowReplies = async () => {
+    const nextShow = !showReplies;
+    setShowReplies(nextShow);
 
-    const fetchReplies = async () => {
+    if (
+      nextShow &&
+      Array.isArray(comment.replies) &&
+      comment.replies.length > 0
+    ) {
       try {
-        const replies = comment.replies || [];
-
-        const detailedReplies = await Promise.all(
-          replies.map(async (reply: any) => {
-            const detailedReply = await getCommentByCommentId(reply._id);
-            return detailedReply;
+        const detailsComments: CommentResponseDTO[] = await Promise.all(
+          comment.replies.map(async (replyId: string) => {
+            return await getCommentByCommentId(replyId);
           })
         );
-
-        if (isMounted) {
-          setRepliesData(detailedReplies);
-        }
+        setRepliesData(detailsComments);
       } catch (error) {
-        console.error("Failed to fetch replies:", error);
-        if (isMounted) {
-          setRepliesData([]);
-        }
+        console.error("Error fetching replies:", error);
       }
-    };
-
-    fetchReplies();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [comment]);
+    }
+  };
 
   const handleReplyComment = async () => {
     const token: string | null = await AsyncStorage.getItem("token");
@@ -225,12 +216,12 @@ const CommentCard = ({
       style={{ flex: 1 }}
     >
       <TouchableOpacity onLongPress={handleLongPress}>
-        <View className="flex-row items-center my-2">
+        <View className="flex-row my-2">
           <Image
             source={{
               uri:
-                comment.userId.avatar ||
-                "https://i.pinimg.com/736x/9a/00/82/9a0082d8f710e7b626a114657ec5b781.jpg",
+                comment.author?.avatar ||
+                "https://i.pinimg.com/236x/88/bd/6b/88bd6bd828ec509f4bda0d9f9450824d.jpg",
             }}
             className="w-11 h-11 rounded-full"
           />
@@ -238,30 +229,42 @@ const CommentCard = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
-              className="font-msemibold text-sm"
+              className="font-mmedium text-[16px]"
             >
-              {comment.userId.firstName} {comment.userId.lastName}
+              {comment.author.firstName} {comment.author.lastName}
             </Text>
-            <Text
-              className="text-sm mt-1 border-gray-400 font-mmedium"
+            <View
+              className=" rounded-r-[20px] rounded-bl-[20px] px-[15px] py-[10px]  self-start"
               style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[400] : colors.light[400],
               }}
             >
-              {comment.content}
-            </Text>
-            <View className="flex-row">
               <Text
-                className="text-xs font-mregular"
+                className="text-[16px] font-normal inline-block"
                 style={{
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
+              >
+                {comment.content}
+              </Text>
+            </View>
+
+            <View className="flex-row">
+              <Text
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[300]
+                      : colors.light[300],
+                  fontSize: 12,
+                }}
+                className="font-mregular"
               >
                 {getTimestamp(comment.createAt)}
               </Text>
@@ -272,12 +275,12 @@ const CommentCard = ({
                 mediaId={mediaId}
               />
             </View>
-            {repliesData?.length > 0 && (
-              <TouchableOpacity onPress={() => setShowReplies(!showReplies)}>
+            {comment.replies?.length > 0 && (
+              <TouchableOpacity onPress={toggleShowReplies}>
                 <Text className="text-primary-100 text-sm mt-2 font-mmedium">
                   {showReplies
                     ? "Hide replies"
-                    : `${repliesData.length} replies`}
+                    : `${comment.replies?.length} replies`}
                 </Text>
               </TouchableOpacity>
             )}

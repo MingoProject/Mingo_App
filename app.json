@@ -13,7 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nguyenthinhuhuynh.mingo",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "newArchEnabled": true,
     "android": {
@@ -26,10 +30,7 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.baoanh04.mingo",
-      "compileSdkVersion": 33,
-      "minSdkVersion": 21,
-      "targetSdkVersion": 33
+      "package": "com.baoanh04.mingo"
     },
     "web": {
       "bundler": "metro",
@@ -70,8 +71,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "3d35b992-040f-4b63-a09b-75387a619375"
+        "projectId": "06d24b0f-2d70-4325-853a-7e1a5e5f9cdc"
       }
-    }
+    },
+    "owner": "huynh013704"
   }
 }
