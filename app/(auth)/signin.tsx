@@ -55,17 +55,17 @@ const SignIn = () => {
         className="w-full h-full p-4 bg-white flex flex-col justify-between"
         style={{
           backgroundColor:
-            colorScheme === "dark" ? colors.dark[300] : colors.light[300], // Sử dụng giá trị màu từ file colors.js
+            colorScheme === "dark" ? colors.dark[500] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
           // flex: 1,
         }}
       >
         <View className="w-full flex-grow flex flex-col">
           <View className="w-full items-center justify-end pb-10 mt-40">
             <Text
-              className="font-msemibold text-[50px] text-light-500"
+              className="font-msemibold text-[50px]"
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
             >
               Login
@@ -80,8 +80,8 @@ const SignIn = () => {
                   style={{
                     backgroundColor:
                       colorScheme === "dark"
-                        ? colors.dark[300]
-                        : colors.light[300], // Sử dụng giá trị màu từ file colors.js
+                        ? colors.dark[500]
+                        : colors.light[500], // Sử dụng giá trị màu từ file colors.js
                     flex: 1,
                   }}
                 >
@@ -91,7 +91,7 @@ const SignIn = () => {
                       color:
                         colorScheme === "dark"
                           ? colors.dark[100]
-                          : colors.light[500],
+                          : colors.light[100],
                     }}
                   >
                     Phone Number
@@ -121,8 +121,8 @@ const SignIn = () => {
                   style={{
                     backgroundColor:
                       colorScheme === "dark"
-                        ? colors.dark[300]
-                        : colors.light[300], // Sử dụng giá trị màu từ file colors.js
+                        ? colors.dark[500]
+                        : colors.light[500], // Sử dụng giá trị màu từ file colors.js
                     flex: 1,
                   }}
                 >
@@ -132,7 +132,7 @@ const SignIn = () => {
                       color:
                         colorScheme === "dark"
                           ? colors.dark[100]
-                          : colors.light[500],
+                          : colors.light[100],
                     }}
                   >
                     Password
@@ -191,7 +191,7 @@ const SignIn = () => {
                       color:
                         colorScheme === "dark"
                           ? colors.dark[100]
-                          : colors.light[500],
+                          : colors.light[100],
                       fontFamily: "Montserrat-Regular",
                     }}
                   >
@@ -207,10 +207,10 @@ const SignIn = () => {
         <View className="w-full mb-10">
           <View className="flex flex-row items-center justify-center">
             <Text
-              className="font-mbold text-light-500 text-[16px]"
+              className="font-mbold  text-[16px]"
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
             >
               Or
@@ -218,21 +218,21 @@ const SignIn = () => {
           </View>
           <View className="mt-4 w-full flex flex-row items-center justify-center">
             <Text
-              className="font-mregular text-[16px] text-light-500"
+              className="font-mregular text-[16px] "
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
             >
               You don't have an account yet?{" "}
               <Text
                 onPress={() => router.push("signup" as any)}
-                className="font-mbold text-light-500 text-[16px]"
+                className="font-mbold  text-[16px]"
                 style={{
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[100],
                 }}
               >
                 Sign up
