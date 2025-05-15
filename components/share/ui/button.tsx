@@ -10,6 +10,7 @@ interface ButtonProps {
   size?: "small" | "large";
   fontColor?: string;
   border?: string;
+  className?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,6 +20,7 @@ const Button: React.FC<ButtonProps> = ({
   size = "large",
   fontColor,
   border = "",
+  className,
 }) => {
   const { colorScheme } = useTheme();
 
@@ -43,6 +45,7 @@ const Button: React.FC<ButtonProps> = ({
       style={containerStyle}
       onPress={onPress}
       activeOpacity={0.8}
+      className={className}
     >
       <Text style={[styles.text, { color: textColor }]}>{title}</Text>
     </TouchableOpacity>
