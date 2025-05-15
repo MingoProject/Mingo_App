@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 import { login, getMyProfile } from "@/lib/service/user.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "@/context/AuthContext";
+import Button from "@/components/share/ui/button";
 
 const SignIn = () => {
   const { setProfile } = useAuth();
@@ -21,13 +22,10 @@ const SignIn = () => {
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
-  const [isRemember, setIsRemember] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     const userData = { phoneNumber, password };
 
     try {
@@ -42,7 +40,7 @@ const SignIn = () => {
         await AsyncStorage.setItem("userId", userId);
         const profileData = await getMyProfile(userId);
         setProfile(profileData.userProfile);
-        router.push("home");
+        router.push("home" as any);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -52,37 +50,41 @@ const SignIn = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View
-        className="w-full h-full p-4 bg-white flex flex-col justify-between"
+        className="w-full h-full px-7"
         style={{
           backgroundColor:
-            colorScheme === "dark" ? colors.dark[500] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-          // flex: 1,
+            colorScheme === "dark" ? colors.dark[500] : colors.light[500],
+          flex: 1,
         }}
       >
-        <View className="w-full flex-grow flex flex-col">
-          <View className="w-full items-center justify-end pb-10 mt-40">
-            <Text
-              className="font-msemibold text-[50px]"
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
-              }}
-            >
-              Login
-            </Text>
-          </View>
+        {/* Phần giữa màn hình */}
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <View className="w-full space-y-10 flex flex-col justify-center items-center">
+            <View className="items-center">
+              <Text
+                className="font-msemibold text-[36px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[100],
+                }}
+              >
+                Login
+              </Text>
+            </View>
 
-          <View className="w-full">
-            <View className="flex flex-col gap-6">
+            <View className="w-full space-y-8">
               <View className="relative">
                 <View
-                  className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
+                  className="absolute left-3 -top-2 flex flex-row items-center px-1 z-10"
                   style={{
                     backgroundColor:
                       colorScheme === "dark"
                         ? colors.dark[500]
-                        : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                    flex: 1,
+                        : colors.light[500],
                   }}
                 >
                   <Text
@@ -94,36 +96,28 @@ const SignIn = () => {
                           : colors.light[100],
                     }}
                   >
-                    Phone Number
+                    Phone Number <Text style={{ color: "red" }}>*</Text>
                   </Text>
-                  {/* <View className="ml-1 pb-1">
-                    <PlusIcon />
-                  </View> */}
                 </View>
                 <MyInput
                   value={phoneNumber}
                   onChangeText={setPhoneNumber}
-                  placeholder="Phone Number"
-                  fontFamily="Montserrat-Regular"
-                  borderRadius={8}
+                  placeholder="Phone number"
                   height={56}
                   fontSize={14}
-                  borderColor={undefined}
-                  backgroundColor={undefined}
-                  fontWeight={undefined}
-                  onSubmit={undefined}
+                  fontFamily="Montserrat-Regular"
                 />
               </View>
 
+              {/* Password Input */}
               <View className="relative">
                 <View
-                  className="absolute left-3 -top-2 bg-white flex flex-row items-center px-1 z-10"
+                  className="absolute left-3 -top-2 flex flex-row items-center px-1 z-10"
                   style={{
                     backgroundColor:
                       colorScheme === "dark"
                         ? colors.dark[500]
-                        : colors.light[500], // Sử dụng giá trị màu từ file colors.js
-                    flex: 1,
+                        : colors.light[500],
                   }}
                 >
                   <Text
@@ -135,55 +129,38 @@ const SignIn = () => {
                           : colors.light[100],
                     }}
                   >
-                    Password
+                    Password <Text style={{ color: "red" }}>*</Text>
                   </Text>
-                  {/* <View className="ml-1 pb-1">
-                    <PlusIcon />
-                  </View> */}
                 </View>
                 <MyInput
                   value={password}
                   onChangeText={setPassword}
                   placeholder="Password"
-                  borderRadius={8}
-                  fontFamily="Montserrat-Regular"
+                  secureTextEntry
                   height={56}
                   fontSize={14}
-                  borderColor={undefined}
-                  backgroundColor={undefined}
-                  fontWeight={undefined}
-                  onSubmit={undefined}
+                  fontFamily="Montserrat-Regular"
                 />
               </View>
-
-              <View>
-                <MyButton
-                  title="Login"
-                  borderRadius={8}
-                  backgroundColor="#FFAABB"
-                  fontSize={16}
-                  color="white"
-                  fontFamily="Montserrat-SemiBold"
+            </View>
+            <View className="w-full space-y-5">
+              <View className="">
+                <Button
+                  title="Sign In"
                   onPress={handleSubmit}
-                  padding={undefined}
-                  paddingTop={undefined}
-                  paddingBottom={undefined}
-                  paddingLeft={undefined}
-                  paddingRight={undefined}
-                  borderColor={undefined}
-                  fontWeight={undefined}
-                  width={undefined}
-                  isActive={undefined}
+                  fontColor={
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[200]
+                  }
                 />
               </View>
-
-              <View className="px-2 flex flex-row justify-between items-center">
+              <View className="items-end">
                 <TouchableOpacity
-                  onPressIn={() => {
+                  onPress={() => {
                     setIsPressed(true);
-                    router.push("forgot-password");
+                    router.push("forgot-password" as any);
                   }}
-                  onPressOut={() => setIsPressed(false)}
                 >
                   <Text
                     className="font-mregular text-[14px]"
@@ -200,14 +177,8 @@ const SignIn = () => {
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
-        </View>
-
-        {/* Phần này sẽ luôn nằm cách đáy 16px */}
-        <View className="w-full mb-10">
-          <View className="flex flex-row items-center justify-center">
             <Text
-              className="font-mbold  text-[16px]"
+              className="font-mbold text-[16px]"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[100],
@@ -215,10 +186,8 @@ const SignIn = () => {
             >
               Or
             </Text>
-          </View>
-          <View className="mt-4 w-full flex flex-row items-center justify-center">
             <Text
-              className="font-mregular text-[16px] "
+              className="font-mregular text-[16px] mt-4"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[100],
@@ -227,7 +196,7 @@ const SignIn = () => {
               You don't have an account yet?{" "}
               <Text
                 onPress={() => router.push("signup" as any)}
-                className="font-mbold  text-[16px]"
+                className="font-mbold text-[16px]"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -240,6 +209,8 @@ const SignIn = () => {
             </Text>
           </View>
         </View>
+
+        {/* Footer đăng ký */}
       </View>
     </TouchableWithoutFeedback>
   );
