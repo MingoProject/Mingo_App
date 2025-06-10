@@ -1,11 +1,12 @@
 // components/CallScreen.tsx
+import { useSocket } from "@/context/CallContext";
 import React from "react";
 import { View, Button, StyleSheet } from "react-native";
 import { RTCView } from "react-native-webrtc";
-import { useCall } from "@/context/CallContext";
 
 export default function CallScreen() {
-  const { localStream, remoteStream, hangUp } = useCall();
+  const { localStream, remoteStream, handleHangUp, ongoingCall } = useSocket();
+  console.log("📺 remoteStream callscreen", remoteStream?.toURL());
 
   return (
     <View style={styles.container}>
@@ -15,7 +16,15 @@ export default function CallScreen() {
       {localStream && (
         <RTCView streamURL={localStream.toURL()} style={styles.local} />
       )}
-      <Button title="Hang Up" onPress={hangUp} />
+      <Button
+        title="Hang Up"
+        onPress={() =>
+          handleHangUp({
+            ongoingCall: ongoingCall ? ongoingCall : undefined,
+            isEmitHangUp: true,
+          })
+        }
+      />
     </View>
   );
 }

@@ -58,7 +58,9 @@ import ExpoCamera from "@/components/forms/media/ExpoCamera";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import { ClickOutsideWrapper } from "@/components/share/ui/click-outside";
-import { useCall } from "@/context/CallContext";
+import { RTCView } from "react-native-webrtc";
+import { useSocket } from "@/context/CallContext";
+import { getMyProfile } from "@/lib/service/user.service";
 
 // Notifications.setNotificationHandler({
 //   handleNotification: async () => ({
@@ -71,7 +73,8 @@ import { useCall } from "@/context/CallContext";
 const Chat = () => {
   const [messages, setMessages] = useState<ResponseGroupMessageDTO[]>([]); // Mảng tin nhắn
   const { profile } = useAuth();
-  const user = profile.profile;
+  const user = profile;
+
   const { colorScheme } = useTheme();
   const [isModalVisible, setModalVisible] = useState(false);
   const { id } = useLocalSearchParams();
@@ -97,18 +100,44 @@ const Chat = () => {
   const [chatItem, setChatItem] = useState<ItemChat | null>(null); // State lưu trữ itemChat
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [permissionGreanted, setPermissionGranted] = useState(false);
-  const { handleCall } = useCall();
-  const { onlineUsers } = useCall();
-  const receiverUser = onlineUsers?.find(
-    (onlineUsers: any) => onlineUsers.userId === user?._id
-  );
-  const onCallUser = () => {
-    handleCall(receiverUser, true); // true = video call
+  const { handleCall, handleHangUp, localStream, remoteStream, onlineUsers } =
+    useSocket();
+
+  // Nếu chưa có onlineUsers thì chưa render gì cả
+  if (!onlineUsers || !user) {
+    console.warn("Thiếu onlineUsers hoặc user");
+    return null;
+  }
+
+  // Người nhận là bất kỳ ai online mà không phải chính mình
+  const receiverUser = onlineUsers.find((u) => u.userId !== user._id);
+  const isUser = onlineUsers.find((u) => u.userId === user._id);
+
+  if (!receiverUser || !isUser) {
+    console.warn("Không tìm thấy user hoặc receiver phù hợp");
+    return null;
+  }
+
+  const roomId = isUser.socketId; // socketId của chính mình dùng để tạo room
+  console.log(roomId, "isuser roomId11");
+  const onhandleCall = () => {
+    // Dẫn đến trang gọi âm thanh
+    router.push({
+      pathname: "/(modals)/[roomId]",
+      params: { roomId },
+    });
+
+    handleCall(receiverUser, false); // false: audio
   };
 
-  const onAudioCallUser = () => {
-    handleCall(receiverUser, false); // false = audio call
+  const onVideohandleCall = () => {
+    router.push({
+      pathname: "/(modals)/[roomId]",
+      params: { roomId },
+    });
+    handleCall(receiverUser, true); // true: video
   };
+
   //   const ref = useClickOutside<View>(() => {
   //     setIsMicroOpen(false);
   //   });
@@ -624,6 +653,19 @@ const Chat = () => {
           colorScheme === "dark" ? colors.dark[300] : colors.light[500], // Màu sắc tùy thuộc vào colorScheme
       }}
     >
+      {localStream && (
+        <RTCView
+          streamURL={localStream.toURL()}
+          style={{ height: 150, backgroundColor: "#ccc" }}
+        />
+      )}
+      {/* {remoteStream && (
+        <RTCView
+          streamURL={remoteStream.toURL()}
+          style={{ height: 150, backgroundColor: "#ccc", marginTop: 10 }}
+        />
+      )}
+
       {isCameraOpen ? (
         <ExpoCamera
           onClose={() => setIsCameraOpen(false)}
@@ -633,7 +675,7 @@ const Chat = () => {
           }
           isSendNow={true}
         />
-      ) : null}
+      ) : null} */}
 
       <View className="flex  flex-row items-center justify-between px-3 pt-3 pb-1 shadow-md">
         <View className="flex flex-row">
@@ -665,15 +707,10 @@ const Chat = () => {
           </View>
         </View>
         <View className="flex flex-row right-2 items-center mb-4">
-          <TouchableOpacity
-            onPress={() => receiverUser && handleCall(receiverUser, false)}
-          >
+          <TouchableOpacity onPress={onhandleCall}>
             <CallIcon size={28} color={iconColor} />
           </TouchableOpacity>
-          <TouchableOpacity
-            className="ml-2"
-            onPress={() => receiverUser && handleCall(receiverUser, true)}
-          >
+          <TouchableOpacity className="ml-2" onPress={onVideohandleCall}>
             <VideoCallIcon size={30} color={iconColor} />
           </TouchableOpacity>
           <TouchableOpacity

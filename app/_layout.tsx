@@ -42,6 +42,13 @@ const RootLayout = () => {
                 {/* <Stack.Screen name="user" options={{ headerShown: false }} /> */}
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="(modals)"
+                  options={{
+                    presentation: "transparentModal",
+                    headerShown: false,
+                  }}
+                />
                 <Stack.Screen name="user" options={{ headerShown: false }} />
                 <Stack.Screen name="chats" options={{ headerShown: false }} />
                 <Stack.Screen name="search" options={{ headerShown: false }} />
