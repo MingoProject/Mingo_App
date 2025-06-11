@@ -8,7 +8,12 @@ import {
   ActivityIndicator,
   Platform,
 } from "react-native";
-import { SettingsIcon } from "../../components/icons/Icons";
+import {
+  RunIcon,
+  SettingsIcon,
+  SoccerIcon,
+  SwimIcon,
+} from "../../components/icons/Icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
 import PostCard from "@/components/card/post/PostCard";
@@ -28,7 +33,12 @@ import Bio from "@/components/forms/profile/Bio";
 import DetailInformation from "@/components/forms/profile/DetailInfomation";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import { PostResponseDTO } from "@/dtos/PostDTO";
-
+import TabSelector from "@/components/share/ui/tab-selector";
+export const tabIcons: Record<string, any> = {
+  Posts: SoccerIcon,
+  Images: SwimIcon,
+  Videos: RunIcon,
+};
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
   const { colorScheme } = useTheme();
@@ -49,11 +59,11 @@ const Profile = () => {
 
   const fetchData = async () => {
     try {
-      const data = await getMyPosts(profile?._id);
-      const postsData = await fetchDetailedPosts(data.userPosts);
-      const sortedPosts = postsData.sort(
-        (a, b) =>
-          new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+      const result = await getMyPosts(profile?._id);
+      const posts = result.userPosts || []; // hoặc result.data.posts
+      const sortedPosts = posts.sort(
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       setPostsData(sortedPosts);
       setIsLoading(false);
@@ -130,7 +140,7 @@ const Profile = () => {
       default:
         return (
           <ScrollView
-            className="p-3"
+            className="p-3 flex felx-col space-y-6"
             style={{
               paddingTop: Platform.OS === "android" ? 16 : 52, // Android: 0, iOS: 12
               backgroundColor:
@@ -160,7 +170,7 @@ const Profile = () => {
               </TouchableOpacity>
             </View>
             <Background profileUser={profile} setProfile={setProfile} />
-            <View className="flex flex-row mt-2">
+            <View className="flex flex-row">
               <Avatar profileUser={profile} setProfile={setProfile} />
               <Bio profileUser={profile} setProfile={setProfile} />
             </View>
@@ -168,73 +178,17 @@ const Profile = () => {
               profileUser={profile}
               setProfileUser={setProfile}
             />
-            <View className="flex  flex-row justify-start  mx-[10%] mt-10">
-              <TouchableOpacity onPress={() => setActiveTab("posts")}>
-                <Text
-                  style={{
-                    fontSize: 14,
-
-                    color:
-                      activeTab === "posts"
-                        ? colors.primary[100] // màu chữ khi active
-                        : colorScheme === "dark"
-                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                          : colors.light[100], // màu chữ khi không active và trong light mode
-                    borderBottomWidth: activeTab === "posts" ? 2 : 0, // đường viền dưới khi active
-                    borderBottomColor:
-                      activeTab === "posts"
-                        ? colors.primary[100]
-                        : "transparent", // màu đường viền dưới
-                  }}
-                  className="text-[14px] font-mregular "
-                >
-                  Posts
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => setActiveTab("photos")}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color:
-                      activeTab === "photos"
-                        ? colors.primary[100] // màu chữ khi active
-                        : colorScheme === "dark"
-                          ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                          : colors.light[100], // màu chữ khi không active và trong light mode
-                    borderBottomWidth: activeTab === "photos" ? 2 : 0, // đường viền dưới khi active
-                    borderBottomColor:
-                      activeTab === "photos"
-                        ? colors.primary[100]
-                        : "transparent", // màu đường viền dưới khi active
-                  }}
-                  className="text-[14px] font-mregular ml-5"
-                >
-                  Pictures
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setActiveTab("videos")}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color:
-                      activeTab === "videos"
-                        ? colors.primary[100] // màu chữ khi active
-                        : colorScheme === "dark"
-                          ? colors.dark[100] // màu chữ khi không active trong dark mode
-                          : colors.light[100], // màu chữ khi không active trong light mode
-                    borderBottomWidth: activeTab === "videos" ? 2 : 0, // đường viền dưới khi active
-                    borderBottomColor:
-                      activeTab === "videos"
-                        ? colors.primary[100]
-                        : "transparent", // màu đường viền dưới khi active
-                  }}
-                  className="text-[14px] font-mregular ml-5"
-                >
-                  Videos
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <TabSelector
+              tabs={[
+                { key: "posts", label: "Post" },
+                { key: "photos", label: "Image" },
+                { key: "videos", label: "Video" },
+              ]}
+              activeTab={activeTab}
+              onTabPress={setActiveTab}
+              colorScheme={colorScheme}
+              colors={colors}
+            />
 
             <View className=" py-3 h-auto">
               <View

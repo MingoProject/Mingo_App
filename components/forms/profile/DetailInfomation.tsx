@@ -4,59 +4,43 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import {
-  SoccerIcon,
+  LocationPinIcon,
+  JobIcon,
+  DobIcon,
+  GenderFemaleIcon,
+  GenderMaleIcon,
+  EmailIcon,
+  CalendarIcon,
   PenIcon,
-  SwimIcon,
-  RunIcon,
-  BookIcon,
-  GameIcon,
-  ChefIcon,
-  PlaneIcon,
-  CodeIcon,
-  CameraIcon,
-  PaletteIcon,
-  DanceIcon,
-  YogaIcon,
-  BikeIcon,
-  FishingIcon,
-  FlowerIcon,
-  CraftingIcon,
-  MovieIcon,
-  MusicIcon,
-  ChessIcon,
-  MicroIcon,
+  LikeIcon,
+  HobbyIcon,
 } from "@/components/icons/Icons";
 import UpdateInformation from "./UpdateInformation";
 
-export const hobbyIcons: Record<string, any> = {
-  Soccer: SoccerIcon,
-  Swimming: SwimIcon,
-  Running: RunIcon,
-  Reading: BookIcon,
-  Gaming: GameIcon,
-  Cooking: ChefIcon,
-  Traveling: PlaneIcon,
-  Programming: CodeIcon,
-  Photography: CameraIcon,
-  Painting: PaletteIcon,
-  Dancing: DanceIcon,
-  Yoga: YogaIcon,
-  Cycling: BikeIcon,
-  Fishing: FishingIcon,
-  Gardening: FlowerIcon,
-  Crafting: CraftingIcon,
-  "Watching Movies": MovieIcon,
-  "Listening to Music": MusicIcon,
-  "Playing Chess": ChessIcon,
-  Singing: MicroIcon,
-};
+const DetailRow = ({
+  icon: Icon,
+  value,
+  color,
+}: {
+  icon: React.FC<{ size?: number; color?: string }>;
+  value: string;
+  color: string;
+}) => (
+  <View className="flex-row items-center space-x-3 mb-4">
+    <Icon size={24} color={color} />
+    <Text className="text-[16px] font-mregular" style={{ color }}>
+      {value}
+    </Text>
+  </View>
+);
 
 const DetailInformation = ({ profileUser, setProfileUser }: any) => {
-  const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [isMe, setIsMe] = useState(false);
   const { profile } = useAuth();
-  const { colorScheme, toggleColorScheme } = useTheme();
+  const { colorScheme } = useTheme();
+  const iconColor =
+    colorScheme === "dark" ? colors.dark[100] : colors.light[100];
 
   useEffect(() => {
     if (profile?._id && profile?._id === profileUser?._id) {
@@ -64,299 +48,151 @@ const DetailInformation = ({ profileUser, setProfileUser }: any) => {
     }
   }, [profileUser?._id]);
 
+  const textColor =
+    colorScheme === "dark" ? colors.dark[100] : colors.light[100];
+
   const formattedDate = (date: string) => {
-    return new Date(date).toLocaleDateString();
+    try {
+      return new Date(date).toLocaleDateString("en-GB"); // dd/mm/yyyy
+    } catch {
+      return date;
+    }
   };
 
   return (
-    <View className=" mt-4 rounded-lg border border-gray-200 py-4">
-      <View className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100">
-        <Text className="text-white font-mmedium">Detailed Information</Text>
-      </View>
-
-      <ScrollView className="ml-[5%] mt-1 w-full">
-        {profileUser?.job && (
-          <Text
-            className="text-dark100_light500 mt-4 font-mregular"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
-            }}
-          >
-            Job:
-            <Text
-              className="font-msemibold"
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
-              }}
-            >
-              {" "}
-              {profileUser.job}
-            </Text>
-          </Text>
-        )}
-
+    <View>
+      <Text
+        className="mb-3 text-[16px] font-msemibold"
+        style={{ color: textColor }}
+      >
+        Information
+      </Text>
+      <View
+        className=" rounded-[10px] px-5 py-5"
+        style={{
+          backgroundColor:
+            colorScheme === "dark" ? colors.dark[200] : colors.light[200],
+        }}
+      >
         {profileUser?.address && (
-          <View className="mt-4">
-            <Text
-              className="text-dark100_light100 font-mregular"
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
-              }}
-            >
-              Address:
-              <Text
-                className="font-msemibold"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[100],
-                }}
-              >
-                {" "}
-                {profileUser.address}
-              </Text>
-            </Text>
-          </View>
+          <DetailRow
+            icon={LocationPinIcon}
+            value={profileUser.address}
+            color={iconColor}
+          />
+        )}
+        {profileUser?.job && (
+          <DetailRow icon={JobIcon} value={profileUser.job} color={textColor} />
+        )}
+        {profileUser?.relationShip && (
+          <DetailRow
+            icon={LikeIcon}
+            value={profileUser.relationShip}
+            color={textColor}
+          />
+        )}
+        {profileUser?.birthDay && (
+          <DetailRow
+            icon={DobIcon}
+            value={formattedDate(profileUser.birthDay)}
+            color={textColor}
+          />
+        )}
+        {profileUser?.gender !== undefined && (
+          <DetailRow
+            icon={profileUser.gender ? GenderMaleIcon : GenderFemaleIcon}
+            value={profileUser.gender ? "Male" : "Female"}
+            color={textColor}
+          />
+        )}
+        {profileUser?.email && (
+          <DetailRow
+            icon={EmailIcon}
+            value={profileUser.email}
+            color={textColor}
+          />
+        )}
+        {profileUser?.attendDate && (
+          <DetailRow
+            icon={CalendarIcon}
+            value={formattedDate(profileUser.attendDate)}
+            color={textColor}
+          />
         )}
 
         {profileUser?.hobbies?.length > 0 && (
-          <View className="mt-4">
-            <Text
-              className="text-dark100_light100 font-mregular"
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
-              }}
-            >
-              Hobbies:
-            </Text>
-            <ScrollView horizontal className="flex flex-row mt-2 w-[350px]">
-              {profileUser.hobbies.map((hobby: string, index: number) => {
-                const HobbyIcon = hobbyIcons[hobby]; // Lấy icon từ hobbyIcons dựa trên tên hobby
-                return (
-                  <View
-                    key={index}
-                    className="mx-2 flex-row items-center rounded-lg border border-gray-200 px-2 py-1"
+          <View className="mt-6 flex flex-row space-x-2">
+            <HobbyIcon size={24} color={iconColor} />
+            <View className="flex-row flex-wrap  gap-2">
+              {profileUser.hobbies.map((hobby: string, index: number) => (
+                <View
+                  key={index}
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    borderRadius: 999,
+                    backgroundColor:
+                      colorScheme === "dark"
+                        ? colors.dark[400]
+                        : colors.light[400],
+                    alignItems: "center",
+                    justifyContent: "center",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color:
+                        colorScheme === "dark"
+                          ? colors.dark[100]
+                          : colors.light[100],
+                    }}
+                    className="font-mmedium text-4"
                   >
-                    {HobbyIcon && (
-                      <HobbyIcon size={20} color={colors.primary[100]} />
-                    )}
-                    <Text
-                      className="ml-1 font-mregular"
-                      style={{
-                        color:
-                          colorScheme === "dark"
-                            ? colors.dark[100]
-                            : colors.light[100],
-                      }}
-                    >
-                      {hobby}
-                    </Text>
-                  </View>
-                );
-              })}
-            </ScrollView>
+                    {hobby}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </View>
         )}
 
-        {profileUser?.relationShip && (
-          <Text
-            className="mt-4 text-dark100_light100 font-mregular"
+        <View className="flex-row items-center justify-between mt-5">
+          {isMe && (
+            <TouchableOpacity
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[400] : colors.light[400],
+              }}
+              className="ml-auto py-3 px-3 rounded-full"
+              onPress={() => setShowEdit(true)}
+            >
+              <PenIcon size={18} color={colors.primary[100]} />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showEdit}
+          onRequestClose={() => setShowEdit(false)}
+        >
+          <View
             style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
+              backgroundColor:
+                colorScheme === "dark" ? colors.dark[500] : colors.light[500],
+              flex: 1,
             }}
           >
-            Relationship:
-            <Text
-              className="font-msemibold"
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
-              }}
-            >
-              {" "}
-              {profileUser.relationShip}
-            </Text>
-          </Text>
-        )}
-
-        {showDetails && (
-          <>
-            {profileUser?.birthDay && (
-              <Text
-                className="mt-4 text-dark100_light100 font-mregular"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[100],
-                }}
-              >
-                Birthday:
-                <Text
-                  className="font-msemibold"
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[100],
-                  }}
-                >
-                  {" "}
-                  {formattedDate(profileUser.birthDay)}
-                </Text>
-              </Text>
-            )}
-            {profileUser?.gender !== undefined && (
-              <Text
-                className="mt-4 text-dark100_light100 font-mregular"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[100],
-                }}
-              >
-                Gender:
-                <Text
-                  className="font-msemibold"
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[100],
-                  }}
-                >
-                  {" "}
-                  {profileUser.gender ? "Male" : "Female"}
-                </Text>
-              </Text>
-            )}
-            {profileUser?.attendDate && (
-              <Text
-                className="mt-4 text-dark100_light100 font-mregular"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[100],
-                }}
-              >
-                Attend date:
-                <Text
-                  className="font-msemibold"
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[100],
-                  }}
-                >
-                  {" "}
-                  {formattedDate(profileUser.attendDate)}
-                </Text>
-              </Text>
-            )}
-            {profileUser?.phoneNumber && (
-              <Text
-                className="mt-4 text-dark100_light100 font-mregular"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[100],
-                }}
-              >
-                Phone number:
-                <Text
-                  className="font-msemibold"
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[100],
-                  }}
-                >
-                  {" "}
-                  {profileUser.phoneNumber}
-                </Text>
-              </Text>
-            )}
-            {profileUser?.email && (
-              <Text
-                className="mt-4 text-dark100_light100 font-mregular"
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                }}
-              >
-                Email:
-                <Text
-                  className="font-msemibold"
-                  style={{
-                    color:
-                      colorScheme === "dark"
-                        ? colors.dark[100]
-                        : colors.light[500],
-                  }}
-                >
-                  {" "}
-                  {profileUser.email}
-                </Text>
-              </Text>
-            )}
-          </>
-        )}
-      </ScrollView>
-
-      <View className="mr-[5%] flex-row items-center">
-        <TouchableOpacity
-          className="ml-[5%] mr-[2%] mt-4"
-          onPress={() => setShowDetails(!showDetails)}
-        >
-          <Text className="text-primary-100 font-mmedium">
-            {showDetails ? "Hidden" : "See all"}
-          </Text>
-        </TouchableOpacity>
-        {isMe && (
-          <TouchableOpacity
-            className="ml-auto"
-            onPress={() => setShowEdit(true)}
-          >
-            <PenIcon size={23} color={colors.primary[100]} />
-          </TouchableOpacity>
-        )}
-      </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showEdit}
-        onRequestClose={() => setShowEdit(false)}
-      >
-        <View
-          style={{
-            backgroundColor:
-              colorScheme === "dark" ? colors.dark[300] : colors.light[700],
-            flex: 1,
-          }}
-          className="pt-10"
-        >
-          <View>
             <UpdateInformation
               profileUser={profileUser}
               setProfileUser={setProfileUser}
               onClose={() => setShowEdit(false)}
             />
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </View>
     </View>
   );
 };

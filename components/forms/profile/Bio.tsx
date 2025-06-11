@@ -1,4 +1,6 @@
 import { CancelIcon, PenIcon } from "@/components/icons/Icons";
+import Button from "@/components/share/ui/button";
+import MyTextarea from "@/components/share/ui/textarea";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { updateUserBio } from "@/lib/service/user.service";
@@ -70,16 +72,20 @@ const Bio = ({ profileUser, setProfile }: any) => {
             color:
               colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           }}
-          className="font-mregular text-[14px] mt-3"
+          className="font-mregular text-[16px] mt-2"
         >
           {profileUser?.bio || "No bio"}
         </Text>
         {isMe && (
           <TouchableOpacity
-            className="ml-auto"
+            style={{
+              backgroundColor:
+                colorScheme === "dark" ? colors.dark[400] : colors.light[400],
+            }}
+            className="ml-auto py-3 px-3 rounded-full"
             onPress={() => setShowEdit(true)}
           >
-            <PenIcon size={23} color={colors.primary[100]} />
+            <PenIcon size={18} color={colors.primary[100]} />
           </TouchableOpacity>
         )}
       </View>
@@ -92,76 +98,59 @@ const Bio = ({ profileUser, setProfile }: any) => {
         <View
           style={{
             backgroundColor:
-              colorScheme === "dark" ? colors.dark[300] : colors.light[300],
+              colorScheme === "dark" ? colors.dark[500] : colors.light[500],
             flex: 1,
           }}
-          className="pt-10"
+          // className="pt-10"
         >
-          <View className="flex-1 justify-center items-center">
+          <View className="flex-1 justify-between items-center">
             <View
-              className="mt-4 py-4 "
+              className=" py-8 px-5 w-full space-y-6"
               style={{
                 backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[300],
+                  colorScheme === "dark" ? colors.dark[500] : colors.light[500],
                 flex: 1,
               }}
             >
-              <View className="flex-row h-[39px] w-full px-5 items-center justify-center rounded-r-lg mb-4">
+              <View className="flex-row w-full items-center justify-between">
                 <Text
                   style={{
-                    fontSize: 24,
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
                         : colors.light[100],
                   }}
-                  className="text-[20px] font-mbold"
+                  className="font-msemibold text-[24px]"
                 >
                   Update Bio
                 </Text>
-                <TouchableOpacity
+                <Button
+                  title="Close"
+                  size="small"
+                  color="transparent"
                   onPress={() => setShowEdit(false)}
-                  className="ml-auto"
-                >
-                  <CancelIcon size={28} color={iconColor} />
-                </TouchableOpacity>
+                />
               </View>
-              <TextInput
-                value={bio}
-                onChangeText={setBio}
-                style={{
-                  backgroundColor:
-                    colorScheme === "dark"
-                      ? colors.dark[300]
-                      : colors.light[300],
-                  padding: 10,
-                  color:
+              <View>
+                <MyTextarea
+                  value={bio}
+                  onChangeText={setBio}
+                  placeholder="Enter your new bio"
+                  fontFamily="Montserrat-Regular"
+                />
+              </View>
+
+              <View className="w-full">
+                <Button
+                  title="Save"
+                  onPress={handleSave}
+                  fontColor={
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[100],
-                  marginBottom: 15,
-                }}
-                placeholder="Enter your new bio"
-                placeholderTextColor={
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[100]
-                }
-                className="border mt-5 border-gray-200 rounded-lg px-2 py-3 mx-5 font-mmedium"
-              />
-              <TouchableOpacity
-                onPress={handleSave}
-                className="bg-primary-100 rounded-[8px] mx-5 mt-3 py-3"
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: "#FFFFFF",
-                    textAlign: "center",
-                  }}
-                  className="font-msemibold"
-                >
-                  Save
-                </Text>
-              </TouchableOpacity>
+                      : colors.light[200]
+                  }
+                />
+              </View>
             </View>
           </View>
         </View>

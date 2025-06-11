@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Platform,
 } from "react-native";
 import MyDropDown from "../../share/MyDropDown";
 import { useTheme } from "../../../context/ThemeContext";
@@ -77,37 +78,6 @@ const AddPost = ({ onClose, setPostsData }: any) => {
       }
     });
   };
-
-  // const handleFileChange = async () => {
-  //   try {
-  //     const permissionResult =
-  //       await ImagePicker.requestMediaLibraryPermissionsAsync();
-  //     if (!permissionResult.granted) {
-  //       alert("Cần cấp quyền truy cập thư viện ảnh!");
-  //       return;
-  //     }
-
-  //     const result = await ImagePicker.launchImageLibraryAsync({
-  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //       allowsEditing: true,
-  //       quality: 1,
-  //     });
-
-  //     if (!result.canceled) {
-  //       setFiles((prevFiles) => [
-  //         ...prevFiles,
-  //         {
-  //           uri: result.assets[0].uri,
-  //           type: result.assets[0].type,
-  //           name: result.assets[0].fileName || `image_${Date.now()}.jpg`,
-  //         },
-  //       ]);
-  //       setCaptions((prevCaptions) => [...prevCaptions, ""]);
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi chọn ảnh:", error);
-  //   }
-  // };
 
   const handleFileChange = async () => {
     try {
@@ -213,15 +183,16 @@ const AddPost = ({ onClose, setPostsData }: any) => {
 
   return (
     <ScrollView
+      className="w-full p-4 h-full space-y-6"
       style={{
-        flex: 1,
+        paddingTop: Platform.OS === "android" ? 14 : 52,
         backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[700],
-        padding: 16,
+          colorScheme === "dark" ? colors.dark[500] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
       }}
     >
       {/* Header */}
-      <View className="flex flex-row pt-12 justify-between items-center pb-4">
+      <View className="flex flex-row justify-between items-center pb-4">
         <Text
           style={{
             color:

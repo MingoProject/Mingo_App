@@ -100,7 +100,7 @@ const Friend = () => {
               horizontal
               contentContainerStyle={{
                 flexDirection: "row",
-                gap: 8,
+                gap: 10,
               }}
               showsHorizontalScrollIndicator={false}
               className="pb-2 mt-3"

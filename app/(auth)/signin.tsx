@@ -19,7 +19,6 @@ import Button from "@/components/share/ui/button";
 const SignIn = () => {
   const { setProfile } = useAuth();
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -61,7 +60,7 @@ const SignIn = () => {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <View className="w-full space-y-10 flex flex-col justify-center items-center">
+          <View className="w-full space-y-8 flex flex-col justify-center items-center">
             <View className="items-center">
               <Text
                 className="font-msemibold text-[36px]"

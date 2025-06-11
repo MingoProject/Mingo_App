@@ -4,13 +4,15 @@ import { colors } from "@/styles/colors";
 import { useTheme } from "@/context/ThemeContext";
 
 interface ButtonProps {
-  title: string;
+  title: any;
   color?: string;
   onPress?: () => void;
   size?: "small" | "large";
   fontColor?: string;
-  border?: string;
+  outline?: boolean;
+  border?: boolean;
   className?: string;
+  borderRadius?: number;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,24 +21,29 @@ const Button: React.FC<ButtonProps> = ({
   onPress,
   size = "large",
   fontColor,
-  border = "",
+  outline,
+  border = false,
   className,
+  borderRadius = 12,
 }) => {
   const { colorScheme } = useTheme();
+  const isDark = colorScheme === "dark";
 
-  const backgroundColor = color ?? colors.primary[100];
-
+  const backgroundColor = outline
+    ? "transparent"
+    : (color ?? colors.primary[100]);
   const textColor =
-    fontColor ??
-    (colorScheme === "dark" ? colors.dark[100] : colors.light[100]);
+    fontColor ?? (isDark ? colors.dark[100] : colors.light[100]);
+  const borderColor = isDark ? "#FFFFFF" : "#000000";
 
   const containerStyle = [
     styles.base,
     size === "small" ? styles.small : styles.large,
     {
+      borderRadius,
       backgroundColor,
       borderWidth: border ? 1 : 0,
-      borderColor: border ? border : undefined,
+      borderColor: border ? borderColor : "transparent",
     },
   ];
 
@@ -54,14 +61,14 @@ const Button: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 12,
+    // borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },
   small: {
-    width: 138,
+    width: 140,
     paddingVertical: 10,
-    paddingHorizontal: 30,
+    paddingHorizontal: 24,
   },
   large: {
     width: "100%",

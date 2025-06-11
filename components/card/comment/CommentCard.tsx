@@ -1,54 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   Image,
   TouchableOpacity,
-  FlatList,
-  TextInput,
   Modal,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
-import { getTimestamp } from "@/lib/utils";
-import CommentAction from "@/components/forms/comment/CommentAction";
-import {
-  addReplyToComment,
-  createReplyCommentPost,
-  createReplyCommentMedia,
-  getCommentByCommentId,
-} from "@/lib/service/comment.service";
-import { useAuth } from "@/context/AuthContext";
-import { createNotification } from "@/lib/service/notification.service";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getCommentByCommentId } from "@/lib/service/comment.service";
 import ReplyCard from "./ReplyCard";
 import CommentMenu from "@/components/forms/comment/CommentMenu";
-import { CancelIcon } from "@/components/icons/Icons";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
+import { UserBasicInfo } from "@/dtos/UserDTO";
+import CommentActionCard from "./CommentActionCard";
 
+interface CommentCardProps {
+  comment: CommentResponseDTO;
+  commentsData: CommentResponseDTO[];
+  setCommentsData: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
+  profileBasic: UserBasicInfo;
+  author: UserBasicInfo;
+  postId?: string;
+  mediaId?: string;
+  setNumberOfComments: React.Dispatch<React.SetStateAction<number>>;
+  numberOfComments: number;
+}
 const CommentCard = ({
   comment,
   commentsData,
   setCommentsData,
+  profileBasic,
   author,
   postId,
   mediaId,
   setNumberOfComments,
   numberOfComments,
-}: any) => {
+}: CommentCardProps) => {
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [isModalVisible, setModalVisible] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
-  const [repliesData, setRepliesData] = useState<any[]>([]);
-  const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [newComment, setNewComment] = useState("");
-  const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
-    null
-  );
-  const { profile } = useAuth();
+  const [repliesData, setRepliesData] = useState<CommentResponseDTO[]>([]);
 
   const toggleShowReplies = async () => {
     const nextShow = !showReplies;
@@ -69,140 +63,6 @@ const CommentCard = ({
       } catch (error) {
         console.error("Error fetching replies:", error);
       }
-    }
-  };
-
-  const handleReplyComment = async () => {
-    const token: string | null = await AsyncStorage.getItem("token");
-    if (!token) {
-      console.error("User is not authenticated");
-      return;
-    }
-
-    if (!newComment.trim() || !replyingTo) {
-      console.warn("Comment cannot be empty or no comment to reply to");
-      return;
-    }
-
-    try {
-      setNewComment("");
-      setReplyingTo(null);
-      if (postId) {
-        const newCommentData = await createReplyCommentPost(
-          {
-            content: newComment,
-            parentId: comment._id,
-            originalCommentId: comment._id,
-          },
-          token,
-          postId
-        );
-        if (newCommentData) {
-          await addReplyToComment(replyingTo, newCommentData._id, token);
-        }
-
-        const currentTime = new Date();
-        const isoStringWithOffset = currentTime
-          .toISOString()
-          .replace("Z", "+00:00");
-
-        const enrichedComment = {
-          ...newCommentData,
-          userId: {
-            _id: profile?._id,
-            avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
-            firstName: profile?.firstName || "Anonymous",
-            lastName: profile?.lastName || "Anonymous",
-          },
-          createAt: isoStringWithOffset,
-        };
-
-        console.log(enrichedComment);
-
-        setRepliesData((prev) => [enrichedComment, ...prev]);
-
-        if (comment.userId._id !== profile._id) {
-          const notificationParams = {
-            senderId: profile._id,
-            receiverId: comment.userId._id,
-            type: "reply_comment",
-            commentId: comment._id,
-            ...(postId && { postId }),
-            ...(mediaId && { mediaId }),
-          };
-
-          await createNotification(notificationParams, token);
-        }
-
-        if (author._id !== profile._id) {
-          const notificationParams2 = {
-            senderId: profile._id,
-            receiverId: author._id,
-            type: "comment",
-            ...(postId && { postId }),
-            ...(mediaId && { mediaId }),
-          };
-          await createNotification(notificationParams2, token);
-        }
-      } else {
-        const newCommentData = await createReplyCommentMedia(
-          {
-            content: newComment,
-            parentId: comment._id,
-            originalCommentId: comment._id,
-          },
-          token,
-          mediaId
-        );
-        if (newCommentData) {
-          await addReplyToComment(replyingTo, newCommentData._id, token);
-        }
-
-        const currentTime = new Date();
-        const isoStringWithOffset = currentTime
-          .toISOString()
-          .replace("Z", "+00:00");
-
-        const enrichedComment = {
-          ...newCommentData,
-          userId: {
-            _id: profile?._id,
-            avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
-            firstName: profile?.firstName || "Anonymous",
-            lastName: profile?.lastName || "Anonymous",
-          },
-          createAt: isoStringWithOffset,
-        };
-
-        setRepliesData((prev) => [enrichedComment, ...prev]);
-
-        if (comment.userId._id !== profile._id) {
-          const notificationParams = {
-            senderId: profile._id,
-            receiverId: comment.userId._id,
-            type: "reply_comment",
-            commentId: comment._id,
-            ...(postId && { postId }),
-            ...(mediaId && { mediaId }),
-          };
-
-          await createNotification(notificationParams, token);
-        }
-
-        if (author._id !== profile._id) {
-          const notificationParams2 = {
-            senderId: profile._id,
-            receiverId: author._id,
-            type: "comment",
-            ...(postId && { postId }),
-            ...(mediaId && { mediaId }),
-          };
-          await createNotification(notificationParams2, token);
-        }
-      }
-      setNumberOfComments(numberOfComments + 1);
-    } catch (error) {
-      console.error("Failed to reply to comment:", error);
     }
   };
 
@@ -233,7 +93,7 @@ const CommentCard = ({
               }}
               className="font-mmedium text-[16px]"
             >
-              {comment.author.firstName} {comment.author.lastName}
+              {comment.author?.firstName} {comment.author?.lastName}
             </Text>
             <View
               className=" rounded-r-[20px] rounded-bl-[20px] px-[15px] py-[10px]  self-start"
@@ -243,7 +103,7 @@ const CommentCard = ({
               }}
             >
               <Text
-                className="text-[16px] font-normal inline-block"
+                className="text-[16px] font-mregular inline-block"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -255,27 +115,18 @@ const CommentCard = ({
               </Text>
             </View>
 
-            <View className="flex-row">
-              <Text
-                style={{
-                  color:
-                    colorScheme === "dark"
-                      ? colors.dark[300]
-                      : colors.light[300],
-                  fontSize: 12,
-                }}
-                className="font-mregular"
-              >
-                {getTimestamp(comment.createAt)}
-              </Text>
-              <CommentAction
-                comment={comment}
-                setReplyingTo={setReplyingTo}
-                postId={postId}
-                mediaId={mediaId}
-              />
-            </View>
-            {comment.replies?.length > 0 && (
+            <CommentActionCard
+              comment={comment}
+              setNumberOfComments={setNumberOfComments}
+              numberOfComments={numberOfComments}
+              profileBasic={profileBasic}
+              postId={postId}
+              mediaId={mediaId}
+              author={author}
+              originalCommentId={comment._id}
+              setRepliesData={setRepliesData}
+            />
+            {comment.replies && comment.replies?.length > 0 && (
               <TouchableOpacity onPress={toggleShowReplies}>
                 <Text className="text-primary-100 text-sm mt-2 font-mmedium">
                   {showReplies
@@ -286,28 +137,6 @@ const CommentCard = ({
             )}
           </View>
         </View>
-        {replyingTo === comment._id && (
-          <View className="mt-2 ml-12 flex-row">
-            <TextInput
-              value={newComment}
-              onChangeText={setNewComment}
-              placeholder="Write a reply..."
-              className="border w-[220px] border-gray-300 rounded-lg p-2 text-sm font-mmedium"
-            />
-            <TouchableOpacity
-              onPress={handleReplyComment}
-              className="bg-primary-100  rounded-lg ml-2 px-3 py-2 flex-row justify-center items-center"
-            >
-              <Text className="text-white text-sm font-mbold">Reply</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setReplyingTo(null)}
-              className=" rounded-lg ml-2 py-2 flex-row justify-center items-center"
-            >
-              <CancelIcon size={20} color={iconColor} />
-            </TouchableOpacity>
-          </View>
-        )}
         {showReplies && Array.isArray(repliesData) && (
           <View className="my-2 ml-10">
             {repliesData.map((reply: any) => (
@@ -317,11 +146,13 @@ const CommentCard = ({
                   repliesData={repliesData}
                   setRepliesData={setRepliesData}
                   commentId={comment._id}
+                  profileBasic={profileBasic}
                   author={author}
                   postId={postId}
                   mediaId={mediaId}
                   setNumberOfComments={setNumberOfComments}
                   numberOfComments={numberOfComments}
+                  setCommentsData={setCommentsData}
                 />
               </View>
             ))}
@@ -335,7 +166,7 @@ const CommentCard = ({
         >
           <CommentMenu
             comment={comment}
-            commentsData={commentsData}
+            // commentsData={commentsData}
             setCommentsData={setCommentsData}
             setModalVisible={setModalVisible}
             postId={postId}

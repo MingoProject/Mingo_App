@@ -5,7 +5,7 @@ import { colors } from "@/styles/colors"; // File màu bạn import ở các fil
 
 interface TabProps {
   content: string;
-  isActive: boolean;
+  isActive?: boolean;
   onClick?: () => void;
 }
 
@@ -16,7 +16,8 @@ const Tab: React.FC<TabProps> = ({ content, isActive, onClick }) => {
   const inactiveBackgroundColor =
     colorScheme === "dark" ? colors.dark[400] : colors.light[400];
 
-  const activeTextColor = colors.light[200];
+  const activeTextColor =
+    colorScheme === "dark" ? colors.dark[100] : colors.light[500];
   const inactiveTextColor =
     colorScheme === "dark" ? colors.dark[300] : colors.light[300];
 
@@ -26,7 +27,7 @@ const Tab: React.FC<TabProps> = ({ content, isActive, onClick }) => {
       style={{
         paddingHorizontal: 16,
         paddingVertical: 12,
-        borderRadius: 999,
+        borderRadius: 12,
         backgroundColor: isActive
           ? activeBackgroundColor
           : inactiveBackgroundColor,
@@ -40,7 +41,7 @@ const Tab: React.FC<TabProps> = ({ content, isActive, onClick }) => {
         style={{
           color: isActive ? activeTextColor : inactiveTextColor,
         }}
-        className="font-mmedium text-4"
+        className="font-mmedium text-4 rounded-3"
       >
         {content}
       </Text>

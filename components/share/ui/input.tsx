@@ -30,8 +30,7 @@ const Input = ({
   onKeyDown,
 }: InputProps) => {
   const { colorScheme } = useTheme();
-
-  const iconColor =
+  const textColor =
     colorScheme === "dark" ? colors.dark[100] : colors.light[100];
 
   return (
@@ -63,9 +62,11 @@ const Input = ({
         activeOpacity={0.9}
       >
         <TextInput
-          style={styles.input}
+          style={[styles.input, { color: textColor }]}
           placeholder={placeholder}
-          placeholderTextColor="#999"
+          placeholderTextColor={
+            colorScheme === "dark" ? colors.dark[300] : colors.light[300]
+          }
           editable={!readOnly}
           value={value}
           onChangeText={onChange}
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    width: 320,
+    width: "100%",
   },
   avatarContainer: {
     width: 40,
@@ -98,12 +99,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderRadius: 999,
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    // paddingVertical: 10,
     alignItems: "center",
   },
   input: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: "Montserrat-Regular",
   },
 });

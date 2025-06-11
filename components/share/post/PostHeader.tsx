@@ -1,6 +1,5 @@
-import { Icon } from "@iconify/react";
 import { getTimestamp } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import TagModal from "@/components/modal/post/TagsModal";
 import { FriendIcon, LocationIcon } from "@/components/icons/Icons";

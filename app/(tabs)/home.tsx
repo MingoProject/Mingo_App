@@ -124,7 +124,10 @@ const Home = () => {
                     className={`text-[24px] font-jsemibold `}
                   >
                     Min
-                    <Text className="text-[24px] font-semibold text-primary-100">
+                    <Text
+                      className="text-[24px] font-semibold"
+                      style={{ color: colors.primary[100] }}
+                    >
                       gle
                     </Text>
                   </Text>

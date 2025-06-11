@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   Switch,
+  FlatList,
 } from "react-native";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -38,6 +39,10 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { updateInfo } from "@/lib/service/user.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
+import Button from "@/components/share/ui/button";
+import MyInput from "@/components/share/MyInput";
+import CustomPicker from "@/components/share/ui/picker";
+import HobbySelector from "@/components/share/ui/hobby-selector";
 
 export const hobbyIcons: Record<string, any> = {
   Soccer: SoccerIcon,
@@ -64,8 +69,7 @@ export const hobbyIcons: Record<string, any> = {
 
 const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
   const { profile } = useAuth();
-  const { colorScheme, toggleColorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const { colorScheme } = useTheme();
   const [formValues, setFormValues] = useState({
     firstName: profileUser.firstName,
     lastName: profileUser.lastName,
@@ -156,415 +160,329 @@ const UpdateInformation = ({ profileUser, setProfileUser, onClose }: any) => {
       console.error("Error updating user information:", err);
     }
   };
+
+  const relationshipItems = [
+    { label: "Select Relationship", value: "" },
+    { label: "Single", value: "Single" },
+    { label: "In a relationship", value: "In a relationship" },
+    { label: "Married", value: "Married" },
+    { label: "Divorced", value: "Divorced" },
+    { label: "Widowed", value: "Widowed" },
+  ];
+
+  const dayItems = days.map((day) => ({
+    label: day.toString(),
+    value: day.toString(),
+  }));
+
+  const monthItems = months.map((month) => ({
+    label: month.toString(),
+    value: month.toString(),
+  }));
+
+  const yearItems = years.map((year) => ({
+    label: year.toString(),
+    value: year.toString(),
+  }));
   return (
-    <ScrollView contentContainerStyle={{ padding: 20 }}>
-      <View className="flex-row">
-        <Text
-          style={{
-            fontSize: 24,
-            marginBottom: 20,
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="font-mbold"
-        >
-          Update Information
-        </Text>
-        <TouchableOpacity onPress={onClose} className="ml-auto">
-          <CancelIcon size={28} color={iconColor} />
-        </TouchableOpacity>
-      </View>
-      <View className="flex flex-row">
-        <View className="w-1/2">
-          <Text
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-            className="mb-1 font-mmedium"
-          >
-            First Name
-          </Text>
-          <TextInput
-            style={{
-              borderWidth: 1,
-              padding: 10,
-              borderRadius: 5,
-              marginBottom: 10,
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-            className="border w-[98%] mr-1 border-gray-200 rounded-lg font-mmedium"
-            placeholder="First Name"
-            value={formValues.firstName}
-            onChangeText={(text) => handleChange("firstName", text)}
-          />
-        </View>
-        <View className="w-1/2">
-          <Text
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-            className="mb-1 font-mmedium"
-          >
-            Last Name
-          </Text>
-          <TextInput
-            style={{
-              borderWidth: 1,
-              padding: 10,
-              borderRadius: 5,
-              marginBottom: 10,
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-            className="border w-[98%] font-mmedium ml-1 border-gray-200 rounded-lg"
-            placeholder="Last Name"
-            value={formValues.lastName}
-            onChangeText={(text) => handleChange("lastName", text)}
-          />
-        </View>
-      </View>
-
-      <View>
-        <Text
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="mb-1 font-mmedium mt-3"
-        >
-          Nick Name
-        </Text>
-        <TextInput
-          style={{
-            borderWidth: 1,
-            padding: 10,
-            borderRadius: 5,
-            marginBottom: 10,
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="border border-gray-200 rounded-lg font-mmedium"
-          placeholder="Nick Name"
-          value={formValues.nickName}
-          onChangeText={(text) => handleChange("nickName", text)}
-        />
-      </View>
-
-      <View style={{ marginBottom: 10 }}>
-        <Text
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="mb-1 font-mmedium"
-        >
-          Gender
-        </Text>
-        <Picker
-          selectedValue={formValues.gender}
-          itemStyle={{
-            fontSize: 16, // Chỉnh font size
-            fontFamily: "Montserrat-Regular", // Thêm font tùy chỉnh nếu có
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            height: 120,
-          }}
-          onValueChange={(itemValue: any) => handleChange("gender", itemValue)}
-          className="border rounded-lg"
-        >
-          <Picker.Item label="Select Gender" value="" />
-          <Picker.Item label="Male" value="true" />
-          <Picker.Item label="Female" value="false" />
-        </Picker>
-      </View>
-      <View className="mb-5">
-        <Text
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="mb-1 font-mmedium"
-        >
-          Job
-        </Text>
-        <TextInput
-          style={{
-            borderWidth: 1,
-            padding: 10,
-            borderRadius: 5,
-            marginBottom: 10,
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="border border-gray-200 rounded-lg font-mmedium"
-          placeholder="Job"
-          value={formValues.job}
-          onChangeText={(text) => handleChange("job", text)}
-        />
-      </View>
-      <View className="mb-5">
-        <Text
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="mb-1 font-mmedium"
-        >
-          Address
-        </Text>
-        <TextInput
-          style={{
-            borderWidth: 1,
-            padding: 10,
-            borderRadius: 5,
-            marginBottom: 10,
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="border border-gray-200 rounded-lg font-mmedium"
-          placeholder="Address"
-          value={formValues.address}
-          onChangeText={(text) => handleChange("address", text)}
-        />
-      </View>
-
-      <View className="mb-5">
-        <Text
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="mb-1 font-mmedium"
-        >
-          Relationship
-        </Text>
-        <Picker
-          selectedValue={formValues.relationShip}
-          onValueChange={(itemValue: any) =>
-            handleChange("relationShip", itemValue)
-          }
-          itemStyle={{
-            fontSize: 16, // Chỉnh font size
-            fontFamily: "Montserrat-Regular", // Thêm font tùy chỉnh nếu có
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            height: 120,
-          }}
-          className="border rounded-lg text-base"
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-        >
-          <Picker.Item
-            label="Select Relationship"
-            value=""
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          />
-          <Picker.Item
-            label="Single"
-            value="Single"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          />
-          <Picker.Item
-            label="In a relationship"
-            value="In a relationship"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          />
-          <Picker.Item
-            label="Married"
-            value="Married"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          />
-          <Picker.Item
-            label="Divorced"
-            value="Divorced"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          />
-          <Picker.Item
-            label="Widowed"
-            value="Widowed"
-            style={{
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-            }}
-          />
-        </Picker>
-      </View>
-
-      {/* Birthday */}
-      <View className="mb-5 h-36">
-        <Text
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="mb-1 font-mmedium"
-        >
-          Birthday
-        </Text>
-        <View className="flex-row">
-          {/* Day Picker */}
-          <Picker
-            selectedValue={selectedDay.toString()}
-            style={{ flex: 1, height: 50 }}
-            itemStyle={{
-              fontSize: 16, // Chỉnh font size
-              fontFamily: "Montserrat-Regular", // Thêm font tùy chỉnh nếu có
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-              height: 120,
-            }}
-            onValueChange={(itemValue: any) => setSelectedDay(itemValue)}
-          >
-            {days.map((day) => (
-              <Picker.Item
-                key={day}
-                label={day.toString()}
-                value={day.toString()}
-              />
-            ))}
-          </Picker>
-
-          {/* Month Picker */}
-          <Picker
-            selectedValue={selectedMonth.toString()}
-            style={{ flex: 1, height: 50 }}
-            itemStyle={{
-              fontSize: 16, // Chỉnh font size
-              fontFamily: "Montserrat-Regular", // Thêm font tùy chỉnh nếu có
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-              height: 120,
-            }}
-            onValueChange={(itemValue: any) => setSelectedMonth(itemValue)}
-          >
-            {months.map((month) => (
-              <Picker.Item
-                key={month}
-                label={month.toString()}
-                value={month.toString()}
-              />
-            ))}
-          </Picker>
-
-          {/* Year Picker */}
-          <Picker
-            selectedValue={selectedYear.toString()}
-            style={{ flex: 1, height: 50 }}
-            itemStyle={{
-              fontSize: 16, // Chỉnh font size
-              fontFamily: "Montserrat-Regular", // Thêm font tùy chỉnh nếu có
-              color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-              height: 120,
-            }}
-            onValueChange={(itemValue: any) => setSelectedYear(itemValue)}
-          >
-            {years.map((year) => (
-              <Picker.Item
-                key={year}
-                label={year.toString()}
-                value={year.toString()}
-              />
-            ))}
-          </Picker>
-        </View>
-      </View>
-
-      <Text
-        style={{
-          color: colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-        }}
-        className="mb-1 font-mmedium"
-      >
-        Hobbies
-      </Text>
-      <View
-        style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 20 }}
-        className="mt-2"
-      >
-        {Object.keys(hobbyIcons).map((hobby) => {
-          const HobbyIcon = hobbyIcons[hobby]; // Lấy icon tương ứng từ hobbyIcons
-          return (
-            <TouchableOpacity
-              key={hobby}
-              onPress={() => handleHobbyToggle(hobby)}
+    <FlatList
+      data={[{}]}
+      keyExtractor={(_, index) => index.toString()}
+      renderItem={() => (
+        <View className="pt-8 pb-14 px-5 w-full space-y-6">
+          <View className="flex flex-row w-full items-center justify-between">
+            <Text
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginRight: 10,
-                marginBottom: 10,
-                padding: 10,
-                backgroundColor: selectedHobbies.includes(hobby)
-                  ? colors.primary[100]
-                  : "tranparent",
+                fontSize: 24,
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
-              className="border border-gray-200 rounded-lg"
+              className="font-mbold"
             >
-              {HobbyIcon && (
-                <HobbyIcon
-                  size={20}
-                  color={
-                    selectedHobbies.includes(hobby)
-                      ? "#ffffff"
-                      : colors.primary[100]
-                  }
-                  style={{ marginRight: 5 }}
+              Update Information
+            </Text>
+            <Button
+              title="Close"
+              size="small"
+              color="transparent"
+              onPress={onClose}
+            />
+          </View>
+          <View className="flex flex-row">
+            <View className="w-[48%]">
+              <View className="relative">
+                <View
+                  className="absolute left-3 -top-2 flex flex-row items-center px-1 z-10"
+                  style={{
+                    backgroundColor:
+                      colorScheme === "dark"
+                        ? colors.dark[500]
+                        : colors.light[500],
+                  }}
+                >
+                  <Text
+                    className="font-mregular text-[12px]"
+                    style={{
+                      color:
+                        colorScheme === "dark"
+                          ? colors.dark[100]
+                          : colors.light[100],
+                    }}
+                  >
+                    First Name <Text style={{ color: "red" }}>*</Text>
+                  </Text>
+                </View>
+                <MyInput
+                  value={formValues.firstName}
+                  onChangeText={(text) => handleChange("firstName", text)}
+                  placeholder="First Name"
+                  // secureTextEntry
+                  height={56}
+                  fontSize={14}
+                  fontFamily="Montserrat-Regular"
                 />
-              )}
+              </View>
+            </View>
+            <View className="w-[48%] ml-[4%]">
+              <View className="relative">
+                <View
+                  className="absolute left-3 -top-2 flex flex-row items-center px-1 z-10"
+                  style={{
+                    backgroundColor:
+                      colorScheme === "dark"
+                        ? colors.dark[500]
+                        : colors.light[500],
+                  }}
+                >
+                  <Text
+                    className="font-mregular text-[12px]"
+                    style={{
+                      color:
+                        colorScheme === "dark"
+                          ? colors.dark[100]
+                          : colors.light[100],
+                    }}
+                  >
+                    Last Name <Text style={{ color: "red" }}>*</Text>
+                  </Text>
+                </View>
+                <MyInput
+                  value={formValues.lastName}
+                  onChangeText={(text) => handleChange("lastName", text)}
+                  placeholder="Last Name"
+                  // secureTextEntry
+                  height={56}
+                  fontSize={14}
+                  fontFamily="Montserrat-Regular"
+                />
+              </View>
+            </View>
+          </View>
+          <View className="relative">
+            <View
+              className="absolute left-3 -top-2 flex flex-row items-center px-1 z-10"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[500] : colors.light[500],
+              }}
+            >
               <Text
+                className="font-mregular text-[12px]"
                 style={{
-                  marginRight: 5,
-                  color: selectedHobbies.includes(hobby)
-                    ? "#ffffff"
-                    : colorScheme === "dark"
-                    ? colors.dark[100]
-                    : colors.light[500],
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[100],
                 }}
-                className="font-mmedium"
               >
-                {hobby}
+                Nick Name
               </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-      <TouchableOpacity
-        onPress={handleSave}
-        className="px-3 h-10 py-2 rounded-[8px] mb-3"
-        style={{
-          backgroundColor: colors.primary[100],
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 16,
-          }}
-          className="text-white mx-auto font-msemibold"
-        >
-          Save
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
+            </View>
+            <MyInput
+              value={formValues.nickName}
+              onChangeText={(text) => handleChange("nickName", text)}
+              placeholder="Nick Name"
+              // secureTextEntry
+              height={56}
+              fontSize={14}
+              fontFamily="Montserrat-Regular"
+            />
+          </View>
+          {/* Gender */}
+          <View>
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
+              }}
+              className="mb-1 font-mmedium"
+            >
+              Gender
+            </Text>
+            <CustomPicker
+              value={formValues.gender}
+              setValue={(val) => handleChange("gender", val)}
+              items={[
+                { label: "Male", value: "true" },
+                { label: "Female", value: "false" },
+              ]}
+              placeholder="Select Gender"
+            />
+          </View>
+
+          <View className="relative">
+            <View
+              className="absolute left-3 -top-2 flex flex-row items-center px-1 z-10"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[500] : colors.light[500],
+              }}
+            >
+              <Text
+                className="font-mregular text-[12px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[100],
+                }}
+              >
+                Job
+              </Text>
+            </View>
+            <MyInput
+              value={formValues.job}
+              onChangeText={(text) => handleChange("job", text)}
+              placeholder="Job"
+              // secureTextEntry
+              height={56}
+              fontSize={14}
+              fontFamily="Montserrat-Regular"
+            />
+          </View>
+          <View className="relative">
+            <View
+              className="absolute left-3 -top-2 flex flex-row items-center px-1 z-10"
+              style={{
+                backgroundColor:
+                  colorScheme === "dark" ? colors.dark[500] : colors.light[500],
+              }}
+            >
+              <Text
+                className="font-mregular text-[12px]"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[100],
+                }}
+              >
+                Address
+              </Text>
+            </View>
+            <MyInput
+              value={formValues.address}
+              onChangeText={(text) => handleChange("address", text)}
+              placeholder="Address"
+              // secureTextEntry
+              height={56}
+              fontSize={14}
+              fontFamily="Montserrat-Regular"
+            />
+          </View>
+          {/* Relationship */}
+          <View>
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
+              }}
+              className="mb-1 font-mmedium"
+            >
+              Relationship
+            </Text>
+            <CustomPicker
+              value={formValues.relationShip}
+              setValue={(val) => handleChange("relationShip", val)}
+              items={relationshipItems}
+              placeholder="Select Relationship"
+              height={56}
+            />
+          </View>
+
+          {/* Birthday */}
+          <View className="">
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
+              }}
+              className="mb-1 font-mmedium"
+            >
+              Date of Birth
+            </Text>
+            <View className="flex-row justify-between gap-2">
+              <View style={{ flex: 1 }}>
+                <CustomPicker
+                  value={selectedDay.toString()}
+                  setValue={(val) => setSelectedDay(Number(val))}
+                  items={dayItems}
+                  placeholder="Day"
+                  height={50}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <CustomPicker
+                  value={selectedMonth.toString()}
+                  setValue={(val) => setSelectedMonth(Number(val))}
+                  items={monthItems}
+                  placeholder="Month"
+                  height={50}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <CustomPicker
+                  value={selectedYear.toString()}
+                  setValue={(val) => setSelectedYear(Number(val))}
+                  items={yearItems}
+                  placeholder="Year"
+                  height={50}
+                />
+              </View>
+            </View>
+          </View>
+          <Text
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
+            }}
+            className="mb-1 font-mmedium"
+          >
+            Hobbies
+          </Text>
+          <HobbySelector
+            hobbies={Object.keys(hobbyIcons)}
+            selectedHobbies={selectedHobbies}
+            onToggle={handleHobbyToggle}
+          />
+          <View className="pb-14">
+            <View className="">
+              <Button
+                title="Save"
+                onPress={handleSave}
+                fontColor={
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[200]
+                }
+              />
+            </View>
+          </View>
+        </View>
+      )}
+      keyboardShouldPersistTaps="handled"
+      nestedScrollEnabled
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 100 }}
+    />
   );
 };
 

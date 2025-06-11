@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, Modal } from "react-native";
-import { useTheme } from "@/context/ThemeContext";
-import { colors } from "@/styles/colors";
-import { getTimestamp } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import {
   deleteComment,
@@ -13,10 +10,27 @@ import {
 } from "@/lib/service/comment.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ReportCard from "@/components/card/report/ReportCard";
+import { CommentResponseDTO } from "@/dtos/CommentDTO";
+
+interface CommentMenuProps {
+  comment: CommentResponseDTO;
+  // originalCommentId: string;
+  // content: string;
+  setCommentsData: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
+  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  postId?: string;
+  mediaId?: string;
+  setNumberOfComments: React.Dispatch<React.SetStateAction<number>>;
+  numberOfComments: number;
+  setParentCommentsData?: React.Dispatch<
+    React.SetStateAction<CommentResponseDTO[]>
+  >;
+  repliesCount?: number;
+}
 
 const CommentMenu = ({
   comment,
-  commentsData,
+  // commentsData,
   setCommentsData,
   setModalVisible,
   postId,
@@ -24,7 +38,8 @@ const CommentMenu = ({
   setNumberOfComments,
   numberOfComments,
   repliesCount,
-}: any) => {
+  setParentCommentsData,
+}: CommentMenuProps) => {
   const [newComment, setNewComment] = useState(comment.content); // Khởi tạo giá trị mặc định là content
   const [isEditing, setIsEditing] = useState(false);
   const [isReport, setIsReport] = useState(false);
@@ -61,7 +76,7 @@ const CommentMenu = ({
     }
   };
 
-  const handleDeleteComment = async (commentId: string, postId: string) => {
+  const handleDeleteComment = async (commentId: string) => {
     const token: string | null = await AsyncStorage.getItem("token");
     if (!token) {
       console.error("User is not authenticated");
@@ -72,54 +87,76 @@ const CommentMenu = ({
       if (postId) {
         if (comment.originalCommentId === null) {
           await deleteComment(commentId, postId, token);
-          setNumberOfComments(numberOfComments - (repliesCount + 1));
+          if (repliesCount)
+            setNumberOfComments(numberOfComments - (repliesCount + 1));
           setCommentsData((prev: any) =>
             prev.filter((comment: any) => comment._id !== commentId)
           );
         } else {
-          const childReplies = commentsData.filter(
-            (comment: any) => comment.parentId === commentId
-          );
-          setCommentsData((prev: any) =>
-            prev.filter(
-              (comment: any) =>
-                comment._id !== commentId &&
-                !childReplies.some((child: any) => child._id === comment._id)
-            )
-          );
           await deleteCommentReply(
             commentId,
             postId,
             comment.originalCommentId,
             token
           );
-          setNumberOfComments(numberOfComments - (childReplies.length + 1));
+          setCommentsData((prev: any) =>
+            prev.filter((comment: any) => comment._id !== commentId)
+          );
+
+          if (setParentCommentsData) {
+            setParentCommentsData((prev: any) =>
+              prev.map((comment: any) => {
+                if (comment._id === comment.originalCommentId) {
+                  return {
+                    ...comment,
+                    replies: comment.replies.filter(
+                      (id: string) => id !== commentId
+                    ),
+                  };
+                }
+                return comment;
+              })
+            );
+          }
+          setNumberOfComments(numberOfComments - 1);
         }
       } else {
         if (comment.originalCommentId === null) {
-          await deleteCommentMedia(commentId, mediaId, token);
-          setNumberOfComments(numberOfComments - (repliesCount + 1));
+          if (mediaId) await deleteCommentMedia(commentId, mediaId, token);
+          if (repliesCount)
+            setNumberOfComments(numberOfComments - (repliesCount + 1));
           setCommentsData((prev: any) =>
             prev.filter((comment: any) => comment._id !== commentId)
           );
         } else {
-          const childReplies = commentsData.filter(
-            (comment: any) => comment.parentId === commentId
-          );
+          if (mediaId)
+            await deleteCommentReplyMedia(
+              commentId,
+              mediaId,
+              comment.originalCommentId,
+              token
+            );
           setCommentsData((prev: any) =>
-            prev.filter(
-              (comment: any) =>
-                comment._id !== commentId &&
-                !childReplies.some((child: any) => child._id === comment._id)
-            )
+            prev.filter((comment: any) => comment._id !== commentId)
           );
-          await deleteCommentReplyMedia(
-            commentId,
-            mediaId,
-            comment.originalCommentId,
-            token
-          );
-          setNumberOfComments(numberOfComments - (childReplies.length + 1));
+
+          if (setParentCommentsData) {
+            setParentCommentsData((prev: any) =>
+              prev.map((comment: any) => {
+                if (comment._id === comment.originalCommentId) {
+                  return {
+                    ...comment,
+                    replies: comment.replies.filter(
+                      (id: string) => id !== commentId
+                    ),
+                  };
+                }
+                return comment;
+              })
+            );
+          }
+
+          setNumberOfComments(numberOfComments - 1);
         }
       }
 
@@ -166,7 +203,7 @@ const CommentMenu = ({
           </View>
         ) : (
           <>
-            {comment.userId._id === profile._id ? (
+            {comment.author._id === profile._id ? (
               <>
                 <TouchableOpacity
                   onPress={() => {
@@ -180,7 +217,7 @@ const CommentMenu = ({
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => handleDeleteComment(comment._id, postId)}
+                  onPress={() => handleDeleteComment(comment._id)}
                   className="mb-4"
                 >
                   <Text className="text-red-500 text-sm font-mmedium">
