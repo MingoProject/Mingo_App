@@ -11,6 +11,8 @@ export default function VideoCallScreen() {
     handleHangUp,
     ongoingCall,
     isRemoteVideoEnabled,
+    socket,
+    setIsRemoteVideoEnabled,
   } = useSocket();
 
   const [isMicOn, setIsMicOn] = useState(true);
@@ -28,21 +30,21 @@ export default function VideoCallScreen() {
 
   // // Kiểm tra và cập nhật trạng thái video của remote stream
   // Kiểm tra khi socket và remote stream thay đổi
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.on("cameraStatusChanged", (data) => {
-  //       console.log("Nhận trạng thái camera từ đối phương:", data.isCameraOn);
-  //       setIsRemoteVideoEnabled(data.isCameraOn); // Cập nhật trạng thái camera của đối phương
-  //     });
-  //   }
+  useEffect(() => {
+    if (socket) {
+      socket.on("cameraStatusChanged", (data) => {
+        console.log("Nhận trạng thái camera từ đối phương:", data.isCameraOn);
+        setIsRemoteVideoEnabled(data.isCameraOn); // Cập nhật trạng thái camera của đối phương
+      });
+    }
 
-  //   // Cleanup khi component unmount
-  //   return () => {
-  //     if (socket) {
-  //       socket.off("cameraStatusChanged");
-  //     }
-  //   };
-  // }, [socket, setIsRemoteVideoEnabled]);
+    // Cleanup khi component unmount
+    return () => {
+      if (socket) {
+        socket.off("cameraStatusChanged");
+      }
+    };
+  }, [socket, setIsRemoteVideoEnabled]);
 
   // Debug log để kiểm tra stream
   useEffect(() => {
@@ -169,9 +171,9 @@ export default function VideoCallScreen() {
     }
   };
 
-  if (!localStream) {
-    return null; // Không render nếu không có local stream
-  }
+  // if (!localStream) {
+  //   return null; // Không render nếu không có local stream
+  // }
 
   return (
     <View style={styles.container}>
