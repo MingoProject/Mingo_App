@@ -6,15 +6,15 @@ import {
   Keyboard,
 } from "react-native";
 import React, { useState } from "react";
-import MyInput from "../../components/share/MyInput";
+import MyInput from "../../components/shared/ui/MyInput";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors";
-import MyButton from "../../components/share/MyButton";
+import MyButton from "../../components/shared/ui/MyButton";
 import { useRouter } from "expo-router";
 import { login, getMyProfile } from "@/lib/service/user.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "@/context/AuthContext";
-import Button from "@/components/share/ui/button";
+import Button from "@/components/shared/ui/button";
 
 const SignIn = () => {
   const { setProfile } = useAuth();

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Image, TextInput } from "react-native";
-import MyInput from "@/components/share/MyInput";
-import Button from "@/components/share/ui/button";
+import MyInput from "@/components/shared/ui/MyInput";
+import Button from "@/components/shared/ui/button";
 import { colors } from "@/styles/colors";
 
 interface Props {

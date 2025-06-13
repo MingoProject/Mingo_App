@@ -24,7 +24,7 @@ import {
   CancelIcon,
   CircleFillIcon,
   CircleTickIcon,
-} from "@/components/icons/Icons";
+} from "@/components/shared/icons/Icons";
 import { useTheme } from "@/context/ThemeContext";
 
 // Danh sách nội dung chia theo mục

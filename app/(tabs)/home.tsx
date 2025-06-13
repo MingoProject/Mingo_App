@@ -10,12 +10,12 @@ import {
 import { Link } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
-import SearchHome from "../../components/home-component/SearchHome";
+import SearchHome from "../../components/forms/other/SearchHome";
 import AddPost from "@/components/forms/post/AddPost";
 import { fetchPosts } from "@/lib/service/post.service";
 import OpenAddPost from "@/components/forms/post/OpenAddPost";
 import PostCard from "@/components/card/post/PostCard";
-import { SearchIcon, MessageIcon } from "@/components/icons/Icons";
+import { SearchIcon, MessageIcon } from "@/components/shared/icons/Icons";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import { useAuth } from "@/context/AuthContext";
 import { UserBasicInfo } from "@/dtos/UserDTO";
@@ -56,6 +56,7 @@ const Home = () => {
           new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
       );
       setPostsData(sortedPosts);
+      console.log(data);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching posts:", error);

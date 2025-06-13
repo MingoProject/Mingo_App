@@ -10,7 +10,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { findUserByPhoneNumber } from "@/lib/service/user.service";
 import { sendOTP, verifyOTP, resetPassword } from "@/lib/service/auth.service";
-import { ArrowIcon } from "@/components/icons/Icons";
+import { ArrowIcon } from "@/components/shared/icons/Icons";
 import ForgotPasswordSteps from "@/components/modal/forgot-password/ForgotPasswordStep";
 
 const ForgotPassword = () => {

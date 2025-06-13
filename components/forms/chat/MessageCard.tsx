@@ -33,14 +33,14 @@ import {
   PlusIcon,
   PptTypeIcon,
   ThreeDotsIcon,
-} from "@/components/icons/Icons";
+} from "@/components/shared/icons/Icons";
 // import { Video, ResizeMode } from "expo-av";
 import { Video, ResizeMode } from "react-native-video";
 import VideoPlayer from "../media/VideoPlayer";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useEvent } from "expo";
 import AudioPlayer from "../media/AudioPlayer";
-import { openWebFile } from "@/lib/untils/File";
+import { openWebFile } from "@/lib/utils/File";
 import { colors } from "@/styles/colors";
 const screenWidth = Dimensions.get("window").width;
 
@@ -205,10 +205,10 @@ const MessageCard = ({
             hasFiles
               ? " p-0"
               : isCurrentUser
-              ? "bg-primary-100 text-white"
-              : colorScheme === "dark"
-              ? "bg-dark-400 text-white"
-              : "bg-light-800 text-black"
+                ? "bg-primary-100 text-white"
+                : colorScheme === "dark"
+                  ? "bg-dark-400 text-white"
+                  : "bg-light-800 text-black"
           }`}
           style={{
             borderRadius: 20,

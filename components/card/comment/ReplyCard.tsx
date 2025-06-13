@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, Modal } from "react-native";
-import { ArrowRightIcon } from "@/components/icons/Icons";
+import { ArrowRightIcon } from "@/components/shared/icons/Icons";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { getCommentByCommentId } from "@/lib/service/comment.service";
-import CommentMenu from "@/components/forms/comment/CommentMenu";
+import CommentMenu from "@/components/shared/comment/CommentMenu";
 import CommentActionCard from "./CommentActionCard";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";

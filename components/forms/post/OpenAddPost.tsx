@@ -1,8 +1,12 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
-import { PictureIcon, VideoIcon, EmotionIcon } from "@/components/icons/Icons";
-import Input from "@/components/share/ui/input";
+import {
+  PictureIcon,
+  VideoIcon,
+  EmotionIcon,
+} from "@/components/shared/icons/Icons";
+import Input from "@/components/shared/ui/input";
 import { colors } from "@/styles/colors";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 

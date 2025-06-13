@@ -1,7 +1,6 @@
 import {
   Text,
   View,
-  Image,
   TouchableOpacity,
   Modal,
   ScrollView,
@@ -13,27 +12,25 @@ import {
   SettingsIcon,
   SoccerIcon,
   SwimIcon,
-} from "../../components/icons/Icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+} from "../../components/shared/icons/Icons";
 import React, { useState, useEffect } from "react";
 import PostCard from "@/components/card/post/PostCard";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors";
-import Setting from "../../components/forms/profile/Setting";
 import OpenAddPost from "@/components/forms/post/OpenAddPost";
-import ImageProfile from "@/components/forms/profile/ImageProfile";
+import ImageProfile from "@/components/shared/user/ImageProfile";
 import AddPost from "@/components/forms/post/AddPost";
 import { useAuth } from "@/context/AuthContext";
 import { getMyPosts } from "@/lib/service/user.service";
-import fetchDetailedPosts from "@/hooks/usePosts";
-import VideoProfile from "@/components/forms/profile/VideoProfile";
-import Background from "@/components/forms/profile/Background";
-import Avatar from "@/components/forms/profile/Avatar";
-import Bio from "@/components/forms/profile/Bio";
-import DetailInformation from "@/components/forms/profile/DetailInfomation";
+import VideoProfile from "@/components/shared/user/VideoProfile";
+import Background from "@/components/forms/setting/Background";
+import Avatar from "@/components/forms/setting/Avatar";
+import Bio from "@/components/forms/setting/Bio";
+import DetailInformation from "@/components/shared/user/DetailInfomation";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import { PostResponseDTO } from "@/dtos/PostDTO";
-import TabSelector from "@/components/share/ui/tab-selector";
+import TabSelector from "@/components/shared/ui/tab-selector";
+import Setting from "@/components/shared/setting/Setting";
 export const tabIcons: Record<string, any> = {
   Posts: SoccerIcon,
   Images: SwimIcon,
@@ -125,9 +122,9 @@ const Profile = () => {
         );
 
       case "photos":
-        return <ImageProfile userId={profile?._id} />;
+        return <ImageProfile profileUser={profileBasic} />;
       case "videos":
-        return <VideoProfile userId={profile?._id} />;
+        return <VideoProfile profileUser={profileBasic} />;
       default:
         return null;
     }
@@ -136,7 +133,7 @@ const Profile = () => {
   const switchSreen = () => {
     switch (isSelect) {
       case "addPost":
-        return <AddPost onClose={handleClose} />;
+        return <AddPost onClose={handleClose} setPostsData={setPostsData} />;
       default:
         return (
           <ScrollView
@@ -190,13 +187,11 @@ const Profile = () => {
               colors={colors}
             />
 
-            <View className=" py-3 h-auto">
+            <View className=" h-auto">
               <View
                 style={{
                   height: 1,
-                  backgroundColor: "#D9D9D9",
                   width: "100%",
-                  marginVertical: 5,
                 }}
               />
               {renderContent()}

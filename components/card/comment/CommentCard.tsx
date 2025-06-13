@@ -12,7 +12,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { getCommentByCommentId } from "@/lib/service/comment.service";
 import ReplyCard from "./ReplyCard";
-import CommentMenu from "@/components/forms/comment/CommentMenu";
+import CommentMenu from "@/components/shared/comment/CommentMenu";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import CommentActionCard from "./CommentActionCard";

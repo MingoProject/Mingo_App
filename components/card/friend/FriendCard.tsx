@@ -18,7 +18,7 @@ import {
 import { useRouter } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
-import Button from "@/components/share/ui/button";
+import Button from "@/components/shared/ui/button";
 
 const FriendCard = ({ item, actionButton, setData }: any) => {
   const router = useRouter();

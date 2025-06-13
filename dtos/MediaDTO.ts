@@ -14,5 +14,5 @@ export interface MediaResponseDTO {
   likes: string[];
   comments: string[];
   shares: string[];
-  createBy?: UserBasicInfo;
+  createBy: UserBasicInfo;
 }

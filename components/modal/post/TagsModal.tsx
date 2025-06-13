@@ -10,7 +10,7 @@ import {
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { useRouter } from "expo-router";
-import { CancelIcon } from "@/components/icons/Icons";
+import { CancelIcon } from "@/components/shared/icons/Icons";
 import { useAuth } from "@/context/AuthContext";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 

@@ -5,8 +5,6 @@ import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { getTimestamp } from "@/lib/utils";
 import PostDetailCard from "../post/PostDetailCard";
-import DetailVideo from "@/components/forms/media/DetailVideo";
-import DetailImage from "@/components/forms/media/DetailImage";
 import { NotificationResponseDTO } from "@/dtos/NotificationDTO";
 import { getCommentByCommentId } from "@/lib/service/comment.service";
 import { getMediaByMediaId } from "@/lib/service/media.service";
@@ -14,7 +12,7 @@ import { getPostByPostId } from "@/lib/service/post.service";
 import FriendRequestAction from "@/components/shared/friend/FriendRequestAction";
 import BffRequestAction from "@/components/shared/friend/BffRequestAction";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ImageDetailCard from "../media/ImageDetailCard";
+import ImageDetailCard from "../media/MediaDetailCard";
 interface NotificationCardProps {
   notification: NotificationResponseDTO;
   profile: any;
@@ -220,10 +218,9 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
 
       <Modal visible={openDetailImage} transparent animationType="slide">
         <ImageDetailCard
-          image={image}
+          media={image}
           isModalVisible={openDetailImage}
           setModalVisible={setOpenDetailImage}
-          profileUser={image?.createBy}
           profileBasic={profileBasic}
           commentsData={commentsData}
           setCommentsData={setCommentsData}
@@ -231,10 +228,10 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
       </Modal>
 
       <Modal visible={openDetailVideo} transparent animationType="slide">
-        <DetailVideo
-          video={video}
-          onClose={() => setOpenDetailVideo(false)}
-          profileUser={video?.createBy}
+        <ImageDetailCard
+          media={video}
+          isModalVisible={openDetailVideo}
+          setModalVisible={setOpenDetailVideo}
           profileBasic={profileBasic}
           commentsData={commentsData}
           setCommentsData={setCommentsData}

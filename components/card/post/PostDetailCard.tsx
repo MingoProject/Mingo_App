@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -13,29 +13,24 @@ import {
 } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
-import { getTimestamp } from "@/lib/utils";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createComment } from "@/lib/service/comment.service";
-import { useAuth } from "@/context/AuthContext";
 import CommentCard from "@/components/card/comment/CommentCard";
 import { ResizeMode, Video } from "expo-av";
 import {
-  FriendIcon,
   LocationIcon,
   SendIcon,
   ThreeDot,
-} from "@/components/icons/Icons";
-import TagModal from "../../modal/post/TagsModal";
-import { useRouter } from "expo-router";
-import PostAction from "@/components/forms/post/PostAction";
-import PostMenu from "@/components/forms/post/PostMenu";
+} from "@/components/shared/icons/Icons";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
-import PostHeader from "@/components/share/post/PostHeader";
-import Button from "@/components/share/ui/button";
-import Input from "@/components/share/ui/input";
+import PostHeader from "@/components/shared/post/PostHeader";
+import Button from "@/components/shared/ui/button";
+import Input from "@/components/shared/ui/input";
+import PostActionCard from "./PostActionCard";
+import PostMenu from "@/components/shared/post/PostMenu";
 
 interface PostDetailCardProps {
   post: PostResponseDTO;
@@ -271,7 +266,7 @@ const PostDetailCard = ({
               )}
             />
           )}
-          <PostAction
+          <PostActionCard
             post={post}
             numberOfLikes={numberOfLikes}
             setNumberOfLikes={setNumberOfLikes}

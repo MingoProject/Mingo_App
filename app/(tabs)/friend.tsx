@@ -12,12 +12,12 @@ import Following from "../../components/shared/friend/Following";
 import Block from "../../components/shared/friend/Blocked";
 import BestFriend from "../../components/shared/friend/BestFriend";
 import MyFriend from "../../components/shared/friend/Friend";
-import SearchFriend from "../../components/friend/SearchFriend";
 import Follower from "@/components/shared/friend/Follower";
-import { AddIcon } from "@/components/icons/Icons";
-import Tab from "@/components/share/ui/tab";
+import { AddIcon } from "@/components/shared/icons/Icons";
+import Tab from "@/components/shared/ui/tab";
 import Blocked from "../../components/shared/friend/Blocked";
 import SuggestedFriend from "@/components/shared/friend/SuggestedFriend";
+import SearchFriend from "@/components/forms/friend/SearchFriend";
 
 const Friend = () => {
   const { colorScheme } = useTheme();
@@ -85,11 +85,6 @@ const Friend = () => {
               </View>
 
               <View className="flex-row">
-                {/* <SearchIcon
-                  size={28}
-                  color={iconColor}
-                  onPress={handleIsSearch}
-                /> */}
                 <TouchableOpacity className="ml-2" onPress={handleIsSearch}>
                   <AddIcon size={27} color={iconColor} />
                 </TouchableOpacity>

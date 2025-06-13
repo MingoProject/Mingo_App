@@ -13,9 +13,9 @@ import {
 } from "@/lib/service/comment.service";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
-import { CancelIcon, SendIcon } from "@/components/icons/Icons";
+import { CancelIcon, SendIcon } from "@/components/shared/icons/Icons";
 import { getTimestamp } from "@/lib/utils";
-import Input from "@/components/share/ui/input";
+import Input from "@/components/shared/ui/input";
 
 interface CommentActionCardProps {
   comment: CommentResponseDTO;

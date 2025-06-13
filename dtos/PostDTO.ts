@@ -17,6 +17,7 @@ export interface MediaInfo {
   _id: string;
   url: string;
   type: string;
+  caption: string;
 }
 
 export interface PostResponseDTO {

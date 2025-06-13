@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
-import { LikeIcon, CommentIcon, ShareIcon } from "@/components/icons/Icons";
+import {
+  LikeIcon,
+  CommentIcon,
+  ShareIcon,
+} from "@/components/shared/icons/Icons";
 import {
   dislikePost,
   getLikesByPostId,
@@ -102,26 +106,19 @@ const MediaAction = ({
 
   return (
     <View className="flex-row mt-2 justify-around">
-      <TouchableOpacity
-        className="flex-row items-center mr-4"
-        onPress={toggleLike}
-      >
-        <LikeIcon
-          size={25}
-          color={isLiked ? colors.primary[100] : iconColor}
-          fillColor={isLiked ? colors.primary[100] : "none"}
-        />
+      <TouchableOpacity className="flex-row items-center" onPress={toggleLike}>
+        <LikeIcon size={25} color={isLiked ? colors.primary[100] : iconColor} />
         <Text
           className="ml-1 font-mmedium"
           style={{
             color: isLiked
               ? colors.primary[100]
               : colorScheme === "dark"
-              ? colors.dark[100]
-              : colors.light[500],
+                ? colors.dark[100]
+                : colors.light[100],
           }}
         >
-          {isLiked ? "Liked" : "Like"} {numberOfLikes}
+          {numberOfLikes} {isLiked ? "Liked" : "Like"}
         </Text>
       </TouchableOpacity>
 
@@ -131,10 +128,10 @@ const MediaAction = ({
       >
         <CommentIcon size={25} color={iconColor} />
         <Text
-          className="ml-1 text-gray-700 font-mmedium"
+          className="ml-1 font-mmedium"
           style={{
             color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           }}
         >
           {numberOfComments} Comments
@@ -147,7 +144,7 @@ const MediaAction = ({
           className="ml-1 text-gray-700 font-mmedium"
           style={{
             color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           }}
         >
           {media.shares.length} Shares

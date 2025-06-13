@@ -1,4 +1,4 @@
-import Button from "@/components/share/ui/button";
+import Button from "@/components/shared/ui/button";
 import { NotificationResponseDTO } from "@/dtos/NotificationDTO";
 import {
   acceptAddBff,
