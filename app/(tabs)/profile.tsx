@@ -116,7 +116,11 @@ const Profile = () => {
               />
             </>
             {postsData.map((item) => (
-              <PostCard post={item} setPostsData={setPostsData} />
+              <PostCard
+                key={item._id}
+                post={item}
+                setPostsData={setPostsData}
+              />
             ))}
           </View>
         );
@@ -202,6 +206,7 @@ const Profile = () => {
               animationType="slide"
               visible={setting}
               onRequestClose={() => setSetting(false)}
+              className="h-full"
             >
               <Setting setSetting={setSetting} />
             </Modal>

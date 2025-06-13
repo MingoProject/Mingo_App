@@ -19,7 +19,6 @@ const Background = ({ profileUser, setProfile }: any) => {
   const { profile } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const { colorScheme, toggleColorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
 
   useEffect(() => {
     if (profile?._id && profile?._id === profileUser?._id) {

@@ -69,31 +69,33 @@ const Setting = ({ setSetting }: any) => {
           }}
         >
           <View
-            className="flex flex-row pt-5 max-h-16"
+            className="flex flex-row max-h-16"
             style={{
               backgroundColor:
                 colorScheme === "dark" ? colors.dark[200] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
               flex: 1,
             }}
           >
-            <TouchableOpacity
-              onPress={() => setSetting(false)}
-              className="mt-3"
-            >
-              <ArrowIcon size={30} color={"#FFAABB"} />
+            <TouchableOpacity onPress={() => setSetting(false)} className="">
+              <ArrowIcon size={28} color={iconColor} />
             </TouchableOpacity>
             <View>
               <Text
-                style={{ color: colors.primary[100] }}
-                className="font-msemibold text-[17px] mt-4 ml-1"
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[100],
+                }}
+                className="font-msemibold text-[18px] ml-1"
               >
                 Setting
               </Text>
             </View>
           </View>
-          <View className=" pl-4">
+          <View className=" pl-2 flex-row justify-between">
             <Text
-              className=" font-mbold mt-6"
+              className=" font-mbold text-[16px]"
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[100],
@@ -104,14 +106,13 @@ const Setting = ({ setSetting }: any) => {
             <Switch
               value={colorScheme === "dark"}
               onValueChange={toggleColorScheme}
-              className=" mt-2"
             />
           </View>
 
           <View className="mt-4">
-            <TouchableOpacity className="brounded p-4  flex flex-row">
+            <TouchableOpacity className="brounded p-2  flex flex-row">
               <Text
-                className=" font-mbold"
+                className=" font-mbold text-[16px]"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -159,9 +160,9 @@ const Setting = ({ setSetting }: any) => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity className="rounded p-4">
+            <TouchableOpacity className="rounded p-2">
               <Text
-                className="font-mbold"
+                className="font-mbold text-[16px]"
                 style={{
                   color:
                     colorScheme === "dark"
@@ -209,14 +210,6 @@ const Setting = ({ setSetting }: any) => {
               </Text>
             </TouchableOpacity>
           </View>
-          {/* <TouchableOpacity
-            onPress={() => setSetting(false)}
-            className="mt-2 py-3 bg-primary-100 rounded p-2"
-          >
-            <Text className="text-white text-[16px] text-center font-msemibold">
-              Close
-            </Text>
-          </TouchableOpacity> */}
         </View>
       </View>
       <Modal

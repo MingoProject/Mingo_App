@@ -11,7 +11,6 @@ const ChangePassword = ({ toggleChangePasswordModal }: any) => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const { colorScheme } = useTheme();
   const [error, setError] = useState("");
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const handleChangePassword = async () => {
     if (!oldPassword || !newPassword || !confirmNewPassword) {
       Alert.alert("Error", "All fields are required.");

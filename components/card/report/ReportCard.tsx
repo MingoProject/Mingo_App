@@ -1,9 +1,3 @@
-import { PostCreateDTO } from "@/dtos/PostDTO";
-
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { SchemaTypes } from "mongoose";
-import { Schema, Types } from "mongoose";
 import { CommentReportCreateDTO, ReportCreateDTO } from "@/dtos/reportDTO";
 import {
   createCommentReport,
@@ -26,6 +20,7 @@ import {
   CircleTickIcon,
 } from "@/components/shared/icons/Icons";
 import { useTheme } from "@/context/ThemeContext";
+import { colors } from "@/styles/colors";
 
 // Danh sách nội dung chia theo mục
 const categorizedReportOptions = [
@@ -91,7 +86,8 @@ const ReportCard = ({
   const { colorScheme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const iconColor =
+    colorScheme === "dark" ? colors.dark[100] : colors.light[100];
 
   const handleSubmit = async () => {
     if (!selectedOption) return;

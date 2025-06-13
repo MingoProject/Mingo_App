@@ -23,7 +23,8 @@ const SavedPosts = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { profile } = useAuth();
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const iconColor =
+    colorScheme === "dark" ? colors.dark[100] : colors.light[100];
 
   const handleUnsave = async () => {
     try {

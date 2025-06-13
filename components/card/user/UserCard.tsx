@@ -25,7 +25,7 @@ const UserCard = ({ item }: any) => {
         styles.card,
         {
           backgroundColor:
-            colorScheme === "dark" ? colors.dark[400] : colors.light[700],
+            colorScheme === "dark" ? colors.dark[200] : colors.light[200],
         },
       ]}
     >
@@ -41,26 +41,26 @@ const UserCard = ({ item }: any) => {
       <View>
         <Text
           style={[
-            styles.name,
+            // styles.name,
             {
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
             },
           ]}
-          className="font-mmedium text-sm"
+          className="font-mmedium text-4"
         >
           {item.firstName} {item.lastName}
         </Text>
         {item.nickName ? (
           <Text
+            className="font-mmedium text-sm mt-1"
             style={[
-              styles.name,
+              // styles.name,
               {
-                fontStyle: "italic",
-                color: colors.primary[100],
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               },
             ]}
-            className="font-mmedium text-sm mt-1"
           >
             {item.nickName}
           </Text>
@@ -76,11 +76,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 12,
     borderRadius: 12,
-    // shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 3,
-    marginVertical: 10,
+    marginVertical: 4,
   },
   avatar: {
     width: 50,
@@ -89,9 +85,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   name: {
-    // fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
+    // color: "#333",
   },
 });
 

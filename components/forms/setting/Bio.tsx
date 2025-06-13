@@ -11,7 +11,6 @@ import { View, Text, TouchableOpacity, Modal, TextInput } from "react-native";
 
 const Bio = ({ profileUser, setProfile }: any) => {
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const [showEdit, setShowEdit] = useState(false);
   const [isMe, setIsMe] = useState(false);
   const { profile } = useAuth();

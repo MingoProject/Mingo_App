@@ -28,7 +28,8 @@ const MediaAction = ({
   numberOfComments,
 }: any) => {
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const iconColor =
+    colorScheme === "dark" ? colors.dark[100] : colors.light[100];
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(media.likes.length);
 
