@@ -6,7 +6,7 @@ import { useRingtone } from "@/hooks/useRingtone";
 import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from "expo-av";
 import { OngoingCall } from "@/dtos/SocketDTO";
 export default function IncomingCallScreen() {
-  const { ongoingCall, handleJoinCall, handleHangUp } = useSocket();
+  const { ongoingCall, setOngoingCall, handleHangUp } = useSocket();
   const router = useRouter();
   const { playRingtone, stopRingtone } = useRingtone();
 
@@ -53,12 +53,14 @@ export default function IncomingCallScreen() {
     stopRingtone();
     const roomId = ongoingCall.participants.caller.socketId;
 
+    setOngoingCall({ ...ongoingCall, isRinging: false });
+
     router.push({
       pathname: "/(modals)/[roomId]",
       params: { roomId },
     });
 
-    handleJoinCall(ongoingCall);
+    // handleJoinCall(ongoingCall);
   };
   const reject = (ongoingCall: OngoingCall) => {
     if (!ongoingCall) return;

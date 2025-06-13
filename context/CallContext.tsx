@@ -29,6 +29,7 @@ interface CallContextProps {
   isCallEnded: boolean;
   isRemoteVideoEnabled: boolean;
   socket: Socket;
+  setOngoingCall: React.Dispatch<React.SetStateAction<OngoingCall | null>>;
   handleCall: (user: SocketUser, isVideoCall: boolean) => void;
   handleJoinCall: (call: OngoingCall) => void;
   handleHangUp: (data: {
@@ -386,100 +387,101 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
   // 2. Cập nhật createPeerConnection để track ICE gathering
 
   // 3. Cập nhật handleWebrtcSignal để track received candidates
-  const handleWebrtcSignal = useCallback(
-    async (data: {
-      sdp?: RTCSessionDescriptionInit;
-      candidate?: RTCIceCandidateInit;
-      ongoingCall: OngoingCall;
-      isCaller: boolean;
-    }) => {
-      try {
-        console.log("📡 Received WebRTC signal:", {
-          hasSdp: !!data.sdp,
-          hasCandidate: !!data.candidate,
-          sdpType: data.sdp?.type,
-          isCaller: data.isCaller,
-        });
 
-        // Existing peer connection check code...
-        if (!peerConnection.current && data.sdp?.type === "offer") {
-          console.log("📥 Received offer, creating peer connection");
+  // const handleWebrtcSignal = useCallback(
+  //   async (data: {
+  //     sdp?: RTCSessionDescriptionInit;
+  //     candidate?: RTCIceCandidateInit;
+  //     ongoingCall: OngoingCall;
+  //     isCaller: boolean;
+  //   }) => {
+  //     try {
+  //       console.log("📡 Received WebRTC signal:", {
+  //         hasSdp: !!data.sdp,
+  //         hasCandidate: !!data.candidate,
+  //         sdpType: data.sdp?.type,
+  //         isCaller: data.isCaller,
+  //       });
 
-          let stream = localStreamRef.current;
-          if (!stream) {
-            stream = await getStream();
-            if (!stream) return;
-          }
+  //       // Existing peer connection check code...
+  //       if (!peerConnection.current && data.sdp?.type === "offer") {
+  //         console.log("📥 Received offer, creating peer connection");
 
-          createPeerConnection(stream, true);
-        }
+  //         let stream = localStreamRef.current;
+  //         if (!stream) {
+  //           stream = await getStream();
+  //           if (!stream) return;
+  //         }
 
-        const pc = peerConnection.current;
-        if (!pc) {
-          console.log("❌ No peer connection available");
-          return;
-        }
+  //         createPeerConnection(stream, true);
+  //       }
 
-        console.log("📡 Nhận WebRTC signal:", data);
-        console.log("Received SDP type:", data.sdp?.type);
-        console.log("Current peerConnection state:", pc.signalingState);
-        // Xử lý SDP
-        if (data.sdp) {
-          const { sdp } = data;
-          console.log("📡 Xử lý SDP:", sdp.type);
+  //       const pc = peerConnection.current;
+  //       if (!pc) {
+  //         console.log("❌ No peer connection available");
+  //         return;
+  //       }
 
-          if (sdp.type === "offer") {
-            console.log("Setting remote description (offer)");
-            await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+  //       console.log("📡 Nhận WebRTC signal:", data);
+  //       console.log("Received SDP type:", data.sdp?.type);
+  //       console.log("Current peerConnection state:", pc.signalingState);
+  //       // Xử lý SDP
+  //       if (data.sdp) {
+  //         const { sdp } = data;
+  //         console.log("📡 Xử lý SDP:", sdp.type);
 
-            console.log("Creating answer");
-            const answer = await pc.createAnswer();
+  //         if (sdp.type === "offer") {
+  //           console.log("Setting remote description (offer)");
+  //           await pc.setRemoteDescription(new RTCSessionDescription(sdp));
 
-            console.log("Setting local description (answer)");
-            await pc.setLocalDescription(answer);
+  //           console.log("Creating answer");
+  //           const answer = await pc.createAnswer();
 
-            console.log("Sending answer");
-            socket?.emit("webrtcSignal", {
-              sdp: answer,
-              ongoingCall: data.ongoingCall,
-              isCaller: false,
-            });
-          }
-          // Xử lý SDP answer
-          else if (sdp.type === "answer") {
-            console.log("Setting remote description (answer)");
-            await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-            if (timeoutRef.current) {
-              clearTimeout(timeoutRef.current);
-              timeoutRef.current = null;
-            }
-          }
-        }
-        // Xử lý ICE candidate - ĐÂY LÀ PHẦN BỊ LỖI
-        if (data.candidate) {
-          try {
-            console.log("🧊 Adding ICE candidate:", data.candidate);
+  //           console.log("Setting local description (answer)");
+  //           await pc.setLocalDescription(answer);
 
-            // Kiểm tra trạng thái remote description
-            if (pc.remoteDescription) {
-              await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-              console.log("✅ ICE candidate added successfully");
-            } else {
-              console.log(
-                "⏳ Chưa có remote description, lưu candidate để xử lý sau"
-              );
-              // Có thể lưu vào queue để xử lý sau khi có remote description
-            }
-          } catch (err) {
-            console.error("❌ Error adding ICE candidate:", err);
-          }
-        }
-      } catch (err) {
-        console.error("❌ Lỗi xử lý WebRTC signal:", err);
-      }
-    },
-    [socket, getStream, createPeerConnection, peerConnection]
-  );
+  //           console.log("Sending answer");
+  //           socket?.emit("webrtcSignal", {
+  //             sdp: answer,
+  //             ongoingCall: data.ongoingCall,
+  //             isCaller: false,
+  //           });
+  //         }
+  //         // Xử lý SDP answer
+  //         else if (sdp.type === "answer") {
+  //           console.log("Setting remote description (answer)");
+  //           await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+  //           if (timeoutRef.current) {
+  //             clearTimeout(timeoutRef.current);
+  //             timeoutRef.current = null;
+  //           }
+  //         }
+  //       }
+  //       // Xử lý ICE candidate - ĐÂY LÀ PHẦN BỊ LỖI
+  //       if (data.candidate) {
+  //         try {
+  //           console.log("🧊 Adding ICE candidate:", data.candidate);
+
+  //           // Kiểm tra trạng thái remote description
+  //           if (pc.remoteDescription) {
+  //             await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+  //             console.log("✅ ICE candidate added successfully");
+  //           } else {
+  //             console.log(
+  //               "⏳ Chưa có remote description, lưu candidate để xử lý sau"
+  //             );
+  //             // Có thể lưu vào queue để xử lý sau khi có remote description
+  //           }
+  //         } catch (err) {
+  //           console.error("❌ Error adding ICE candidate:", err);
+  //         }
+  //       }
+  //     } catch (err) {
+  //       console.error("❌ Lỗi xử lý WebRTC signal:", err);
+  //     }
+  //   },
+  //   [socket, getStream, createPeerConnection, peerConnection]
+  // );
 
   // const handleCall = useCallback(
   //   async (receiver: SocketUser, isVideoCall: boolean) => {
@@ -691,67 +693,67 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
     [socket, user, remoteStream, router]
   );
 
-  const debugStreams = useCallback(() => {
-    console.log("=== DEBUG STREAMS ===");
+  // const debugStreams = useCallback(() => {
+  //   console.log("=== DEBUG STREAMS ===");
 
-    // Debug local stream
-    if (localStreamRef.current) {
-      console.log("Local Stream:", {
-        id: localStreamRef.current.id,
-        active: localStreamRef.current.active,
-        tracks: localStreamRef.current.getTracks().map((track) => ({
-          kind: track.kind,
-          enabled: track.enabled,
-          muted: track.muted,
-          readyState: track.readyState,
-          id: track.id,
-        })),
-      });
-    } else {
-      console.log("Local Stream: null");
-    }
+  //   // Debug local stream
+  //   if (localStreamRef.current) {
+  //     console.log("Local Stream:", {
+  //       id: localStreamRef.current.id,
+  //       active: localStreamRef.current.active,
+  //       tracks: localStreamRef.current.getTracks().map((track) => ({
+  //         kind: track.kind,
+  //         enabled: track.enabled,
+  //         muted: track.muted,
+  //         readyState: track.readyState,
+  //         id: track.id,
+  //       })),
+  //     });
+  //   } else {
+  //     console.log("Local Stream: null");
+  //   }
 
-    // Debug remote stream
-    if (remoteStream) {
-      console.log("Remote Stream:", {
-        id: remoteStream.id,
-        active: remoteStream.active,
-        tracks: remoteStream.getTracks().map((track) => ({
-          kind: track.kind,
-          enabled: track.enabled,
-          muted: track.muted,
-          readyState: track.readyState,
-          id: track.id,
-        })),
-      });
-    } else {
-      console.log("Remote Stream: null");
-    }
+  //   // Debug remote stream
+  //   if (remoteStream) {
+  //     console.log("Remote Stream:", {
+  //       id: remoteStream.id,
+  //       active: remoteStream.active,
+  //       tracks: remoteStream.getTracks().map((track) => ({
+  //         kind: track.kind,
+  //         enabled: track.enabled,
+  //         muted: track.muted,
+  //         readyState: track.readyState,
+  //         id: track.id,
+  //       })),
+  //     });
+  //   } else {
+  //     console.log("Remote Stream: null");
+  //   }
 
-    // Debug peer connection
-    if (peerConnection.current) {
-      console.log(
-        "Peer Connection State:",
-        peerConnection.current.connectionState
-      );
-      console.log("Signaling State:", peerConnection.current.signalingState);
-      console.log(
-        "ICE Connection State:",
-        peerConnection.current.iceConnectionState
-      );
-    }
-  }, [remoteStream]);
+  //   // Debug peer connection
+  //   if (peerConnection.current) {
+  //     console.log(
+  //       "Peer Connection State:",
+  //       peerConnection.current.connectionState
+  //     );
+  //     console.log("Signaling State:", peerConnection.current.signalingState);
+  //     console.log(
+  //       "ICE Connection State:",
+  //       peerConnection.current.iceConnectionState
+  //     );
+  //   }
+  // }, [remoteStream]);
+
+  // useEffect(() => {
+  //   if (ongoingCall && !ongoingCall.isRinging) {
+  //     setTimeout(() => {
+  //       debugStreams();
+  //     }, 2000); // Debug sau 2 giây
+  //   }
+  // }, [ongoingCall, debugStreams]);
 
   useEffect(() => {
-    if (ongoingCall && !ongoingCall.isRinging) {
-      setTimeout(() => {
-        debugStreams();
-      }, 2000); // Debug sau 2 giây
-    }
-  }, [ongoingCall, debugStreams]);
-
-  useEffect(() => {
-    const newSocket = io("http://192.168.1.40:3000");
+    const newSocket = io("http://192.168.1.219:3000");
     setSocket(newSocket);
 
     return () => {
@@ -811,15 +813,15 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
     console.log("🎧 Đăng ký event listeners");
 
     socket.on("incomingCall", onIncomingCall);
-    socket.on("webrtcSignal", handleWebrtcSignal);
-    socket.on("hangup", handleHangUp);
+    // socket.on("webrtcSignal", handleWebrtcSignal);
+    // socket.on("hangup", handleHangUp);
 
     return () => {
       socket.off("incomingCall", onIncomingCall);
-      socket.off("webrtcSignal", handleWebrtcSignal);
-      socket.off("hangup", handleHangUp);
+      // socket.off("webrtcSignal", handleWebrtcSignal);
+      // socket.off("hangup", handleHangUp);
     };
-  }, [socket, isSocketConnected, user, onIncomingCall, handleWebrtcSignal]);
+  }, [socket, isSocketConnected, user, onIncomingCall]);
 
   // Reset call ended state
   useEffect(() => {
@@ -843,6 +845,7 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
         isCallEnded,
         isRemoteVideoEnabled,
         socket: socket!,
+        setOngoingCall,
         handleCall,
         handleJoinCall,
         handleHangUp,

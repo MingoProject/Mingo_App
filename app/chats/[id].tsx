@@ -61,6 +61,7 @@ import { ClickOutsideWrapper } from "@/components/share/ui/click-outside";
 import { RTCView } from "react-native-webrtc";
 import { useSocket } from "@/context/CallContext";
 import { getMyProfile } from "@/lib/service/user.service";
+import { Participants } from "@/dtos/SocketDTO";
 
 // Notifications.setNotificationHandler({
 //   handleNotification: async () => ({
@@ -100,7 +101,7 @@ const Chat = () => {
   const [chatItem, setChatItem] = useState<ItemChat | null>(null); // State lưu trữ itemChat
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [permissionGreanted, setPermissionGranted] = useState(false);
-  const { handleCall, handleHangUp, localStream, remoteStream, onlineUsers } =
+  const { handleCall, socket, localStream, remoteStream, onlineUsers } =
     useSocket();
 
   // Nếu chưa có onlineUsers thì chưa render gì cả
@@ -122,6 +123,7 @@ const Chat = () => {
   console.log(roomId, "isuser roomId11");
   const onhandleCall = () => {
     // Dẫn đến trang gọi âm thanh
+
     router.push({
       pathname: "/(modals)/[roomId]",
       params: { roomId },
@@ -131,11 +133,20 @@ const Chat = () => {
   };
 
   const onVideohandleCall = () => {
+    const participants: Participants = {
+      caller: isUser!,
+      receiver: receiverUser!,
+    };
+
+    // Gửi thông báo cuộc gọi qua socket
+    console.log("Emitting call event");
+    socket?.emit("call", participants, true);
+
     router.push({
       pathname: "/(modals)/[roomId]",
       params: { roomId },
     });
-    handleCall(receiverUser, true); // true: video
+    // handleCall(receiverUser, true); // true: video
   };
 
   //   const ref = useClickOutside<View>(() => {
