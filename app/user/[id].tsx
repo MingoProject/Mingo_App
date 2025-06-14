@@ -7,38 +7,43 @@ import {
   ActivityIndicator,
   Modal,
   Image,
-  Alert,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { colors } from "@/styles/colors";
-import Background from "@/components/forms/profile/Background";
-import Avatar from "@/components/forms/profile/Avatar";
-import Bio from "@/components/forms/profile/Bio";
-import DetailInformation from "@/components/forms/profile/DetailInfomation";
-import ImageProfile from "@/components/forms/profile/ImageProfile";
-import VideoProfile from "@/components/forms/profile/VideoProfile";
+import Background from "@/components/forms/setting/Background";
+import Avatar from "@/components/forms/setting/Avatar";
+import Bio from "@/components/forms/setting/Bio";
+import DetailInformation from "@/components/shared/user/DetailInfomation";
+import ImageProfile from "@/components/shared/user/ImageProfile";
+import VideoProfile from "@/components/shared/user/VideoProfile";
 import PostCard from "@/components/card/post/PostCard";
 import { getMyPosts, getMyProfile } from "@/lib/service/user.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
 import { useTheme } from "@/context/ThemeContext";
 import { checkRelation } from "@/lib/service/relation.service";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import RelationAction from "@/components/forms/user/RelationAction";
-import { ThreeDot } from "@/components/icons/Icons";
+import { ThreeDot } from "@/components/shared/icons/Icons";
 import ReportCard from "@/components/card/report/ReportCard";
-import { ArrowIcon } from "@/components/icons/Icons";
+import { ArrowIcon } from "@/components/shared/icons/Icons";
 import { useNavigation } from "@react-navigation/native";
 import { pusherClient } from "@/lib/pusher";
 import { useAuth } from "@/context/AuthContext";
+import { UserBasicInfo, UserResponseDTO } from "@/dtos/UserDTO";
+import { PostResponseDTO } from "@/dtos/PostDTO";
+import TabSelector from "@/components/shared/ui/tab-selector";
+import Button from "@/components/shared/ui/button";
 
 const UserProfile = () => {
   const { id } = useLocalSearchParams();
   const [activeTab, setActiveTab] = useState("posts");
   const { colorScheme } = useTheme();
-  const [postsData, setPostsData] = useState<any[]>([]);
+  const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [profileUser, setProfileUser] = useState();
+  const [profileUser, setProfileUser] = useState<UserResponseDTO>();
+  const [profileUserBasic, setProfileUserBasic] = useState<UserBasicInfo>();
+
   const [relation, setRelation] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
   const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
@@ -51,7 +56,7 @@ const UserProfile = () => {
   const [isBlocked, setIsBlocked] = useState(false);
 
   const handleBackPress = () => {
-    navigation.goBack(); // Trở về trang trước
+    navigation.goBack();
   };
   useEffect(() => {
     const fetchUser = async () => {
@@ -59,6 +64,12 @@ const UserProfile = () => {
         const data = await getMyProfile(id);
         setProfileUser(data.userProfile);
         setIsLoading(false);
+        setProfileUserBasic({
+          _id: data.userProfile._id,
+          avatar: data.userProfile.avatar,
+          firstName: data.userProfile.firstName,
+          lastName: data.userProfile.lastName,
+        });
       } catch (error) {
         console.error("Error fetching posts:", error);
         setIsError(true);
@@ -143,8 +154,8 @@ const UserProfile = () => {
   const fetchData = async () => {
     try {
       const data = await getMyPosts(id);
-      const postsData = await fetchDetailedPosts(data.userPosts);
-      setPostsData(postsData);
+      // const postsData = await fetchDetailedPosts(data.userPosts);
+      setPostsData(data.userPosts);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -181,18 +192,34 @@ const UserProfile = () => {
           <View
             style={{
               backgroundColor:
-                colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+                colorScheme === "dark" ? colors.dark[500] : colors.light[500],
             }}
           >
-            {postsData.map((item: any) => (
-              <PostCard key={item._id} item={item} />
+            {postsData.map((item: PostResponseDTO) => (
+              <PostCard
+                key={item._id}
+                post={item}
+                setPostsData={setPostsData}
+              />
             ))}
           </View>
         );
       case "photos":
-        return <ImageProfile userId={id} />;
+        return (
+          <>
+            {profileUserBasic && (
+              <ImageProfile profileUser={profileUserBasic} />
+            )}
+          </>
+        );
       case "videos":
-        return <VideoProfile userId={id} />;
+        return (
+          <>
+            {profileUserBasic && (
+              <VideoProfile profileUser={profileUserBasic} />
+            )}
+          </>
+        );
       default:
         return null;
     }
@@ -202,92 +229,96 @@ const UserProfile = () => {
     setIsReport(false);
   };
 
+  const getColorFromRelation = (relation: string): string => {
+    switch (relation) {
+      case "bff":
+        return "#FACC15";
+      case "senderRequestBff":
+        return "#FDE68A";
+      case "receiverRequestBff":
+        return "#CA8A04";
+      case "friend":
+        return "#22C55E";
+      case "following":
+        return "#3B82F6";
+      case "follower":
+        return "#A855F7";
+      case "blocked":
+        return "#EF4444";
+      case "blockedBy":
+        return "#9CA3AF";
+      default:
+        return "#D1D5DB";
+    }
+  };
+
   return (
     <ScrollView
-      className="p-3 pt-14"
+      className="p-3 flex felx-col space-y-6"
       style={{
+        paddingTop: Platform.OS === "android" ? 16 : 52, // Android: 0, iOS: 12
         backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+          colorScheme === "dark" ? colors.dark[500] : colors.light[500],
         flex: 1,
       }}
     >
       {!isBlocked ? (
-        <>
+        <View className="flex felx-col space-y-6">
           <View className="flex flex-row">
             <TouchableOpacity onPress={handleBackPress}>
               <ArrowIcon size={28} color={iconColor} />
             </TouchableOpacity>
 
-            <Text
-              style={{
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-              }}
-              className="text-[20px] font-msemibold"
-            >
-              {profileUser?.firstName} {profileUser?.lastName}
-            </Text>
+            {profileUserBasic && (
+              <Text
+                style={{
+                  color:
+                    colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[100],
+                }}
+                className="text-[20px] font-msemibold"
+              >
+                {profileUser?.firstName} {profileUser?.lastName}
+              </Text>
+            )}
           </View>
           <Background profileUser={profileUser} />
-          <View className="flex flex-row mt-2">
+          <View className="flex flex-row">
             <Avatar profileUser={profileUser} />
             <Bio profileUser={profileUser} />
           </View>
           <View className="flex-row">
-            <TouchableOpacity
+            <Button
+              size="small"
               onPress={() => setModalOpen(true)}
-              className={` mt-3 rounded-xl px-4 py-3 text-white ${
+              title={
                 relation === "bff"
-                  ? "bg-yellow-500"
-                  : relation === "senderRequestBff"
-                  ? "bg-yellow-300"
-                  : relation === "receiverRequestBff"
-                  ? "bg-yellow-700"
-                  : relation === "friend"
-                  ? "bg-green-500"
-                  : relation === "following"
-                  ? "bg-blue-500"
-                  : relation === "follower"
-                  ? "bg-purple-500"
-                  : relation === "blocked"
-                  ? "bg-red-500"
-                  : relation === "blockedBy"
-                  ? "bg-gray-500"
-                  : "bg-gray-400"
-              }`}
-            >
-              <Text className="text-white font-mmedium">
-                {relation === "bff"
                   ? "Best friend"
                   : relation === "senderRequestBff"
-                  ? "Sending friend request"
-                  : relation === "receiverRequestBff"
-                  ? "Friend request"
-                  : relation === "friend"
-                  ? "Friend"
-                  : relation === "following"
-                  ? "Following"
-                  : relation === "follower"
-                  ? "Follower"
-                  : relation === "blocked"
-                  ? "Blocked"
-                  : relation === "blockedBy"
-                  ? "Blocked by"
-                  : "Stranger"}
-              </Text>
-            </TouchableOpacity>
+                    ? "Sending friend request"
+                    : relation === "receiverRequestBff"
+                      ? "Friend request"
+                      : relation === "friend"
+                        ? "Friend"
+                        : relation === "following"
+                          ? "Following"
+                          : relation === "follower"
+                            ? "Follower"
+                            : relation === "blocked"
+                              ? "Blocked"
+                              : relation === "blockedBy"
+                                ? "Blocked by"
+                                : "Stranger"
+              }
+              fontColor={colors.light[400]}
+              color={getColorFromRelation(relation)}
+            />
+            <View className="ml-2"></View>
+            <Button size="small" title="Chat" fontColor={colors.light[400]} />
+
             <TouchableOpacity
-              className="mt-3 rounded-xl px-7 py-3 text-white bg-slate-500 ml-3 "
-              style={{
-                // height: 1,
-                backgroundColor: colors.primary[100],
-                // marginVertical: 5,
-              }}
-            >
-              <Text className="text-white font-mmedium">Chat</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="mt-3 rounded-xl px-7 py-3 text-white flex-1 felx flex-row justify-end"
+              className="rounded-xl px-7 py-3  flex-1 felx flex-row justify-end"
               ref={menuRef}
               onPress={() => {
                 menuRef.current?.measure((fx, fy, width, height, px, py) => {
@@ -326,110 +357,76 @@ const UserProfile = () => {
                 className="bg-black/50"
               >
                 <View
-                  className=" rounded-lg p-5 w-[80%]"
+                  className=" rounded-lg p-5 w-[70%]"
                   style={{
                     backgroundColor:
                       colorScheme === "dark"
-                        ? colors.dark[300]
-                        : colors.light[700],
+                        ? colors.dark[400]
+                        : colors.light[400],
                   }}
                 >
                   <TouchableOpacity
-                    className="py-3 mt-2"
+                    className=""
                     onPress={() => setIsReport(true)}
                   >
-                    <Text className="text-center text-primary-100">
+                    <Text
+                      className="text-center text-4"
+                      style={{
+                        color:
+                          colorScheme === "dark"
+                            ? colors.dark[100]
+                            : colors.light[100],
+                      }}
+                    >
                       Report user
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    className="py-3 mt-4"
+                    className="pt-3 mt-3"
                     onPress={() => setMenuVisible(false)}
                   >
-                    <Text className="text-center text-gray-400">Cancel</Text>
+                    <Text
+                      className="text-center "
+                      style={{
+                        color:
+                          colorScheme === "dark"
+                            ? colors.dark[100]
+                            : colors.light[100],
+                      }}
+                    >
+                      Cancel
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </Modal>
           </View>
-          <DetailInformation profileUser={profileUser} />
-          <View className="flex  flex-row justify-start  mx-[10%] mt-10">
-            <TouchableOpacity onPress={() => setActiveTab("posts")}>
-              <Text
-                style={{
-                  fontSize: 14,
-
-                  color:
-                    activeTab === "posts"
-                      ? colors.primary[100] // màu chữ khi active
-                      : colorScheme === "dark"
-                      ? colors.dark[100] // màu chữ khi không active và trong dark mode
-                      : colors.light[500], // màu chữ khi không active và trong light mode
-                  borderBottomWidth: activeTab === "posts" ? 2 : 0, // đường viền dưới khi active
-                  borderBottomColor:
-                    activeTab === "posts" ? colors.primary[100] : "transparent", // màu đường viền dưới
-                }}
-                className="text-[14px] font-mregular "
-              >
-                Posts
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => setActiveTab("photos")}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color:
-                    activeTab === "photos"
-                      ? colors.primary[100]
-                      : colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                  borderBottomWidth: activeTab === "photos" ? 2 : 0,
-                  borderBottomColor:
-                    activeTab === "photos"
-                      ? colors.primary[100]
-                      : "transparent",
-                }}
-                className="text-[14px] font-mregular ml-5"
-              >
-                Pictures
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setActiveTab("videos")}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color:
-                    activeTab === "videos"
-                      ? colors.primary[100]
-                      : colorScheme === "dark"
-                      ? colors.dark[100]
-                      : colors.light[500],
-                  borderBottomWidth: activeTab === "videos" ? 2 : 0,
-                  borderBottomColor:
-                    activeTab === "videos"
-                      ? colors.primary[100]
-                      : "transparent",
-                }}
-                className="text-[14px] font-mregular ml-5"
-              >
-                Videos
-              </Text>
-            </TouchableOpacity>
+          <View className="mt-3">
+            <DetailInformation profileUser={profileUser} />
           </View>
 
-          <View className=" py-3 h-auto">
+          <TabSelector
+            tabs={[
+              { key: "posts", label: "Post" },
+              { key: "photos", label: "Image" },
+              { key: "videos", label: "Video" },
+            ]}
+            activeTab={activeTab}
+            onTabPress={setActiveTab}
+            colorScheme={colorScheme}
+            colors={colors}
+          />
+
+          <View className=" h-auto pb-7">
             <View
               style={{
                 height: 1,
-                backgroundColor: "#D9D9D9",
                 width: "100%",
-                marginVertical: 5,
               }}
             />
             {renderContent()}
           </View>
+
           <Modal
             animationType="none"
             visible={isReport}
@@ -443,18 +440,7 @@ const UserProfile = () => {
               reportedId={profileUser?._id || ""}
             />
           </Modal>
-          <View className=" py-3 h-auto">
-            <View
-              style={{
-                height: 1,
-                backgroundColor: "#D9D9D9",
-                width: "100%",
-                marginVertical: 5,
-              }}
-            />
-            {renderContent()}
-          </View>
-        </>
+        </View>
       ) : (
         <>
           <View className="">
@@ -467,14 +453,14 @@ const UserProfile = () => {
                   ? require("../../assets/images/Screenshot 2024-09-25 225618.png")
                   : require("../../assets/images/CannotFound.png")
               }
-              style={{ width: 233, height: 235 }} // Tránh lỗi style
+              style={{ width: 233, height: 235 }}
               className="mx-auto mt-40"
             />
             <Text
               className="font-msemibold text-[20px] mx-auto"
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
             >
               User not found

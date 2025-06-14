@@ -6,20 +6,19 @@ import {
   Keyboard,
 } from "react-native";
 import React, { useState } from "react";
-import MyInput from "../../components/share/MyInput";
+import MyInput from "../../components/shared/ui/MyInput";
 import { useTheme } from "../../context/ThemeContext";
 import { colors } from "../../styles/colors";
-import MyButton from "../../components/share/MyButton";
+import MyButton from "../../components/shared/ui/MyButton";
 import { useRouter } from "expo-router";
 import { login, getMyProfile } from "@/lib/service/user.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "@/context/AuthContext";
-import Button from "@/components/share/ui/button";
+import Button from "@/components/shared/ui/button";
 
 const SignIn = () => {
   const { setProfile } = useAuth();
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
   const router = useRouter();
   const [isPressed, setIsPressed] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -61,7 +60,7 @@ const SignIn = () => {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <View className="w-full space-y-10 flex flex-col justify-center items-center">
+          <View className="w-full space-y-8 flex flex-col justify-center items-center">
             <View className="items-center">
               <Text
                 className="font-msemibold text-[36px]"

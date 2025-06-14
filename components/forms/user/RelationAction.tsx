@@ -547,7 +547,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
         className="w-[320px] rounded-xl bg-white dark:bg-gray-800 p-6 shadow-lg"
         style={{
           backgroundColor:
-            colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+            colorScheme === "dark" ? colors.dark[400] : colors.light[400],
         }}
       >
         <Text

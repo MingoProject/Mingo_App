@@ -1,26 +1,25 @@
 import { Schema } from "mongoose";
+import { UserBasicInfo } from "./UserDTO";
 
 export interface UpdateCommentDTO {
   content: string;
-  replies?: Schema.Types.ObjectId[];
+  replies?: string[];
 }
 
 export interface CreateCommentDTO {
   content: string;
-  replies?: Schema.Types.ObjectId[];
-  parentId?: Schema.Types.ObjectId;
-  originalCommentId?: Schema.Types.ObjectId;
+  replies?: string[];
+  parentId?: string;
+  originalCommentId?: string;
 }
 
 export interface CommentResponseDTO {
   _id: string;
-  userId: Schema.Types.ObjectId;
+  author: UserBasicInfo;
   content: string;
-  createdTime: Date;
-  replies?: Schema.Types.ObjectId[];
-  likes: Schema.Types.ObjectId[];
-  createBy: Schema.Types.ObjectId;
+  replies?: string[];
+  likes: string[];
   createAt: Date;
-  parentId: Schema.Types.ObjectId;
-  originalCommentId: Schema.Types.ObjectId;
+  parentId: UserBasicInfo | null;
+  originalCommentId: string | null;
 }

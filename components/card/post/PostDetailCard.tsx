@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -13,24 +13,24 @@ import {
 } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
-import { getTimestamp } from "@/lib/utils";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createComment } from "@/lib/service/comment.service";
-import { useAuth } from "@/context/AuthContext";
 import CommentCard from "@/components/card/comment/CommentCard";
 import { ResizeMode, Video } from "expo-av";
-import { FriendIcon, LocationIcon, ThreeDot } from "@/components/icons/Icons";
-import TagModal from "../../modal/post/TagsModal";
-import { useRouter } from "expo-router";
-import PostAction from "@/components/forms/post/PostAction";
-import PostMenu from "@/components/forms/post/PostMenu";
+import {
+  LocationIcon,
+  SendIcon,
+  ThreeDot,
+} from "@/components/shared/icons/Icons";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
-import PostHeader from "@/components/share/post/PostHeader";
-import Button from "@/components/share/ui/button";
-import Input from "@/components/share/ui/input";
+import PostHeader from "@/components/shared/post/PostHeader";
+import Button from "@/components/shared/ui/button";
+import Input from "@/components/shared/ui/input";
+import PostActionCard from "./PostActionCard";
+import PostMenu from "@/components/shared/post/PostMenu";
 
 interface PostDetailCardProps {
   post: PostResponseDTO;
@@ -67,12 +67,11 @@ const PostDetailCard = ({
   const iconColor =
     colorScheme === "dark" ? colors.dark[100] : colors.light[100];
   const [comment, setComment] = useState("");
-  const { profile } = useAuth();
+
   const menuRef = useRef<TouchableOpacity | null>(null);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [isMenuVisible, setMenuVisible] = useState(false);
-  const isAuthor = profile?._id === post.author._id;
-  const router = useRouter();
+  const isAuthor = profileBasic?._id === post.author._id;
   const handleSendComment = async () => {
     const token: string | null = await AsyncStorage.getItem("token");
 
@@ -105,7 +104,7 @@ const PostDetailCard = ({
         createAt: currentTime,
         likes: [],
       };
-      post.comments = [newCommentData._id, ...post.comments];
+      // post.comments = [newCommentData._id, ...post.comments];
 
       setCommentsData((prev: any) => [enrichedComment, ...prev]);
 
@@ -138,15 +137,15 @@ const PostDetailCard = ({
               colorScheme === "dark" ? colors.dark[200] : colors.light[200],
           }}
           contentContainerStyle={{ paddingBottom: 100, paddingTop: 20 }}
-          className="flex-1 px-[20px] pt-[10px]"
+          className="flex-1 px-[20px]"
         >
-          <View className="flex-row mt-7 justify-between items-center mb-4">
+          <View className="flex-row justify-between items-center mb-4">
             <Text
               style={{
                 color:
                   colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
-              className="font-msemibold text-lg"
+              className="font-msemibold text-[24px]"
             >
               Post Details
             </Text>
@@ -154,12 +153,9 @@ const PostDetailCard = ({
               title="Close"
               size="small"
               color="transparent"
-              border="border border-border-100"
-              fontColor="text-dark100_light100"
               onPress={() => setModalVisible(false)}
             />
           </View>
-          //Header
           <View className="flex-row items-center mb-2">
             <PostHeader
               post={post}
@@ -219,7 +215,6 @@ const PostDetailCard = ({
               </View>
             </Modal>
           )}
-          //caption
           <Text
             style={{
               color:
@@ -250,7 +245,6 @@ const PostDetailCard = ({
               </Text>
             </View>
           )}
-          //Media
           {post.media && (
             <FlatList
               data={post.media}
@@ -272,7 +266,7 @@ const PostDetailCard = ({
               )}
             />
           )}
-          <PostAction
+          <PostActionCard
             post={post}
             numberOfLikes={numberOfLikes}
             setNumberOfLikes={setNumberOfLikes}
@@ -292,6 +286,7 @@ const PostDetailCard = ({
                         setCommentsData={setCommentsData}
                         author={post.author}
                         postId={post._id}
+                        profileBasic={profileBasic}
                         setNumberOfComments={setNumberOfComments}
                         numberOfComments={numberOfComments}
                       />
@@ -301,9 +296,15 @@ const PostDetailCard = ({
             </View>
           )}
         </ScrollView>
-        <View className="absolute bottom-6 left-0 right-0 px-4 py-2">
-          <View className="flex flex-row">
-            <View className="w-64">
+        <View
+          className="absolute bottom-0 left-0 right-0 px-2 py-2"
+          style={{
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[200] : colors.light[200],
+          }}
+        >
+          <View className="w-full flex-row items-center space-x-2">
+            <View className="flex-1">
               <Input
                 avatarSrc={profileBasic?.avatar || "/assets/images/capy.jpg"}
                 placeholder="Write a comment"
@@ -312,13 +313,9 @@ const PostDetailCard = ({
                 onChange={(e) => setComment(e)}
               />
             </View>
-            <Button
-              title="Comment"
-              size="small"
-              onPress={handleSendComment}
-              color="bg-primary-100"
-              fontColor="text-dark100_light200"
-            />
+            <TouchableOpacity onPress={handleSendComment}>
+              <SendIcon size={27} color={colors.primary[100]} />
+            </TouchableOpacity>
           </View>
         </View>
       </KeyboardAvoidingView>

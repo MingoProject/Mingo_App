@@ -28,7 +28,7 @@ import {
   PptTypeIcon,
   VideoIcon,
   PlusIcon,
-} from "../../icons/Icons"; // Đảm bảo đường dẫn đúng
+} from "../../shared/icons/Icons"; // Đảm bảo đường dẫn đúng
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
 import { router, useLocalSearchParams, useRouter } from "expo-router";
@@ -53,7 +53,7 @@ import { FriendRequestDTO } from "@/dtos/FriendDTO";
 import { block } from "@/lib/service/friend.service";
 import ReportCard from "@/components/card/report/ReportCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { openWebFile } from "@/lib/untils/File";
+import { openWebFile } from "@/lib/utils/File";
 import message from "@/app/message";
 import VideoPlayer from "../media/VideoPlayer";
 import ChangeAvatar from "./ChangeAvatar";

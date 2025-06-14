@@ -7,7 +7,7 @@ import {
   TextInput,
   Platform,
 } from "react-native";
-import { ArrowIcon, PlusIcon } from "../components/icons/Icons";
+import { ArrowIcon, PlusIcon } from "../components/shared/icons/Icons";
 import React, {
   useCallback,
   useEffect,
@@ -26,7 +26,7 @@ import { pusherClient } from "@/lib/pusher";
 import { useAuth } from "@/context/AuthContext";
 import { useSearchParams } from "expo-router/build/hooks";
 import CreateGroupChat from "@/components/forms/chat/CreateGroupChat";
-import { debouncedSearch } from "@/lib/untils/declarations";
+import { debouncedSearch } from "@/lib/utils/declarations";
 import debounce from "lodash.debounce";
 
 const Message = () => {

@@ -10,7 +10,11 @@ import {
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import VideoPlayer from "./VideoPlayer";
 import { generateRandomNumberString } from "@/lib/utils";
-import { CancelIcon, PlusIcon, SendIcon } from "@/components/icons/Icons";
+import {
+  CancelIcon,
+  PlusIcon,
+  SendIcon,
+} from "@/components/shared/icons/Icons";
 import { useTheme } from "@/context/ThemeContext";
 
 const ExpoCamera = ({

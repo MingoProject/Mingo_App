@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import MyInput from "@/components/share/MyInput";
-import Button from "@/components/share/ui/button";
+import MyInput from "@/components/shared/ui/MyInput";
+import Button from "@/components/shared/ui/button";
 import { colors } from "@/styles/colors";
 
 interface Props {
@@ -100,7 +100,7 @@ const SignUpSteps: React.FC<Props> = ({
                       : colors.light[100],
                 }}
               >
-                First Name
+                First Name <Text style={{ color: "red" }}>*</Text>
               </Text>
             </View>
 
@@ -130,7 +130,7 @@ const SignUpSteps: React.FC<Props> = ({
                       : colors.light[100],
                 }}
               >
-                Last Name
+                Last Name <Text style={{ color: "red" }}>*</Text>
               </Text>
             </View>
 
@@ -160,7 +160,7 @@ const SignUpSteps: React.FC<Props> = ({
                       : colors.light[100],
                 }}
               >
-                Phone Number
+                Phone Number <Text style={{ color: "red" }}>*</Text>
               </Text>
             </View>
 
@@ -193,7 +193,7 @@ const SignUpSteps: React.FC<Props> = ({
                       : colors.light[100],
                 }}
               >
-                Email
+                Email <Text style={{ color: "red" }}>*</Text>
               </Text>
             </View>
 
@@ -219,7 +219,9 @@ const SignUpSteps: React.FC<Props> = ({
       return (
         <View className="w-full space-y-10">
           <View className="mb-3">
-            <Text className="mb-1 text-sm ">Gender</Text>
+            <Text className="mb-1 text-sm ">
+              Gender <Text style={{ color: "red" }}>*</Text>
+            </Text>
             <Picker selectedValue={gender} onValueChange={setGender}>
               <Picker.Item label="Select Gender" value="" />
               <Picker.Item label="Male" value="male" />
@@ -227,7 +229,9 @@ const SignUpSteps: React.FC<Props> = ({
             </Picker>
           </View>
           <View>
-            <Text className="mb-1 text-sm ">Date of Birth</Text>
+            <Text className="mb-1 text-sm ">
+              Date of Birth <Text style={{ color: "red" }}>*</Text>
+            </Text>
             <View className="flex-row justify-between mb-8">
               <Picker
                 selectedValue={selectedDay.toString()}
@@ -301,7 +305,7 @@ const SignUpSteps: React.FC<Props> = ({
                       : colors.light[100],
                 }}
               >
-                Password
+                Password <Text style={{ color: "red" }}>*</Text>
               </Text>
             </View>
 
@@ -332,7 +336,7 @@ const SignUpSteps: React.FC<Props> = ({
                       : colors.light[100],
                 }}
               >
-                Confirm password
+                Confirm password <Text style={{ color: "red" }}>*</Text>
               </Text>
             </View>
 

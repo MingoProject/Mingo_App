@@ -13,31 +13,11 @@ export interface PostCreateDTO {
   };
 }
 
-// export interface PostResponseDTO {
-//   _id: string;
-//   content: string;
-//   media?: Schema.Types.ObjectId[];
-//   url?: string;
-//   createdAt: Date;
-//   author: Schema.Types.ObjectId;
-//   shares: Schema.Types.ObjectId[];
-//   likes: Schema.Types.ObjectId[];
-//   savedByUsers: Schema.Types.ObjectId[];
-//   comments: Schema.Types.ObjectId[];
-//   location?: string;
-//   tags?: Schema.Types.ObjectId[];
-//   privacy: {
-//     type: string;
-//     allowedUsers?: Schema.Types.ObjectId[];
-//   };
-//   likedIds: Schema.Types.ObjectId[];
-//   flag: boolean;
-// }
-
 export interface MediaInfo {
   _id: string;
   url: string;
   type: string;
+  caption: string;
 }
 
 export interface PostResponseDTO {

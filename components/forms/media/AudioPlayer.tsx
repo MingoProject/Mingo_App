@@ -7,8 +7,8 @@ import Animated, {
   withSpring,
   Easing,
 } from "react-native-reanimated";
-import { millisToMMSS } from "@/lib/untils/DateFormatter";
-import { PauseAuidoIcon, PlayAudioIcon } from "@/components/icons/Icons";
+import { millisToMMSS } from "@/lib/utils/DateFormatter";
+import { PauseAuidoIcon, PlayAudioIcon } from "@/components/shared/icons/Icons";
 import { useTheme } from "@/context/ThemeContext";
 
 const MAX_PROGRESS_WIDTH = 100; // Chiều rộng tối đa của progress bar

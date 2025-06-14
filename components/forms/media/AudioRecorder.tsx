@@ -18,7 +18,7 @@ import {
   CircleFillIcon,
   PauseAuidoIcon,
   PlayAudioIcon,
-} from "@/components/icons/Icons";
+} from "@/components/shared/icons/Icons";
 import { useTheme } from "@/context/ThemeContext";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");

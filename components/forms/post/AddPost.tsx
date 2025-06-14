@@ -5,20 +5,19 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  TextInput,
+  Platform,
+  ActivityIndicator,
 } from "react-native";
-import MyDropDown from "../../share/MyDropDown";
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
 import {
-  VideoIcon,
-  PictureIcon,
-  EmotionIcon,
   CancelIcon,
-} from "@/components/icons/Icons";
-import MyTextArea from "../../share/MyTextArea";
+  AddMediaIcon,
+  FriendIcon,
+  LocationIcon,
+} from "@/components/shared/icons/Icons";
 import { createMedia } from "@/lib/service/media.service";
-import { PostCreateDTO } from "@/dtos/PostDTO";
+import { PostCreateDTO, PostResponseDTO } from "@/dtos/PostDTO";
 import { createPost } from "@/lib/service/post.service";
 import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -26,8 +25,16 @@ import { useAuth } from "@/context/AuthContext";
 import { getMyBffs, getMyFriends } from "@/lib/service/user.service";
 import * as ImagePicker from "expo-image-picker";
 import { Video } from "expo-av";
+import Button from "@/components/shared/ui/button";
+import MyTextarea from "@/components/shared/ui/textarea";
+import MyInput from "@/components/shared/ui/MyInput";
 
-const AddPost = ({ onClose, setPostsData }: any) => {
+interface AddPostprops {
+  onClose: () => void;
+  setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
+}
+
+const AddPost = ({ onClose, setPostsData }: AddPostprops) => {
   const { colorScheme } = useTheme();
   const iconColor =
     colorScheme === "dark" ? colors.dark[100] : colors.light[100];
@@ -77,37 +84,6 @@ const AddPost = ({ onClose, setPostsData }: any) => {
       }
     });
   };
-
-  // const handleFileChange = async () => {
-  //   try {
-  //     const permissionResult =
-  //       await ImagePicker.requestMediaLibraryPermissionsAsync();
-  //     if (!permissionResult.granted) {
-  //       alert("Cần cấp quyền truy cập thư viện ảnh!");
-  //       return;
-  //     }
-
-  //     const result = await ImagePicker.launchImageLibraryAsync({
-  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //       allowsEditing: true,
-  //       quality: 1,
-  //     });
-
-  //     if (!result.canceled) {
-  //       setFiles((prevFiles) => [
-  //         ...prevFiles,
-  //         {
-  //           uri: result.assets[0].uri,
-  //           type: result.assets[0].type,
-  //           name: result.assets[0].fileName || `image_${Date.now()}.jpg`,
-  //         },
-  //       ]);
-  //       setCaptions((prevCaptions) => [...prevCaptions, ""]);
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi chọn ảnh:", error);
-  //   }
-  // };
 
   const handleFileChange = async () => {
     try {
@@ -213,93 +189,138 @@ const AddPost = ({ onClose, setPostsData }: any) => {
 
   return (
     <ScrollView
+      className="w-full p-4 h-full space-y-5"
       style={{
-        flex: 1,
+        paddingTop: Platform.OS === "android" ? 14 : 52,
         backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[700],
-        padding: 16,
+          colorScheme === "dark" ? colors.dark[500] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
       }}
     >
-      {/* Header */}
-      <View className="flex flex-row pt-12 justify-between items-center pb-4">
+      <View className="flex-row justify-between items-center mb-2">
         <Text
           style={{
             color:
-              colorScheme === "dark" ? colors.dark[100] : colors["title-pink"],
+              colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           }}
-          className="text-[20px] font-msemibold"
+          className="font-msemibold text-[24px]"
         >
           Create Post
         </Text>
-        <TouchableOpacity onPress={onClose}>
-          <CancelIcon size={28} color={iconColor} />
-        </TouchableOpacity>
+        <Button
+          title="Close"
+          size="small"
+          color="transparent"
+          onPress={onClose}
+        />
       </View>
 
-      {/* Profile and Privacy */}
-      <View className="flex flex-row items-center mb-4">
+      <View className="flex flex-row items-center">
         <Image
-          source={{ uri: profile.avatar }} // Avatar from profile
-          className="w-14 h-14 rounded-full"
+          source={{
+            uri:
+              profile?.avatar ||
+              "https://i.pinimg.com/236x/88/bd/6b/88bd6bd828ec509f4bda0d9f9450824d.jpg",
+          }}
+          className="w-10 h-10 rounded-full"
         />
-        <View className="ml-4 flex-1">
+        <View className="ml-2 flex-1">
           <Text
             style={{
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
+              fontSize: 16,
             }}
-            className="font-mmedium text-[18px]"
+            className="font-mmedium"
           >
-            {profile.firstName} {profile.lastName}
-            {/* Replace with user's name */}
+            {profile.firstName || ""} {profile.lastName || ""}
           </Text>
-          {/* <MyDropDown /> */}
         </View>
       </View>
 
-      {/* Content */}
-      <MyTextArea
-        value={content}
-        onChangeText={setContent}
-        placeholder="Share something..."
-      />
-
-      {/* Location Input */}
       <View>
-        <Text
-          style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-          }}
-          className="text-[16px] font-mmedium"
-        >
-          Add location
-        </Text>
+        <MyTextarea
+          value={content}
+          onChangeText={setContent}
+          placeholder="Share something..."
+          fontFamily="Montserrat-Regular"
+        />
       </View>
-      <TextInput
-        value={location}
-        onChangeText={setLocation}
-        placeholder="Location"
-        className="text-[14px] font-mmedium border-gray-200 pt-3"
-        style={{
-          borderWidth: 1,
-          borderRadius: 8,
-          padding: 10,
-          marginVertical: 12,
-          color: colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-        }}
-      />
 
-      <View className="mb-4">
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="flex-row gap-2"
+      >
+        {files.map((file, index) => (
+          <View key={index} className="w-[300px] relative flex-col">
+            {file.type?.includes("video") || file.uri?.endsWith(".mp4") ? (
+              <Video
+                source={{ uri: file.uri }}
+                style={{ width: 300, height: 300, marginRight: 8 }}
+                // resizeMode="cover"
+                // controls={true} // Hiển thị nút điều khiển video
+                className="rounded-lg  object-cover"
+              />
+            ) : (
+              <Image
+                source={{ uri: file.uri }}
+                style={{ width: 300, height: 300, marginRight: 8 }}
+                className="rounded-md"
+              />
+            )}
+
+            <View className="mt-2">
+              <MyInput
+                value={captions[index]}
+                onChangeText={(value) => handleCaptionChange(index, value)}
+                placeholder="Caption"
+                height={56}
+                fontSize={14}
+                fontFamily="Montserrat-Regular"
+              />
+            </View>
+
+            <TouchableOpacity
+              onPress={() => handleDeleteFile(index)}
+              className="absolute top-1 right-1 bg-primary-100 rounded-full p-1"
+            >
+              <CancelIcon size={16} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
+
+      <TouchableOpacity
+        onPress={handleFileChange}
+        className="flex flex-row space-x-2"
+      >
+        <AddMediaIcon size={24} color={iconColor} />
         <Text
           style={{
             color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           }}
-          className="text-[16px] font-mmedium"
+          className="text-[16px] font-mregular"
         >
-          Tag friends
+          Add media to the post
         </Text>
+      </TouchableOpacity>
+
+      <View className="">
+        <View className="flex flex-row space-x-2">
+          <FriendIcon size={24} color={iconColor} />
+          <Text
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
+            }}
+            className="text-[16px] font-mregular"
+          >
+            Tag friends
+          </Text>
+        </View>
+
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {friends.map((friend, index) => (
             <TouchableOpacity
@@ -308,7 +329,9 @@ const AddPost = ({ onClose, setPostsData }: any) => {
               style={{
                 backgroundColor: taggedFriends.includes(friend)
                   ? colors.primary[100]
-                  : colors.light[800],
+                  : colorScheme === "dark"
+                    ? colors.dark[400]
+                    : colors.light[400],
                 borderRadius: 20,
                 marginRight: 8,
                 padding: 5,
@@ -327,7 +350,7 @@ const AddPost = ({ onClose, setPostsData }: any) => {
                 style={{
                   color: taggedFriends.includes(friend)
                     ? colors.dark[100]
-                    : colors.light[500],
+                    : colors.light[100],
                 }}
                 className="text-[14px] ml-1 font-mmedium"
               >
@@ -338,87 +361,63 @@ const AddPost = ({ onClose, setPostsData }: any) => {
         </ScrollView>
       </View>
 
-      <View className=" flex-wrap gap-2 mt-2">
-        {files.map((file, index) => (
-          <View
-            key={index}
-            className="w-20 relative flex-row"
-            style={{
-              borderColor: colors.primary[100],
-              borderWidth: 1,
-              borderRadius: 8,
-            }}
-          >
-            {file.type?.includes("video") || file.uri?.endsWith(".mp4") ? (
-              <Video
-                source={{ uri: file.uri }}
-                style={{ width: 100, height: 100, marginRight: 8 }}
-                // resizeMode="cover"
-                // controls={true} // Hiển thị nút điều khiển video
-                className="rounded-lg size-20 object-cover"
-              />
-            ) : (
-              <Image
-                source={{ uri: file.uri }}
-                style={{ width: 100, height: 100, marginRight: 8 }}
-                className="rounded-lg"
-              />
-            )}
-            <TextInput
-              value={captions[index]}
-              onChangeText={(value) => handleCaptionChange(index, value)}
-              placeholder="Caption"
-              style={{
-                padding: 5,
-                marginTop: 8,
-                color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-              }}
-              className="w-72 font-mregular"
-            />
-            <TouchableOpacity
-              onPress={() => handleDeleteFile(index)}
-              className="absolute top-1 right-1 bg-red-500 rounded-full p-1"
-            >
-              <CancelIcon size={16} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        ))}
-      </View>
-
-      {/* Add Media */}
-      <View className="flex flex-row items-center justify-between mt-4">
+      <View className="flex flex-row space-x-2">
+        <LocationIcon size={24} color={iconColor} />
         <Text
           style={{
             color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           }}
-          className="text-[16px] font-mmedium"
+          className="text-[16px] font-mregular"
         >
-          Add to the post
+          Add location
         </Text>
-        <View className="flex flex-row gap-4">
-          <TouchableOpacity onPress={handleFileChange}>
-            <PictureIcon size={28} color={iconColor} />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <EmotionIcon size={28} color={iconColor} />
-          </TouchableOpacity>
-        </View>
       </View>
 
-      {/* Submit Button */}
-      <TouchableOpacity
-        onPress={handleSubmit}
-        className="w-full py-3 mt-4 rounded-[8px] mb-10"
-        style={{
-          backgroundColor: colors.primary[100],
-        }}
-      >
-        <Text className="text-center text-white font-msemibold">
-          Create post
-        </Text>
-      </TouchableOpacity>
+      <View className="mt-2">
+        <MyInput
+          value={location}
+          onChangeText={setLocation}
+          placeholder="Location"
+          height={56}
+          fontSize={14}
+          fontFamily="Montserrat-Regular"
+        />
+      </View>
+
+      <View className="mb-28">
+        {loading && (
+          <View className="flex-row items-center space-x-2 mb-4">
+            <Text
+              style={{
+                color:
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
+              }}
+            >
+              Creating post...
+            </Text>
+            <ActivityIndicator size="small" color={colors.primary[100]} />
+          </View>
+        )}
+
+        {error ? (
+          <Text
+            style={{ color: "red", marginBottom: 10 }}
+            className="text-sm font-mregular"
+          >
+            {error}
+          </Text>
+        ) : null}
+
+        <Button
+          title="Create Post"
+          onPress={() => handleSubmit}
+          fontColor={
+            colorScheme === "dark" ? colors.dark[100] : colors.light[200]
+          }
+          disabled={loading}
+        />
+      </View>
     </ScrollView>
   );
 };

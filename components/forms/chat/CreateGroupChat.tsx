@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
-import { CancelIcon } from "@/components/icons/Icons";
+import { CancelIcon } from "@/components/shared/icons/Icons";
 import { createMedia } from "@/lib/service/media.service";
 import { PostCreateDTO } from "@/dtos/PostDTO";
 import { createPost } from "@/lib/service/post.service";
