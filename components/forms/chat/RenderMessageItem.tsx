@@ -415,6 +415,26 @@ const RenderMessageItem = ({
                       {item.userName.trim().split(" ").pop()}:{" "}
                     </Text>
                     {(() => {
+                      // Kiểm tra nếu là thông báo kết thúc cuộc gọi
+                      if (
+                        lastMessage.text.startsWith(
+                          "//Cuoc goi ket thuc; time:"
+                        )
+                      ) {
+                        return (
+                          <Text
+                            className="font-msemibold"
+                            style={{
+                              color:
+                                colorScheme === "dark"
+                                  ? colors.dark[100]
+                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                            }}
+                          >
+                            Cuộc gọi kết thúc
+                          </Text>
+                        );
+                      }
                       console.log(lastMessage.contentId?.type?.toLowerCase());
                       const type =
                         lastMessage.contentId?.type?.toLowerCase() || "";
@@ -531,6 +551,26 @@ const RenderMessageItem = ({
                       You:{" "}
                     </Text>
                     {(() => {
+                      // Kiểm tra nếu là thông báo kết thúc cuộc gọi
+                      if (
+                        lastMessage.text.startsWith(
+                          "//Cuoc goi ket thuc; time:"
+                        )
+                      ) {
+                        return (
+                          <Text
+                            className="font-msemibold"
+                            style={{
+                              color:
+                                colorScheme === "dark"
+                                  ? colors.dark[100]
+                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                            }}
+                          >
+                            Cuộc gọi kết thúc{" "}
+                          </Text>
+                        );
+                      }
                       const type =
                         lastMessage.contentId?.type?.toLowerCase() || "";
                       const messageStatusClass = lastMessage.status

@@ -11,6 +11,7 @@ export type OngoingCall = {
   participants: Participants;
   isRinging: boolean;
   isVideoCall: boolean;
+  boxId: string;
 };
 
 export type Participants = {

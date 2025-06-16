@@ -1,254 +1,3 @@
-// import React, { useCallback, useEffect, useState } from "react";
-// import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-// import { useLocalSearchParams } from "expo-router";
-// import { RTCView } from "react-native-webrtc";
-// import { useSocket } from "@/context/CallContext";
-
-// export default function VideoCallScreen() {
-//   const {
-//     localStream,
-//     remoteStream,
-//     handleHangUp,
-//     ongoingCall,
-//     isRemoteVideoEnabled,
-//     socket,
-//     setIsRemoteVideoEnabled,
-//   } = useSocket();
-
-//   const [isMicOn, setIsMicOn] = useState(true);
-//   const [isCameraOn, setIsCameraOn] = useState(true);
-//   const [isRemoteCameraOn, setIsRemoteCameraOn] =
-//     useState(isRemoteVideoEnabled);
-
-//   const { roomId } = useLocalSearchParams();
-
-//   console.log(isRemoteVideoEnabled, "isRemoteVideoEnabled");
-
-//   useEffect(() => {
-//     setIsRemoteCameraOn(isRemoteVideoEnabled); // Đồng bộ trạng thái từ context vào state
-//   }, [isRemoteVideoEnabled]);
-
-//   // // Kiểm tra và cập nhật trạng thái video của remote stream
-//   // Kiểm tra khi socket và remote stream thay đổi
-//   useEffect(() => {
-//     if (socket) {
-//       socket.on("cameraStatusChanged", (data) => {
-//         console.log("Nhận trạng thái camera từ đối phương:", data.isCameraOn);
-//         setIsRemoteVideoEnabled(data.isCameraOn); // Cập nhật trạng thái camera của đối phương
-//       });
-//     }
-
-//     // Cleanup khi component unmount
-//     return () => {
-//       if (socket) {
-//         socket.off("cameraStatusChanged");
-//       }
-//     };
-//   }, [socket, setIsRemoteVideoEnabled]);
-
-//   // Debug log để kiểm tra stream
-//   useEffect(() => {
-//     console.log("🔄 LocalStream changed:", {
-//       hasStream: !!localStream,
-//       streamId: localStream?.id,
-//       videoTracks: localStream?.getVideoTracks().map((track) => ({
-//         id: track.id,
-//         enabled: track.enabled,
-//         muted: track.muted,
-//         readyState: track.readyState,
-//         kind: track.kind,
-//       })),
-//     });
-//   }, [localStream]);
-
-//   // Debug remoteStream
-//   useEffect(() => {
-//     if (remoteStream) {
-//       console.log("🌐 RemoteStream changed:", {
-//         streamId: remoteStream.id,
-//         videoTracks: remoteStream.getVideoTracks().map((track) => ({
-//           id: track.id,
-//           enabled: track.enabled,
-//           muted: track.muted,
-//           readyState: track.readyState,
-//           kind: track.kind,
-//         })),
-//       });
-//     }
-//   }, [remoteStream]);
-
-//   // Toggle mic state
-//   const toggleMic = useCallback(() => {
-//     if (localStream) {
-//       const audioTracks = localStream.getAudioTracks();
-//       if (audioTracks.length > 0) {
-//         const newState = !audioTracks[0].enabled;
-//         audioTracks[0].enabled = newState;
-//         setIsMicOn(newState);
-//         console.log("🎤 Mic toggled:", newState);
-//       }
-//     }
-//   }, [localStream]);
-
-//   // Toggle camera state
-//   const toggleCamera = () => {
-//     if (localStream) {
-//       const videoTrack = localStream.getVideoTracks()[0];
-//       if (videoTrack) {
-//         videoTrack.enabled = !videoTrack.enabled;
-//         console.log("Camera toggled:", videoTrack.enabled);
-//       }
-//     }
-//   };
-
-//   // Kết thúc cuộc gọi
-//   const onHangUp = () => {
-//     console.log("📞 Hanging up call");
-//     handleHangUp({
-//       ongoingCall: ongoingCall || undefined,
-//       isEmitHangUp: true,
-//     });
-//   };
-
-//   console.log(
-//     "remote:",
-//     remoteStream,
-//     "local:",
-//     localStream,
-//     "so sanh remote luc hien thi"
-//   );
-
-//   const remoteStreamURL = remoteStream?.toURL();
-//   const localStreamURL = localStream?.toURL();
-//   console.log("Remote stream URL:", remoteStreamURL);
-//   console.log("Local stream URL:", localStreamURL);
-
-//   const shouldShowRemoteVideo = remoteStream && isRemoteVideoEnabled;
-
-//   useEffect(() => {
-//     console.log("Remote Stream:", remoteStream);
-//     console.log("isRemoteVideoEnabled:", isRemoteVideoEnabled);
-//     console.log("shouldShowRemoteVideo:", shouldShowRemoteVideo);
-//   }, [remoteStream, isRemoteVideoEnabled]);
-
-//   // Render video chỉ khi có stream hợp lệ
-//   const renderRemoteVideo = () => {
-//     if (remoteStream) {
-//       return (
-//         <RTCView
-//           streamURL={remoteStream.toURL()}
-//           style={styles.remoteVideo}
-//           objectFit="cover"
-//           zOrder={0}
-//         />
-//       );
-//     } else {
-//       return (
-//         <View style={styles.blackRemoteVideo}>
-//           <Text style={styles.videoDisabledText}>Đối phương đã tắt camera</Text>
-//         </View>
-//       );
-//     }
-//   };
-
-//   const renderLocalVideo = () => {
-//     if (isCameraOn && localStream) {
-//       return (
-//         <RTCView
-//           streamURL={localStream.toURL()}
-//           style={styles.localVideo}
-//           objectFit="cover"
-//           mirror
-//           zOrder={1}
-//         />
-//       );
-//     } else {
-//       return (
-//         <View style={styles.blackLocalVideo}>
-//           <Text style={styles.localVideoDisabledText}>Đã tắt camera</Text>
-//         </View>
-//       );
-//     }
-//   };
-
-//   // if (!localStream) {
-//   //   return null; // Không render nếu không có local stream
-//   // }
-
-//   return (
-//     <View style={styles.container}>
-//       {/* Remote Video */}
-//       {renderRemoteVideo()}
-
-//       {/* Local Video */}
-//       <View style={styles.localVideoContainer}>{renderLocalVideo()}</View>
-
-//       {/* Controls */}
-//       <View style={styles.controlsContainer}>
-//         <TouchableOpacity onPress={toggleMic} style={styles.controlButton}>
-//           <Text style={styles.controlText}>
-//             {isMicOn ? "🔇 Tắt Mic" : "🎤 Bật Mic"}
-//           </Text>
-//         </TouchableOpacity>
-
-//         <TouchableOpacity onPress={toggleCamera} style={styles.controlButton}>
-//           <Text style={styles.controlText}>
-//             {isCameraOn ? "📷 Tắt Cam" : "📸 Bật Cam"}
-//           </Text>
-//         </TouchableOpacity>
-
-//         <TouchableOpacity onPress={onHangUp} style={styles.hangupButton}>
-//           <Text style={styles.hangupText}>❌ Kết thúc {roomId}</Text>
-//         </TouchableOpacity>
-//       </View>
-
-//       {/* Status */}
-//       <View style={styles.statusBar}>
-//         <Text style={styles.statusText}>
-//           📷 Cam đối phương: {isRemoteCameraOn ? "Bật" : "Tắt"}
-//         </Text>
-//         <Text style={styles.statusText}>
-//           🌐 Remote Stream: {remoteStream ? "Có" : "Không"}
-//         </Text>
-//         <Text style={styles.statusText}>
-//           📹 Video Tracks: {remoteStream?.getVideoTracks().length || 0}
-//         </Text>
-//       </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: "#000" },
-//   localVideoContainer: { flex: 1, justifyContent: "center" },
-//   remoteVideo: { width: "100%", height: "100%" },
-//   blackRemoteVideo: { flex: 1, justifyContent: "center", alignItems: "center" },
-//   blackLocalVideo: { flex: 1, justifyContent: "center", alignItems: "center" },
-//   localVideo: {
-//     width: 150,
-//     height: 200,
-//     position: "absolute",
-//     bottom: 20,
-//     right: 20,
-//   },
-//   controlsContainer: {
-//     position: "absolute",
-//     bottom: 60,
-//     left: 20,
-//     right: 20,
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//   },
-//   controlButton: { padding: 10, backgroundColor: "#FFF", borderRadius: 10 },
-//   controlText: { fontSize: 14 },
-//   hangupButton: { padding: 10, backgroundColor: "#FF0000", borderRadius: 10 },
-//   hangupText: { fontSize: 14, color: "#FFF" },
-//   statusBar: { position: "absolute", top: 20, left: 10, color: "#FFF" },
-//   statusText: { fontSize: 12, color: "#FFF" },
-//   videoDisabledText: { color: "#FFF", fontSize: 16 },
-//   localVideoDisabledText: { color: "#FFF", fontSize: 16 },
-// });
-
 import React, { useEffect, useRef, useState } from "react";
 import {
   View,
@@ -258,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Image,
 } from "react-native";
 import {
   RTCView,
@@ -270,10 +20,13 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSocket } from "@/context/CallContext";
-import { Participants } from "@/dtos/SocketDTO";
+import { OngoingCall, Participants, SocketUser } from "@/dtos/SocketDTO";
 import { useAuth } from "@/context/AuthContext";
+import { sendMessage } from "@/lib/service/message.service";
+import user from "pusher-js/types/src/core/user";
+import RemoteAvatar from "@/components/forms/chat/RemoteAvatar";
 
 const ICE_SERVERS = {
   iceServers: [
@@ -287,9 +40,8 @@ const ICE_SERVERS = {
 
 const VideoCallScreen = () => {
   const navigation = useNavigation();
-  const { receiverId } = useRoute().params as { receiverId: string };
-  const { socket, onlineUsers } = useSocket();
-  const { userId } = useLocalSearchParams();
+  const user = useRef<any>(null);
+  const { socket, onlineUsers, handleHangUp, ongoingCall } = useSocket();
   const { profile } = useAuth();
   const users = profile;
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -303,12 +55,17 @@ const VideoCallScreen = () => {
   const [isSpeakerOn, setIsSpeakerOn] = useState(true);
 
   const peerConnection = useRef<RTCPeerConnection | null>(null);
-  const user = useRef<any>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const ongoingCallRef = useRef<{ participants: Participants } | null>(null);
 
   const receiverUser = onlineUsers?.find((u) => u.userId !== users._id);
   const isUser = onlineUsers?.find((u) => u.userId === users._id);
+  const [callDuration, setCallDuration] = useState(0);
+  const { roomId, isVideoCall, receiverAva } = useLocalSearchParams();
+  const isNotCaller = users._id === ongoingCall?.participants.caller?.userId;
+  console.log(isVideoCall, "isVideoCall");
+
+  console.log(receiverAva, "receiverAva");
 
   // Tạo và khởi tạo kết nối peer
   const createPeer = (stream: MediaStream) => {
@@ -398,7 +155,7 @@ const VideoCallScreen = () => {
         //   navigation.goBack();
         //   return;
         // }
-        // user.current = JSON.parse(data);
+        user.current = users._id;
 
         // Lấy media stream từ camera và microphone
         console.log("Getting user media");
@@ -459,6 +216,59 @@ const VideoCallScreen = () => {
       socket?.off("videoStateChange");
     };
   }, []);
+
+  useEffect(() => {
+    let timer: number; // Explicitly typing timer as number for React Native
+    if (callStatus === "connected") {
+      // Start timer when the call is connected
+      timer = setInterval(() => {
+        setCallDuration((prev) => prev + 1); // Increment time every second
+      }, 1000);
+    }
+
+    return () => clearInterval(timer); // Clean up timer when component unmounts or call is disconnected
+  }, [callStatus]);
+
+  const handleSendTextMessage = async () => {
+    // Tạo đối tượng SegmentMessageDTO
+    const messageData = {
+      boxId: ongoingCall?.boxId,
+      content: `//Cuoc goi ket thuc; time: ${formatTime(callDuration)}`, // content is now a string
+    };
+
+    if (!messageData.boxId) {
+      console.error("Missing required fields in message data");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("boxId", messageData.boxId.toString());
+    formData.append("content", JSON.stringify(messageData.content)); // Directly append the string
+
+    // Gửi API
+    try {
+      const storedToken = await AsyncStorage.getItem("token");
+      if (!storedToken) return;
+
+      const response = await sendMessage(formData);
+    } catch (error) {
+      console.error("Error sending message: ", error);
+    }
+  };
+
+  const handleSend = async () => {
+    await handleSendTextMessage();
+  };
+
+  const handleEndCall = async () => {
+    setCallStatus("ended");
+    handleHangUp({
+      ongoingCall: ongoingCall ? ongoingCall : undefined,
+      isEmitHangUp: true,
+    });
+    handleSend();
+    // Xử lý sự kiện reject (tắt cuộc gọi)
+  };
 
   // Hàm thực hiện cuộc gọi
   const makeCall = async () => {
@@ -603,32 +413,6 @@ const VideoCallScreen = () => {
     setIsSpeakerOn(!isSpeakerOn);
   };
 
-  // Kết thúc cuộc gọi
-  const endCall = async () => {
-    try {
-      const participants: Participants = {
-        caller: isUser!,
-        receiver: receiverUser!,
-      };
-
-      socket?.emit("hangup", {
-        ongoingCall: {
-          participants: participants,
-          isRinging: false,
-          isVideoCall: true,
-        },
-        userHangingupId: user.current._id,
-      });
-
-      cleanup();
-      navigation.goBack();
-    } catch (err) {
-      console.error("End call error:", err);
-      cleanup();
-      navigation.goBack();
-    }
-  };
-
   const switchCamera = async () => {
     if (!localStream) return;
 
@@ -661,6 +445,39 @@ const VideoCallScreen = () => {
     }
   };
 
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(
+      remainingSeconds
+    ).padStart(2, "0")}`;
+  };
+
+  const endCall = async () => {
+    try {
+      const participants: Participants = {
+        caller: isUser!,
+        receiver: receiverUser!,
+      };
+
+      socket?.emit("hangup", {
+        ongoingCall: {
+          participants: participants,
+          isRinging: false,
+          isVideoCall: true,
+        },
+        userHangingupId: user.current._id,
+      });
+
+      cleanup();
+      navigation.goBack();
+    } catch (err) {
+      console.error("End call error:", err);
+      cleanup();
+      navigation.goBack();
+    }
+  };
+
   // Dọn dẹp tài nguyên
   const cleanup = () => {
     console.log("Cleaning up resources");
@@ -685,14 +502,12 @@ const VideoCallScreen = () => {
       timeoutRef.current = null;
     }
 
-    setCallStatus("ended");
-
     socket?.off("webrtcSignal", handleSignal);
     socket?.off("hangup");
     socket?.off("videoStateChange");
   };
 
-  return (
+  return isVideoCall === "true" ? (
     <SafeAreaView style={styles.container}>
       <StatusBar hidden />
 
@@ -745,7 +560,7 @@ const VideoCallScreen = () => {
           <Ionicons name={isMuted ? "mic-off" : "mic"} size={24} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={endCall}
+          onPress={() => handleEndCall()}
           style={[styles.controlButton, styles.endCall]}
         >
           <Ionicons name="call" size={26} color="#fff" />
@@ -760,6 +575,63 @@ const VideoCallScreen = () => {
       </View>
 
       {/* Additional buttons */}
+      <TouchableOpacity onPress={switchCamera} style={styles.speakerButton}>
+        <Ionicons name="camera-reverse" size={24} color="#fff" />
+      </TouchableOpacity>
+    </SafeAreaView>
+  ) : (
+    <SafeAreaView style={styles.container}>
+      <StatusBar hidden />
+
+      {/* Audio Call - No Video Stream */}
+      <View style={styles.audioCallBackground}>
+        {/* Displaying remote avatar if needed */}
+        {/* <View style={styles.remoteAvatar}>
+          <Image
+            source={{ uri: ongoingCall?.participants.caller?.profile.avatar }}
+            style={styles.avatarImage}
+          />
+        </View> */}
+
+        <RemoteAvatar
+          users={users}
+          ongoingCall={ongoingCall}
+          receiverAva={receiverAva}
+        />
+
+        {/* Display Call Duration */}
+        <Text style={styles.callDuration}>
+          {formatTime(callDuration)} {/* Display the formatted time */}
+        </Text>
+      </View>
+
+      {/* End Call button */}
+      <View style={styles.controls}>
+        <TouchableOpacity
+          onPress={() => handleEndCall()}
+          style={[styles.controlButton, styles.endCall]}
+        >
+          <Ionicons name="call" size={26} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Control buttons */}
+      <View style={styles.controls}>
+        <TouchableOpacity onPress={toggleMic} style={styles.controlButton}>
+          <Ionicons name={isMuted ? "mic-off" : "mic"} size={24} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleEndCall()}
+          style={[styles.controlButton, styles.endCall]}
+        >
+          <Ionicons name="call" size={26} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.controlButton}>
+          <Ionicons name={"videocam-off"} size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Speaker button */}
       <TouchableOpacity onPress={toggleSpeaker} style={styles.speakerButton}>
         <Ionicons
           name={isSpeakerOn ? "volume-high" : "volume-off"}
@@ -767,19 +639,6 @@ const VideoCallScreen = () => {
           color="#fff"
         />
       </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={switchCamera}
-        style={styles.switchCameraButton}
-      >
-        <Ionicons name="camera-reverse" size={24} color="#fff" />
-      </TouchableOpacity>
-
-      {callStatus === "connected" && (
-        <View style={styles.connectedIndicator}>
-          <Text style={styles.connectedText}>Đã kết nối</Text>
-        </View>
-      )}
     </SafeAreaView>
   );
 };
@@ -825,21 +684,30 @@ const styles = StyleSheet.create({
   },
   controls: {
     position: "absolute",
-    bottom: 0,
+    bottom: 40,
     left: 0,
     right: 0,
     paddingVertical: 20,
     backgroundColor: "rgba(0,0,0,0.5)",
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-around", // Sắp xếp các nút đều trên màn hình
+    alignItems: "center", // Canh giữa các nút dọc theo trục Y
   },
   controlButton: {
-    padding: 10,
+    padding: 15, // Tăng padding để nút dễ nhấn trên màn hình nhỏ hoặc lớn
+    minWidth: 50, // Đảm bảo nút không quá nhỏ
+    minHeight: 50, // Đảm bảo nút không quá nhỏ
+    justifyContent: "center", // Canh giữa các biểu tượng trong nút
+    alignItems: "center", // Canh giữa các biểu tượng trong nút
   },
   endCall: {
     backgroundColor: "#ff4d4d",
     borderRadius: 50,
-    padding: 12,
+    padding: 15,
+    minWidth: 50,
+    minHeight: 50,
+    justifyContent: "center", // Canh giữa biểu tượng trong nút
+    alignItems: "center",
   },
   speakerButton: {
     position: "absolute",
@@ -882,6 +750,36 @@ const styles = StyleSheet.create({
   connectedText: {
     color: "#fff",
     fontSize: 14,
+  },
+  audioCallBackground: {
+    flex: 1,
+    backgroundColor: "#1a1a1a",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  remoteAvatar: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  avatarImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  callDuration: {
+    color: "#fff",
+    fontSize: 16,
+    marginTop: 20,
+    fontWeight: "bold",
+  },
+
+  avatarContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
   },
 });
 

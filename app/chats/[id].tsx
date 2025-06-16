@@ -101,8 +101,7 @@ const Chat = () => {
   const [chatItem, setChatItem] = useState<ItemChat | null>(null); // State lưu trữ itemChat
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [permissionGreanted, setPermissionGranted] = useState(false);
-  const { handleCall, socket, localStream, remoteStream, onlineUsers } =
-    useSocket();
+  const { socket, localStream, remoteStream, onlineUsers } = useSocket();
 
   // Nếu chưa có onlineUsers thì chưa render gì cả
   if (!onlineUsers || !user) {
@@ -121,15 +120,29 @@ const Chat = () => {
 
   const roomId = isUser.socketId; // socketId của chính mình dùng để tạo room
   console.log(roomId, "isuser roomId11");
-  const onhandleCall = () => {
-    // Dẫn đến trang gọi âm thanh
 
+  const onAudioCall = () => {
+    // Dẫn đến trang gọi âm thanh
+    const participants: Participants = {
+      caller: isUser!,
+      receiver: receiverUser!,
+    };
+
+    const boxId = id;
+
+    const receiverAvatar = receiverUser.profile.avatar;
+
+    // Gửi thông báo cuộc gọi qua socket
+    console.log("Emitting call event");
+    socket?.emit("call", participants, false, boxId);
     router.push({
       pathname: "/(modals)/[roomId]",
-      params: { roomId },
+      params: {
+        roomId: roomId,
+        isVideoCall: "false",
+        receiverAva: receiverAvatar,
+      },
     });
-
-    handleCall(receiverUser, false); // false: audio
   };
 
   const onVideohandleCall = () => {
@@ -137,16 +150,15 @@ const Chat = () => {
       caller: isUser!,
       receiver: receiverUser!,
     };
-
+    const boxId = id;
     // Gửi thông báo cuộc gọi qua socket
     console.log("Emitting call event");
-    socket?.emit("call", participants, true);
+    socket?.emit("call", participants, true, boxId);
 
     router.push({
       pathname: "/(modals)/[roomId]",
-      params: { roomId },
+      params: { roomId: roomId, isVideoCall: "true" },
     });
-    // handleCall(receiverUser, true); // true: video
   };
 
   //   const ref = useClickOutside<View>(() => {
@@ -718,7 +730,7 @@ const Chat = () => {
           </View>
         </View>
         <View className="flex flex-row right-2 items-center mb-4">
-          <TouchableOpacity onPress={onhandleCall}>
+          <TouchableOpacity onPress={onAudioCall}>
             <CallIcon size={28} color={iconColor} />
           </TouchableOpacity>
           <TouchableOpacity className="ml-2" onPress={onVideohandleCall}>

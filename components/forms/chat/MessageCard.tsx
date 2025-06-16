@@ -35,14 +35,13 @@ import {
   ThreeDotsIcon,
 } from "@/components/icons/Icons";
 // import { Video, ResizeMode } from "expo-av";
-import { Video, ResizeMode } from "react-native-video";
 import VideoPlayer from "../media/VideoPlayer";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useEvent } from "expo";
 import AudioPlayer from "../media/AudioPlayer";
 import { openWebFile } from "@/lib/untils/File";
 import { colors } from "@/styles/colors";
-const screenWidth = Dimensions.get("window").width;
+import { EndCallCard } from "./EndCallCard";
 
 const MessageCard = ({
   message,
@@ -338,7 +337,16 @@ const MessageCard = ({
                   isCurrentUser ? "text-white" : "text-black"
                 }`}
               >
-                {message.text}
+                {message.text &&
+                message.text.startsWith("//Cuoc goi ket thuc; time:") ? (
+                  // Nếu tin nhắn là "Cuộc gọi kết thúc", hiển thị EndCallCard
+                  <EndCallCard
+                    duration={message.text.split("time:")[1].trim()}
+                  />
+                ) : (
+                  // Hiển thị nội dung tin nhắn bình thường nếu không phải "Cuộc gọi kết thúc"
+                  message.text
+                )}
               </Text>
               {/* Display files */}
               {hasFiles && (

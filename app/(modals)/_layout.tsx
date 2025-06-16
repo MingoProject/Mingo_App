@@ -11,6 +11,7 @@ export default function ModalLayout() {
     >
       <Stack.Screen name="incoming-call" options={{ headerShown: false }} />
       <Stack.Screen name="[roomId]" options={{ headerShown: false }} />
+      <Stack.Screen name="[audioRoomId]" options={{ headerShown: false }} />
     </Stack>
   );
 }

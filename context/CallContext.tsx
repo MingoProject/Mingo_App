@@ -30,8 +30,8 @@ interface CallContextProps {
   isRemoteVideoEnabled: boolean;
   socket: Socket;
   setOngoingCall: React.Dispatch<React.SetStateAction<OngoingCall | null>>;
-  handleCall: (user: SocketUser, isVideoCall: boolean) => void;
-  handleJoinCall: (call: OngoingCall) => void;
+  // handleCall: (user: SocketUser, isVideoCall: boolean) => void;
+  // handleJoinCall: (call: OngoingCall) => void;
   handleHangUp: (data: {
     ongoingCall?: OngoingCall;
     isEmitHangUp?: boolean;
@@ -81,201 +81,201 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
 
   console.log(remoteStream, "check remotestream");
 
-  const requestPermissions = async () => {
-    try {
-      const camera = await request(PERMISSIONS.ANDROID.CAMERA);
-      const mic = await request(PERMISSIONS.ANDROID.RECORD_AUDIO);
+  // const requestPermissions = async () => {
+  //   try {
+  //     const camera = await request(PERMISSIONS.ANDROID.CAMERA);
+  //     const mic = await request(PERMISSIONS.ANDROID.RECORD_AUDIO);
 
-      console.log("📸 CAMERA permission:", camera);
-      console.log("🎤 MIC permission:", mic);
+  //     console.log("📸 CAMERA permission:", camera);
+  //     console.log("🎤 MIC permission:", mic);
 
-      if (camera !== RESULTS.GRANTED || mic !== RESULTS.GRANTED) {
-        console.warn("⚠️ Không đủ quyền để truy cập camera/micro");
-        return false;
-      }
+  //     if (camera !== RESULTS.GRANTED || mic !== RESULTS.GRANTED) {
+  //       console.warn("⚠️ Không đủ quyền để truy cập camera/micro");
+  //       return false;
+  //     }
 
-      return true;
-    } catch (err) {
-      console.error("❌ Lỗi khi yêu cầu quyền:", err);
-      return false;
-    }
-  };
+  //     return true;
+  //   } catch (err) {
+  //     console.error("❌ Lỗi khi yêu cầu quyền:", err);
+  //     return false;
+  //   }
+  // };
 
-  const getStream = useCallback(async () => {
-    const granted = await requestPermissions();
+  // const getStream = useCallback(async () => {
+  //   const granted = await requestPermissions();
 
-    if (!granted) return null;
+  //   if (!granted) return null;
 
-    try {
-      const constraints = {
-        audio: true,
-        video: {
-          enabled: true,
-          width: { min: 640, ideal: 1280, max: 1920 },
-          height: { min: 480, ideal: 720, max: 1080 },
-          frameRate: { min: 15, ideal: 24, max: 30 },
-          facingMode: "user",
-        },
-      };
+  //   try {
+  //     const constraints = {
+  //       audio: true,
+  //       video: {
+  //         enabled: true,
+  //         width: { min: 640, ideal: 1280, max: 1920 },
+  //         height: { min: 480, ideal: 720, max: 1080 },
+  //         frameRate: { min: 15, ideal: 24, max: 30 },
+  //         facingMode: "user",
+  //       },
+  //     };
 
-      const stream = await mediaDevices.getUserMedia(constraints);
+  //     const stream = await mediaDevices.getUserMedia(constraints);
 
-      stream.getTracks().forEach((track) => {
-        track.enabled = true;
-        console.log(`${track.kind} track enabled:`, track.enabled);
-      });
+  //     stream.getTracks().forEach((track) => {
+  //       track.enabled = true;
+  //       console.log(`${track.kind} track enabled:`, track.enabled);
+  //     });
 
-      setLocalStream(stream);
-      localStreamRef.current = stream;
-      return stream;
-    } catch (err) {
-      console.error("❌ Lỗi khi lấy mediaDevices:", err);
-      setLocalStream(null);
-      localStreamRef.current = null;
-      return null;
-    }
-  }, []);
+  //     setLocalStream(stream);
+  //     localStreamRef.current = stream;
+  //     return stream;
+  //   } catch (err) {
+  //     console.error("❌ Lỗi khi lấy mediaDevices:", err);
+  //     setLocalStream(null);
+  //     localStreamRef.current = null;
+  //     return null;
+  //   }
+  // }, []);
 
-  const createPeerConnection = useCallback(
-    (stream: MediaStream, isCaller: boolean) => {
-      if (!stream) {
-        console.error("❌ Không có local stream khi tạo peer connection");
-        return;
-      }
-      const pc = new RTCPeerConnection(ICE_SERVERS) as any;
+  // const createPeerConnection = useCallback(
+  //   (stream: MediaStream, isCaller: boolean) => {
+  //     if (!stream) {
+  //       console.error("❌ Không có local stream khi tạo peer connection");
+  //       return;
+  //     }
+  //     const pc = new RTCPeerConnection(ICE_SERVERS) as any;
 
-      // Add local stream tracks
-      stream.getTracks().forEach((track) => {
-        track.enabled = true;
-        pc.addTrack(track, stream);
-        console.log(`➕ Added ${track.kind} track to peer connection`, {
-          enabled: track.enabled,
-          muted: track.muted,
-          readyState: track.readyState,
-        });
-      });
+  //     // Add local stream tracks
+  //     stream.getTracks().forEach((track) => {
+  //       track.enabled = true;
+  //       pc.addTrack(track, stream);
+  //       console.log(`➕ Added ${track.kind} track to peer connection`, {
+  //         enabled: track.enabled,
+  //         muted: track.muted,
+  //         readyState: track.readyState,
+  //       });
+  //     });
 
-      //Cach cua mta
-      let remoteStreamInstance: MediaStream | null = null;
-      pc.ontrack = (event: any) => {
-        console.log("Received remote track:", event.track.kind);
-        const track = event.track;
+  //     //Cach cua mta
+  //     let remoteStreamInstance: MediaStream | null = null;
+  //     pc.ontrack = (event: any) => {
+  //       console.log("Received remote track:", event.track.kind);
+  //       const track = event.track;
 
-        if (!remoteStreamInstance) {
-          remoteStreamInstance = new MediaStream();
-        }
+  //       if (!remoteStreamInstance) {
+  //         remoteStreamInstance = new MediaStream();
+  //       }
 
-        // Kiểm tra và thêm track vào remote stream
-        remoteStreamInstance.addTrack(track);
+  //       // Kiểm tra và thêm track vào remote stream
+  //       remoteStreamInstance.addTrack(track);
 
-        // Log chi tiết về track
-        console.log(`📡 ${track.kind} track received:`, {
-          id: track.id,
-          enabled: track.enabled,
-          muted: track.muted,
-          readyState: track.readyState,
-        });
+  //       // Log chi tiết về track
+  //       console.log(`📡 ${track.kind} track received:`, {
+  //         id: track.id,
+  //         enabled: track.enabled,
+  //         muted: track.muted,
+  //         readyState: track.readyState,
+  //       });
 
-        // Kiểm tra nếu là video track
-        if (track.kind === "video" && !track.enabled) {
-          console.warn("⚠️ Remote video track bị disabled, đang enable...");
-          track.enabled = true; // Thêm dòng này
-          setIsRemoteVideoEnabled(true);
-          // Note: Không thể force enable remote track, nhưng có thể log để debug
-        }
+  //       // Kiểm tra nếu là video track
+  //       if (track.kind === "video" && !track.enabled) {
+  //         console.warn("⚠️ Remote video track bị disabled, đang enable...");
+  //         track.enabled = true; // Thêm dòng này
+  //         setIsRemoteVideoEnabled(true);
+  //         // Note: Không thể force enable remote track, nhưng có thể log để debug
+  //       }
 
-        console.log("remote setRemoteStream", remoteStreamInstance);
-        setRemoteStream(remoteStreamInstance);
-      };
+  //       console.log("remote setRemoteStream", remoteStreamInstance);
+  //       setRemoteStream(remoteStreamInstance);
+  //     };
 
-      // Handle ICE candidates
-      pc.onicecandidate = (event: any) => {
-        if (event.candidate && ongoingCall) {
-          console.log("🧊 Gửi ICE candidate", event.candidate.toJSON());
-          socket?.emit("webrtcSignal", {
-            candidate: {
-              // ✅ Truyền cả object candidate
-              candidate: event.candidate.candidate,
-              sdpMLineIndex: event.candidate.sdpMLineIndex,
-              sdpMid: event.candidate.sdpMid,
-            },
-            ongoingCall,
-            isCaller: true,
-          });
-        }
-      };
+  //     // Handle ICE candidates
+  //     pc.onicecandidate = (event: any) => {
+  //       if (event.candidate && ongoingCall) {
+  //         console.log("🧊 Gửi ICE candidate", event.candidate.toJSON());
+  //         socket?.emit("webrtcSignal", {
+  //           candidate: {
+  //             // ✅ Truyền cả object candidate
+  //             candidate: event.candidate.candidate,
+  //             sdpMLineIndex: event.candidate.sdpMLineIndex,
+  //             sdpMid: event.candidate.sdpMid,
+  //           },
+  //           ongoingCall,
+  //           isCaller: true,
+  //         });
+  //       }
+  //     };
 
-      // Connection state monitoring
-      pc.oniceconnectionstatechange = () => {
-        console.log(`🔄 ICE Connection State: ${pc.iceConnectionState}`);
+  //     // Connection state monitoring
+  //     pc.oniceconnectionstatechange = () => {
+  //       console.log(`🔄 ICE Connection State: ${pc.iceConnectionState}`);
 
-        // Sử dụng switch case để kiểm tra trạng thái ICE connection state
-        switch (pc.iceConnectionState) {
-          case "connected":
-            console.log("✅ Kết nối ICE thành công");
-            const receivers = pc.getReceivers();
-            console.log(
-              "Active receivers:",
-              receivers.map((r: any) => ({
-                track: r.track
-                  ? {
-                      kind: r.track.kind,
-                      enabled: r.track.enabled,
-                      muted: r.track.muted,
-                      readyState: r.track.readyState,
-                    }
-                  : null,
-              }))
-            );
+  //       // Sử dụng switch case để kiểm tra trạng thái ICE connection state
+  //       switch (pc.iceConnectionState) {
+  //         case "connected":
+  //           console.log("✅ Kết nối ICE thành công");
+  //           const receivers = pc.getReceivers();
+  //           console.log(
+  //             "Active receivers:",
+  //             receivers.map((r: any) => ({
+  //               track: r.track
+  //                 ? {
+  //                     kind: r.track.kind,
+  //                     enabled: r.track.enabled,
+  //                     muted: r.track.muted,
+  //                     readyState: r.track.readyState,
+  //                   }
+  //                 : null,
+  //             }))
+  //           );
 
-            // Kiểm tra remote stream tracks
-            if (remoteStreamInstance) {
-              console.log(
-                "Remote stream tracks:",
-                remoteStreamInstance.getTracks().map((track) => ({
-                  kind: track.kind,
-                  enabled: track.enabled,
-                  muted: track.muted,
-                  readyState: track.readyState,
-                }))
-              );
-            }
-            break;
+  //           // Kiểm tra remote stream tracks
+  //           if (remoteStreamInstance) {
+  //             console.log(
+  //               "Remote stream tracks:",
+  //               remoteStreamInstance.getTracks().map((track) => ({
+  //                 kind: track.kind,
+  //                 enabled: track.enabled,
+  //                 muted: track.muted,
+  //                 readyState: track.readyState,
+  //               }))
+  //             );
+  //           }
+  //           break;
 
-          case "disconnected":
-          case "failed":
-            console.warn("⚠️ ICE connection failed");
-            handleHangUp({});
-            break;
+  //         case "disconnected":
+  //         case "failed":
+  //           console.warn("⚠️ ICE connection failed");
+  //           handleHangUp({});
+  //           break;
 
-          case "checking":
-            console.log("🔄 Đang kiểm tra kết nối ICE...");
-            break;
+  //         case "checking":
+  //           console.log("🔄 Đang kiểm tra kết nối ICE...");
+  //           break;
 
-          case "new":
-            console.log("🔄 ICE connection mới bắt đầu");
-            break;
+  //         case "new":
+  //           console.log("🔄 ICE connection mới bắt đầu");
+  //           break;
 
-          case "closed":
-            console.log("🔄 ICE connection đã đóng");
-            break;
+  //         case "closed":
+  //           console.log("🔄 ICE connection đã đóng");
+  //           break;
 
-          default:
-            console.log(
-              "🔄 Trạng thái ICE không xác định:",
-              pc.iceConnectionState
-            );
-            break;
-        }
-      };
+  //         default:
+  //           console.log(
+  //             "🔄 Trạng thái ICE không xác định:",
+  //             pc.iceConnectionState
+  //           );
+  //           break;
+  //       }
+  //     };
 
-      // Save to refs and state
-      peerConnection.current = pc;
+  //     // Save to refs and state
+  //     peerConnection.current = pc;
 
-      return pc;
-    },
-    [socket, ongoingCall, remoteStream]
-  );
+  //     return pc;
+  //   },
+  //   [socket, ongoingCall, remoteStream]
+  // );
 
   // const handleWebrtcSignal = useCallback(
   //   async (data: {
@@ -548,112 +548,113 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
   //   ]
   // );
 
-  const handleCall = useCallback(
-    async (receiver: SocketUser, isVideoCall: boolean) => {
-      try {
-        console.log("📞 Bắt đầu cuộc gọi");
-        setIsCallEnded(false);
+  // const handleCall = useCallback(
+  //   async (receiver: SocketUser, isVideoCall: boolean) => {
+  //     try {
+  //       console.log("📞 Bắt đầu cuộc gọi");
+  //       setIsCallEnded(false);
 
-        const stream = await getStream();
-        if (!stream || !currentUser || !socket) {
-          console.error("❌ Missing requirements");
-          return;
-        }
+  //       const stream = await getStream();
+  //       if (!stream || !currentUser || !socket) {
+  //         console.error("❌ Missing requirements");
+  //         return;
+  //       }
 
-        // 1. Gửi event "call" để thông báo cho receiver
-        const participants = { caller: currentUser, receiver };
-        socket.emit("call", participants, isVideoCall);
+  //       // 1. Gửi event "call" để thông báo cho receiver
+  //       const participants = { caller: currentUser, receiver };
+  //       socket.emit("call", participants, isVideoCall);
 
-        // 2. Tạo peer connection
-        const pc = createPeerConnection(stream, true); // isCaller = true
-        if (!pc) {
-          console.error("❌ PeerConnection creation failed");
-          return;
-        }
+  //       // 2. Tạo peer connection
+  //       const pc = createPeerConnection(stream, true); // isCaller = true
+  //       if (!pc) {
+  //         console.error("❌ PeerConnection creation failed");
+  //         return;
+  //       }
 
-        // 3. Tạo offer
-        let offer;
-        try {
-          offer = await pc.createOffer({
-            offerToReceiveAudio: true,
-            offerToReceiveVideo: isVideoCall,
-            iceRestart: false,
-          });
-          await pc.setLocalDescription(offer);
-        } catch (err) {
-          console.error("❌ Offer creation error:", err);
-          handleHangUp({});
-          return;
-        }
+  //       // 3. Tạo offer
+  //       let offer;
+  //       try {
+  //         offer = await pc.createOffer({
+  //           offerToReceiveAudio: true,
+  //           offerToReceiveVideo: isVideoCall,
+  //           iceRestart: false,
+  //         });
+  //         await pc.setLocalDescription(offer);
+  //       } catch (err) {
+  //         console.error("❌ Offer creation error:", err);
+  //         handleHangUp({});
+  //         return;
+  //       }
 
-        // // 4. Đợi ICE gathering hoàn tất (quan trọng!)
-        // await new Promise<void>((resolve) => {
-        //   if (pc.iceGatheringState === "complete") {
-        //     resolve();
-        //   } else {
-        //     pc.onicegatheringstatechange = () => {
-        //       if (pc.iceGatheringState === "complete") {
-        //         resolve();
-        //       }
-        //     };
-        //   }
-        // });
+  //       // // 4. Đợi ICE gathering hoàn tất (quan trọng!)
+  //       // await new Promise<void>((resolve) => {
+  //       //   if (pc.iceGatheringState === "complete") {
+  //       //     resolve();
+  //       //   } else {
+  //       //     pc.onicegatheringstatechange = () => {
+  //       //       if (pc.iceGatheringState === "complete") {
+  //       //         resolve();
+  //       //       }
+  //       //     };
+  //       //   }
+  //       // });
 
-        // 5. Gửi offer đi
-        socket.emit("webrtcSignal", {
-          sdp: pc.localDescription, // Gửi localDescription mới nhất
-          ongoingCall: { participants, isVideoCall },
-          isCaller: true,
-        });
+  //       // 5. Gửi offer đi
+  //       socket.emit("webrtcSignal", {
+  //         sdp: pc.localDescription, // Gửi localDescription mới nhất
+  //         ongoingCall: { participants, isVideoCall },
+  //         isCaller: true,
+  //       });
 
-        console.log("📤 Offer sent successfully");
-      } catch (err) {
-        console.error("❌ Call setup failed:", err);
-        handleHangUp({});
-      }
-    },
-    [socket, currentUser, getStream]
-  );
+  //       console.log("📤 Offer sent successfully");
+  //     } catch (err) {
+  //       console.error("❌ Call setup failed:", err);
+  //       handleHangUp({});
+  //     }
+  //   },
+  //   [socket, currentUser, getStream]
+  // );
 
   const onIncomingCall = useCallback(
-    (participants: Participants, isVideoCall: boolean) => {
+    (participants: Participants, isVideoCall: boolean, boxId: string) => {
       // console.log("📞 Cuộc gọi đến:", participants);
       setOngoingCall({
         participants,
         isRinging: true,
         isVideoCall: isVideoCall,
+        boxId: boxId,
       });
       router.push(`/(modals)/incoming-call`);
     },
     [router]
   );
 
-  const handleJoinCall = useCallback(
-    async (call: OngoingCall) => {
-      console.log("🚀 Tham gia cuộc gọi");
-      if (ongoingCall && !ongoingCall.isRinging) {
-        console.log("⚠️ Already in call, skipping join");
-        return;
-      }
+  // const handleJoinCall = useCallback(
+  //   async (call: OngoingCall) => {
+  //     console.log("🚀 Tham gia cuộc gọi");
+  //     if (ongoingCall && !ongoingCall.isRinging) {
+  //       console.log("⚠️ Already in call, skipping join");
+  //       return;
+  //     }
 
-      if (!call) {
-        console.error("⚠️ OngoingCall is undefined!");
-        return;
-      }
-      setIsCallEnded(false);
+  //     if (!call) {
+  //       console.error("⚠️ OngoingCall is undefined!");
+  //       return;
+  //     }
+  //     setIsCallEnded(false);
 
-      setOngoingCall({ ...call, isRinging: false });
+  //     setOngoingCall({ ...call, isRinging: false });
 
-      const stream = await getStream();
-      if (!stream) {
-        console.log("❌ Không lấy được stream trong handleJoinCall");
-        return;
-      }
-      console.log("✅ Sẵn sàng nhận WebRTC signals");
-      // router.push("");
-    },
-    [socket, currentUser, getStream]
-  );
+  //     const stream = await getStream();
+  //     if (!stream) {
+  //       console.log("❌ Không lấy được stream trong handleJoinCall");
+  //       return;
+  //     }
+  //     console.log("✅ Sẵn sàng nhận WebRTC signals");
+  //     // router.push("");
+  //   },
+  //   [socket, currentUser, getStream]
+  // );
 
   const handleHangUp = useCallback(
     (data: { ongoingCall?: OngoingCall | null; isEmitHangUp?: boolean }) => {
@@ -688,72 +689,13 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
 
       setOngoingCall(null);
       setIsCallEnded(true);
-      router.back();
+      // router.back();
     },
     [socket, user, remoteStream, router]
   );
 
-  // const debugStreams = useCallback(() => {
-  //   console.log("=== DEBUG STREAMS ===");
-
-  //   // Debug local stream
-  //   if (localStreamRef.current) {
-  //     console.log("Local Stream:", {
-  //       id: localStreamRef.current.id,
-  //       active: localStreamRef.current.active,
-  //       tracks: localStreamRef.current.getTracks().map((track) => ({
-  //         kind: track.kind,
-  //         enabled: track.enabled,
-  //         muted: track.muted,
-  //         readyState: track.readyState,
-  //         id: track.id,
-  //       })),
-  //     });
-  //   } else {
-  //     console.log("Local Stream: null");
-  //   }
-
-  //   // Debug remote stream
-  //   if (remoteStream) {
-  //     console.log("Remote Stream:", {
-  //       id: remoteStream.id,
-  //       active: remoteStream.active,
-  //       tracks: remoteStream.getTracks().map((track) => ({
-  //         kind: track.kind,
-  //         enabled: track.enabled,
-  //         muted: track.muted,
-  //         readyState: track.readyState,
-  //         id: track.id,
-  //       })),
-  //     });
-  //   } else {
-  //     console.log("Remote Stream: null");
-  //   }
-
-  //   // Debug peer connection
-  //   if (peerConnection.current) {
-  //     console.log(
-  //       "Peer Connection State:",
-  //       peerConnection.current.connectionState
-  //     );
-  //     console.log("Signaling State:", peerConnection.current.signalingState);
-  //     console.log(
-  //       "ICE Connection State:",
-  //       peerConnection.current.iceConnectionState
-  //     );
-  //   }
-  // }, [remoteStream]);
-
-  // useEffect(() => {
-  //   if (ongoingCall && !ongoingCall.isRinging) {
-  //     setTimeout(() => {
-  //       debugStreams();
-  //     }, 2000); // Debug sau 2 giây
-  //   }
-  // }, [ongoingCall, debugStreams]);
-
   useEffect(() => {
-    const newSocket = io("http://192.168.1.219:3000");
+    const newSocket = io("http://192.168.1.220:3000");
     setSocket(newSocket);
 
     return () => {
@@ -814,14 +756,14 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
 
     socket.on("incomingCall", onIncomingCall);
     // socket.on("webrtcSignal", handleWebrtcSignal);
-    // socket.on("hangup", handleHangUp);
+    socket.on("hangup", handleHangUp);
 
     return () => {
       socket.off("incomingCall", onIncomingCall);
       // socket.off("webrtcSignal", handleWebrtcSignal);
-      // socket.off("hangup", handleHangUp);
+      socket.off("hangup", handleHangUp);
     };
-  }, [socket, isSocketConnected, user, onIncomingCall]);
+  }, [socket, isSocketConnected, user, onIncomingCall, handleHangUp]);
 
   // Reset call ended state
   useEffect(() => {
@@ -846,8 +788,8 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
         isRemoteVideoEnabled,
         socket: socket!,
         setOngoingCall,
-        handleCall,
-        handleJoinCall,
+        // handleCall,
+        // handleJoinCall,
         handleHangUp,
         setIsRemoteVideoEnabled,
       }}

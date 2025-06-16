@@ -1,16 +1,23 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ImageBackground,
+} from "react-native";
 import { useSocket } from "@/context/CallContext";
 import { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useRingtone } from "@/hooks/useRingtone";
 import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from "expo-av";
 import { OngoingCall } from "@/dtos/SocketDTO";
+
 export default function IncomingCallScreen() {
   const { ongoingCall, setOngoingCall, handleHangUp } = useSocket();
   const router = useRouter();
   const { playRingtone, stopRingtone } = useRingtone();
-
-  console.log(ongoingCall, "ongoingCall");
+  const { userId } = useLocalSearchParams();
 
   useEffect(() => {
     const setupAudio = async () => {
@@ -52,15 +59,16 @@ export default function IncomingCallScreen() {
     if (!ongoingCall) return;
     stopRingtone();
     const roomId = ongoingCall.participants.caller.socketId;
+    console.log(ongoingCall, "ongoingCalllll");
 
     setOngoingCall({ ...ongoingCall, isRinging: false });
-
     router.push({
       pathname: "/(modals)/[roomId]",
-      params: { roomId },
+      params: {
+        roomId,
+        isVideoCall: ongoingCall.isVideoCall ? "true" : "false",
+      }, // Sử dụng cùng roomId
     });
-
-    // handleJoinCall(ongoingCall);
   };
   const reject = (ongoingCall: OngoingCall) => {
     if (!ongoingCall) return;
@@ -74,67 +82,94 @@ export default function IncomingCallScreen() {
   const caller = ongoingCall?.participants?.caller;
 
   if (!ongoingCall?.isRinging) return null;
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>📲 Cuộc gọi đến</Text>
-      <Text style={styles.caller}>👤 Từ: {caller?.userId}</Text>
+    <ImageBackground
+      source={{ uri: caller?.profile.avatar }} // Sử dụng avatar làm nền
+      style={styles.container}
+    >
+      {/* Nội dung cuộc gọi */}
+      <View style={styles.topContainer}>
+        <Text style={styles.title}>Cuộc gọi đến</Text>
+        <Text style={styles.caller}>
+          {`${caller?.profile.firstName} ${caller?.profile.lastName}`}
+        </Text>
+      </View>
 
+      {/* Nút chấp nhận và từ chối ở dưới, mỗi bên một nút */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.acceptButton}
+          style={[styles.button, styles.acceptButton]}
           onPress={() => accept(ongoingCall)}
         >
-          <Text style={styles.buttonText}>✅ Chấp nhận</Text>
+          <Text style={styles.buttonText}>Chấp nhận</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.rejectButton}
+          style={[styles.button, styles.rejectButton]}
           onPress={() => reject(ongoingCall)}
         >
-          <Text style={styles.buttonText}>❌ Từ chối</Text>
+          <Text style={styles.buttonText}>Từ chối</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
-    justifyContent: "center",
+    justifyContent: "space-between", // Đảm bảo nội dung được phân bổ hợp lý
     alignItems: "center",
     padding: 20,
+    backgroundColor: "#000", // fallback color in case the background image fails
+  },
+  topContainer: {
+    alignItems: "center",
+    marginTop: 50, // Đưa tiêu đề và tên người gọi lên phía trên
   },
   title: {
     color: "#fff",
-    fontSize: 24,
+    fontSize: 28, // Tăng kích thước font cho tiêu đề
     marginBottom: 16,
+    fontWeight: "bold", // Tăng độ đậm
   },
   caller: {
-    color: "#ccc",
-    fontSize: 18,
+    color: "#fff", // Sử dụng màu sáng hơn để nổi bật
+    fontSize: 22, // Tăng kích thước font cho tên người gọi
     marginBottom: 40,
+    fontWeight: "400", // Làm chữ đậm
+    textShadowColor: "#000", // Thêm bóng cho chữ
   },
   buttonContainer: {
-    flexDirection: "row",
-    gap: 20,
+    flexDirection: "row", // Sắp xếp các nút theo hàng ngang
+    justifyContent: "space-between", // Mỗi nút sẽ chiếm một bên
+    width: "100%", // Đảm bảo chiều rộng đầy đủ
+    paddingHorizontal: 30, // Giãn cách cho các nút
+  },
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginBottom: 30,
+    flex: 1, // Đảm bảo nút chiếm đều không gian
   },
   acceptButton: {
     backgroundColor: "green",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
+    marginRight: 10,
   },
   rejectButton: {
     backgroundColor: "red",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
+    marginLeft: 10,
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+    textAlign: "center", // Đảm bảo text nằm giữa nút
   },
 });
