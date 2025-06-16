@@ -33,6 +33,13 @@ config.resolver = {
   ...resolver,
   assetExts: resolver.assetExts.filter((ext) => ext !== "svg"),
   sourceExts: [...resolver.sourceExts, "svg"],
+  extraNodeModules: {
+    stream: require.resolve("stream-browserify"),
+    events: require.resolve("events/"),
+    util: require.resolve("util/"),
+    buffer: require.resolve("buffer/"),
+    process: require.resolve("process/browser"),
+  },
 };
 
 module.exports = config;

@@ -1,4 +1,3 @@
-import { Schema } from "mongoose";
 export interface UserRegisterDTO {
   firstName: string;
   lastName: string;
