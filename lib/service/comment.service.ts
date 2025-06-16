@@ -87,7 +87,7 @@ export async function createReplyCommentPost(
 export async function createReplyCommentMedia(
   params: CreateCommentDTO,
   token: string,
-  mediaId: string
+  mediaId: string | undefined
 ): Promise<CommentResponseDTO> {
   try {
     const response = await fetch(

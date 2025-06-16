@@ -1,8 +1,12 @@
 import React from "react";
-import { View, Text, TextInput, Image } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
-import { PictureIcon, VideoIcon, EmotionIcon } from "@/components/icons/Icons";
-import Input from "@/components/share/ui/input";
+import {
+  PictureIcon,
+  VideoIcon,
+  EmotionIcon,
+} from "@/components/shared/icons/Icons";
+import Input from "@/components/shared/ui/input";
 import { colors } from "@/styles/colors";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 
@@ -20,7 +24,8 @@ const OpenAddPost: React.FC<OpenAddPostProps> = ({
     colorScheme === "dark" ? colors.dark[100] : colors.light[100];
   return (
     <>
-      <View
+      <TouchableOpacity
+        onPress={handleAddPost}
         style={{
           backgroundColor:
             colorScheme === "dark" ? colors.dark[200] : colors.light[200],
@@ -28,7 +33,7 @@ const OpenAddPost: React.FC<OpenAddPostProps> = ({
         className={`h-auto w-full rounded-lg px-3 py-5 mb-2 `}
       >
         <View className="flex flex-row items-center">
-          <View className="w-64">
+          <View className="w-full">
             <Input
               avatarSrc={profileBasic.avatar}
               placeholder="Share something..."
@@ -39,7 +44,15 @@ const OpenAddPost: React.FC<OpenAddPostProps> = ({
         </View>
 
         <View className="mt-3 flex flex-row justify-between">
-          <Text className="font-mregular text-4">Add to your post</Text>
+          <Text
+            className="font-mregular text-4"
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
+            }}
+          >
+            Add to your post
+          </Text>
           <View className="flex flex-row items-center space-x-2">
             <View>
               <PictureIcon size={20} color={iconColor} />
@@ -49,7 +62,7 @@ const OpenAddPost: React.FC<OpenAddPostProps> = ({
             </View>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </>
   );
 };

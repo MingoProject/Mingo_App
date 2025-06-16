@@ -6,26 +6,21 @@ import {
   Image,
   Modal,
   TouchableOpacity,
-  ActivityIndicator,
 } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
-import DetailsPost from "@/components/forms/post/DetailsPost";
-import PostAction from "@/components/forms/post/PostAction";
 import { Video, ResizeMode } from "expo-av";
-import { LocationIcon, ThreeDot } from "@/components/icons/Icons";
+import { LocationIcon, ThreeDot } from "@/components/shared/icons/Icons";
 import { useAuth } from "@/context/AuthContext";
-import PostMenu from "@/components/forms/post/PostMenu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
-import PostHeader from "@/components/share/post/PostHeader";
-import TagModal from "@/components/modal/post/TagsModal";
+import PostHeader from "@/components/shared/post/PostHeader";
 import PostDetailCard from "./PostDetailCard";
 import { getCommentByCommentId } from "@/lib/service/comment.service";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
-import Input from "@/components/share/ui/input";
-import Button from "@/components/share/ui/button";
+import PostActionCard from "./PostActionCard";
+import PostMenu from "@/components/shared/post/PostMenu";
 
 interface PostCardProps {
   post: PostResponseDTO;
@@ -224,7 +219,7 @@ const PostCard = ({ post, setPostsData }: PostCardProps) => {
           )}
         />
       )}
-      <PostAction
+      <PostActionCard
         post={post}
         openModal={openModal}
         numberOfLikes={numberOfLikes}

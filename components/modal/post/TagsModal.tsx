@@ -10,7 +10,7 @@ import {
 import { useTheme } from "@/context/ThemeContext";
 import { colors } from "@/styles/colors";
 import { useRouter } from "expo-router";
-import { CancelIcon } from "@/components/icons/Icons";
+import { CancelIcon } from "@/components/shared/icons/Icons";
 import { useAuth } from "@/context/AuthContext";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 
@@ -24,7 +24,8 @@ const TagModal: React.FC<TagModalProps> = ({ tags, isOpen, onClose }) => {
   if (!isOpen) return null;
   const router = useRouter();
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const iconColor =
+    colorScheme === "dark" ? colors.dark[100] : colors.light[100];
   const { profile } = useAuth();
 
   const navigateToUserProfile = (item: any) => {

@@ -17,9 +17,8 @@ import {
 } from "@/lib/service/notification.service";
 import { useRouter } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
-import MyButton from "@/components/share/MyButton";
 import { colors } from "@/styles/colors";
-import Button from "@/components/share/ui/button";
+import Button from "@/components/shared/ui/button";
 
 const FriendCard = ({ item, actionButton, setData }: any) => {
   const router = useRouter();
@@ -39,7 +38,6 @@ const FriendCard = ({ item, actionButton, setData }: any) => {
               color={
                 colorScheme === "dark" ? colors.dark[400] : colors.light[400]
               }
-              border="border border-border-100"
               onPress={() => handleAction("unfriend")}
             />
           </>
@@ -49,12 +47,11 @@ const FriendCard = ({ item, actionButton, setData }: any) => {
           <>
             <Button size="small" title="Chat" fontColor={colors.light[200]} />
             <Button
-              title="Unbestfriend"
+              title="Unbff"
               size="small"
               color={
                 colorScheme === "dark" ? colors.dark[400] : colors.light[400]
               }
-              border="border border-border-100"
               onPress={() => handleAction("unbestfriend")}
             />
           </>
@@ -69,7 +66,6 @@ const FriendCard = ({ item, actionButton, setData }: any) => {
               color={
                 colorScheme === "dark" ? colors.dark[400] : colors.light[400]
               }
-              border="border border-border-100"
               onPress={() => handleAction("unfollow")}
             />
           </>
@@ -89,7 +85,6 @@ const FriendCard = ({ item, actionButton, setData }: any) => {
               color={
                 colorScheme === "dark" ? colors.dark[400] : colors.light[400]
               }
-              border="border border-border-100"
               onPress={() => handleAction("refuse")}
             />
           </>
@@ -100,7 +95,6 @@ const FriendCard = ({ item, actionButton, setData }: any) => {
             fontColor={colors.light[200]}
             title="Unblock"
             size="large"
-            border="border border-border-100"
             onPress={() => handleAction("unblock")}
           />
         );
@@ -110,7 +104,6 @@ const FriendCard = ({ item, actionButton, setData }: any) => {
             fontColor={colors.light[200]}
             title="Add friend"
             size="large"
-            border="border border-border-100"
             onPress={() => handleAction("add friend")}
           />
         );
@@ -303,7 +296,15 @@ const FriendCard = ({ item, actionButton, setData }: any) => {
                       />
                     ))}
                 </View>
-                <Text className="text-[14px] font-normal text-dark100_light100">
+                <Text
+                  className="text-[14px] font-normal"
+                  style={{
+                    color:
+                      colorScheme === "dark"
+                        ? colors.dark[100]
+                        : colors.light[100],
+                  }}
+                >
                   {item.mutualFriends.length} mutual friends
                 </Text>
               </View>
@@ -311,7 +312,7 @@ const FriendCard = ({ item, actionButton, setData }: any) => {
           </View>
         </View>
 
-        <View className={`flex flex-row w-full justify-between pb-4 pr-8`}>
+        <View className={`flex flex-row w-full justify-between pb-4 pr-2`}>
           {renderActionButtons()}
         </View>
       </View>

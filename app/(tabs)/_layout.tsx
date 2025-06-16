@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, AppState } from "react-native";
+import { View, Text, AppState, Dimensions } from "react-native";
 import { Tabs } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import { ThemeProvider, useTheme } from "../../context/ThemeContext";
@@ -10,42 +10,24 @@ import { IsOffline, IsOnline } from "../../lib/service/message.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // import { useTheme } from "../../context/ThemeContext";
-
-const TabIcon = ({ SvgIcon, color, name, focused }: any) => {
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const TabIcon = ({ SvgIcon, color, focused }: any) => {
   return (
     <View
-      className="justify-center items-center"
       style={{
         alignItems: "center",
         justifyContent: "center",
-        width: 80,
+        width: 50,
         height: 39,
       }}
     >
       <SvgIcon color={color} focused={focused} />
-      <Text
-        style={{
-          fontWeight: "600",
-          fontSize: 12, // Đảm bảo kích thước chữ phù hợp
-          marginTop: 2, // Khoảng cách giữa icon và text
-          color: color,
-        }}
-        className="font-mregular"
-      >
-        {name}
-      </Text>
     </View>
   );
 };
 
 const HomeIcon = ({ color = "currentColor", width = 24, height = 24 }) => (
-  <Svg
-    // xmlns="http://www.w3.org/2000/svg"
-    width={width}
-    height={height}
-    viewBox="0 0 24 24"
-    fill="none"
-  >
+  <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
     <Path
       fill={color}
       fillRule="evenodd"
@@ -168,11 +150,16 @@ const TabsLayout = () => {
         tabBarInactiveTintColor: colorScheme === "dark" ? "#CFBFAD" : "#1E2021",
         tabBarStyle: {
           backgroundColor: colorScheme === "dark" ? "#252525" : "#FFFFFF",
-          borderTopWidth: 5,
-          borderTopColor: "transparent",
-        },
-        tabBarItemStyle: {
-          flex: 1,
+          height: 60,
+          // marginBottom: 20,
+          paddingBottom: 20,
+          marginHorizontal: (SCREEN_WIDTH - 430) / 2, // căn giữa
+          width: 430,
+          borderRadius: 25,
+          position: "absolute",
+          shadowOpacity: 0.1,
+          shadowRadius: 6,
+          elevation: 8,
         },
       }}
     >
@@ -180,14 +167,8 @@ const TabsLayout = () => {
         name="home"
         options={{
           title: "Home",
-          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              SvgIcon={HomeIcon}
-              color={color}
-              focused={focused}
-              //name="Home"
-            />
+            <TabIcon SvgIcon={HomeIcon} color={color} focused={focused} />
           ),
         }}
       />
@@ -195,14 +176,8 @@ const TabsLayout = () => {
         name="friend"
         options={{
           title: "Friend",
-          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              SvgIcon={PersonIcon}
-              color={color}
-              focused={focused}
-              //name="Friends"
-            />
+            <TabIcon SvgIcon={PersonIcon} color={color} focused={focused} />
           ),
         }}
       />
@@ -210,14 +185,8 @@ const TabsLayout = () => {
         name="notification"
         options={{
           title: "Notifications",
-          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              SvgIcon={BellIcon}
-              color={color}
-              focused={focused}
-              //name="Notifications"
-            />
+            <TabIcon SvgIcon={BellIcon} color={color} focused={focused} />
           ),
         }}
       />
@@ -225,14 +194,8 @@ const TabsLayout = () => {
         name="profile"
         options={{
           title: "Profile",
-          headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon
-              SvgIcon={ProfileIcon}
-              color={color}
-              focused={focused}
-              //name="Profile"
-            />
+            <TabIcon SvgIcon={ProfileIcon} color={color} focused={focused} />
           ),
         }}
       />

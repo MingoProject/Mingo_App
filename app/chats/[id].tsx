@@ -23,17 +23,7 @@ import {
   MarkMessageAsRead,
   sendMessage,
 } from "../../lib/service/message.service";
-import {
-  ArrowIcon,
-  CallIcon,
-  InfoIcon,
-  VideoCallIcon,
-  CameraIcon,
-  ImageIcon,
-  MicroIcon,
-  PlusIcon,
-  SendIcon,
-} from "../../components/icons/Icons";
+
 import InfoChat from "../../components/forms/chat/InfoChat";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -46,22 +36,33 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { pusherClient } from "@/lib/pusher";
 import * as FileSystem from "expo-file-system";
 import { useChatItemContext } from "@/context/ChatItemContext";
-import { pickMedia } from "@/lib/untils/GalleryPicker";
 import MessageCard from "@/components/forms/chat/MessageCard";
 import { checkRelation } from "@/lib/service/relation.service";
 import { unblock } from "@/lib/service/friend.service";
 import ReportCard from "@/components/card/report/ReportCard";
-import { pickDocument } from "@/lib/untils/DoucmentPicker";
 import AudioRecorder from "@/components/forms/media/AudioRecorder";
 import { useCamera } from "@/context/CameraContext";
 import ExpoCamera from "@/components/forms/media/ExpoCamera";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
-import { ClickOutsideWrapper } from "@/components/share/ui/click-outside";
 import { RTCView } from "react-native-webrtc";
 import { useSocket } from "@/context/CallContext";
 import { getMyProfile } from "@/lib/service/user.service";
 import { Participants } from "@/dtos/SocketDTO";
+import {
+  ArrowIcon,
+  CallIcon,
+  VideoCallIcon,
+  InfoIcon,
+  PlusIcon,
+  CameraIcon,
+  ImageIcon,
+  MicroIcon,
+  SendIcon,
+} from "@/components/shared/icons/Icons";
+import { ClickOutsideWrapper } from "@/components/shared/ui/click-outside";
+import { pickDocument } from "@/lib/utils/DoucmentPicker";
+import { pickMedia } from "@/lib/utils/GalleryPicker";
 
 // Notifications.setNotificationHandler({
 //   handleNotification: async () => ({
