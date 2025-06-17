@@ -35,10 +35,9 @@ const RenderMessageItem = ({
 }) => {
   const timeString = `${item.lastMessage.timestamp.getHours()}:${item.lastMessage.timestamp.getMinutes()}`;
   const [lastMessage, setLastMessage] = useState(item.lastMessage);
-  const router = useRouter(); // Khởi tạo router
+  const router = useRouter();
   const { colorScheme } = useTheme();
   const { messages, setMessages } = useChatContext();
-  const [userId, setUserId] = useState("");
   const [isRead, setIsRead] = useState(false);
   const { isOnlineChat, setIsOnlineChat } = useChatContext();
 
@@ -161,22 +160,18 @@ const RenderMessageItem = ({
   };
 
   const handleDeleteMessage = async (data: PusherDelete) => {
-    // Kiểm tra nếu không phải tin nhắn trong box hiện tại
     if (data.boxId !== item.id) return;
 
     const currentUserId = await AsyncStorage.getItem("userId");
 
     setMessages((prevMessages) => {
-      // Lọc tin nhắn trong box chat hiện tại
       const boxChatMessages = prevMessages.filter(
         (msg) => msg.boxId === item.id
       );
 
       console.log("Box chat messages before delete: ", boxChatMessages);
 
-      // Nếu `visibility` là `false`, xử lý tin nhắn bị xóa
       if (!data.visibility) {
-        // Lọc các tin nhắn còn lại sau khi xóa tin nhắn bị thu hồi
         const updatedMessages = boxChatMessages.filter(
           (msg) => msg.id !== data.id
         );
@@ -194,20 +189,17 @@ const RenderMessageItem = ({
           width: "",
         };
 
-        // Chỉ cập nhật `lastMessage` cho người xóa
         if (data.createBy === currentUserId) {
           let latestMessage;
 
           if (updatedMessages.length > 0) {
-            // Lấy tin nhắn mới nhất từ `updatedMessages`
             latestMessage = updatedMessages.sort(
               (a, b) =>
                 new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
             )[0];
           } else {
-            // Nếu không còn tin nhắn, gọi API để lấy lại danh sách tin nhắn
             myChat();
-            return prevMessages; // Tạm thời trả về danh sách hiện tại
+            return prevMessages;
           }
 
           if (latestMessage) {
@@ -248,12 +240,11 @@ const RenderMessageItem = ({
 
     setMessages((prevMessages) => {
       const updatedMessages = prevMessages.map((chat) => {
-        // Nếu là tin nhắn bị thu hồi, cập nhật nội dung
         if (chat.id === data.id) {
           return {
             ...chat,
-            text: "message unsent", // Hoặc nội dung tùy chỉnh
-            type: "recalled", // Có thể thêm type để phân loại tin nhắn unsent
+            text: "message unsent",
+            type: "recalled",
           };
         }
         return chat;
@@ -309,7 +300,6 @@ const RenderMessageItem = ({
     pusherClient.bind("delete-message", handleDeleteMessage);
     pusherClient.bind("revoke-message", handleRevokeMessage);
 
-    // Dọn dẹp khi component bị unmount
     return () => {
       pusherClient.unbind("new-message", handleNewMessage);
       pusherClient.unbind("delete-message", handleDeleteMessage);
@@ -317,6 +307,7 @@ const RenderMessageItem = ({
   }, [item.id, setMessages]);
 
   const handleMessagePress = (item: any) => {
+    console.log("vo");
     router.push(`./chats/${item.id}`);
   };
 
@@ -348,7 +339,7 @@ const RenderMessageItem = ({
       onPress={() => handleMessagePress(item)}
       style={{
         backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+          colorScheme === "dark" ? colors.dark[500] : colors.light[500],
       }}
     >
       <Image
@@ -357,14 +348,14 @@ const RenderMessageItem = ({
             ? { uri: item.avatarUrl }
             : require("../../../assets/images/default-user.png")
         }
-        style={{ width: 55, height: 55, borderRadius: 50 }}
+        style={{ width: 50, height: 50, borderRadius: 50 }}
       />
       <View className="ml-3 flex-1">
         <View className="flex flex-col gap-2">
           <Text
             style={{
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100], // Sử dụng giá trị màu từ file colors.js
               flex: 1,
             }}
             className={`text-[16px] font-mmedium  `}
@@ -374,10 +365,10 @@ const RenderMessageItem = ({
           <Text
             style={{
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
             }}
             className={`text-[15px] font-mregular w-[290px]`}
-            numberOfLines={1} // Giới hạn chỉ một dòng
+            numberOfLines={1}
             ellipsizeMode="tail"
           >
             {lastMessage.text === "Started the chat" ? (
@@ -387,7 +378,7 @@ const RenderMessageItem = ({
                     color:
                       colorScheme === "dark"
                         ? colors.dark[100]
-                        : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                        : colors.light[100],
                     flex: 1,
                   }}
                   className={`font-msemibold text-[14px]`}
@@ -409,13 +400,12 @@ const RenderMessageItem = ({
                         color:
                           colorScheme === "dark"
                             ? colors.dark[100]
-                            : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                            : colors.light[100],
                       }}
                     >
                       {item.userName.trim().split(" ").pop()}:{" "}
                     </Text>
                     {(() => {
-                      // Kiểm tra nếu là thông báo kết thúc cuộc gọi
                       if (
                         lastMessage.text.startsWith(
                           "//Cuoc goi ket thuc; time:"
@@ -428,7 +418,7 @@ const RenderMessageItem = ({
                               color:
                                 colorScheme === "dark"
                                   ? colors.dark[100]
-                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                                  : colors.light[100],
                             }}
                           >
                             Cuộc gọi kết thúc
@@ -545,13 +535,12 @@ const RenderMessageItem = ({
                         color:
                           colorScheme === "dark"
                             ? colors.dark[100]
-                            : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                            : colors.light[100],
                       }}
                     >
                       You:{" "}
                     </Text>
                     {(() => {
-                      // Kiểm tra nếu là thông báo kết thúc cuộc gọi
                       if (
                         lastMessage.text.startsWith(
                           "//Cuoc goi ket thuc; time:"
@@ -564,7 +553,7 @@ const RenderMessageItem = ({
                               color:
                                 colorScheme === "dark"
                                   ? colors.dark[100]
-                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                                  : colors.light[500],
                             }}
                           >
                             Cuộc gọi kết thúc{" "}
@@ -585,7 +574,7 @@ const RenderMessageItem = ({
                               color:
                                 colorScheme === "dark"
                                   ? colors.dark[100]
-                                  : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                                  : colors.light[100], // Sử dụng giá trị màu từ file colors.js
                             }}
                           >
                             {lastMessage.text}
@@ -648,7 +637,7 @@ const RenderMessageItem = ({
             color:
               colorScheme === "dark"
                 ? colors.dark[100]
-                : "text-gray-500 font-mregular", // Sử dụng giá trị màu từ file colors.js
+                : "text-gray-500 font-mregular",
           }}
         >
           {timeString}
