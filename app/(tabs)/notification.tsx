@@ -45,7 +45,6 @@ const Notification = () => {
     };
   }, []);
 
-  // Thiết lập kết nối Pusher
   useEffect(() => {
     if (!profile?._id) return;
 
@@ -99,7 +98,6 @@ const Notification = () => {
     >
       <View className="h-full w-fit">
         <View className="flex flex-row justify-between items-center pb-4">
-          {" "}
           <View>
             <Text
               style={{
@@ -108,9 +106,7 @@ const Notification = () => {
                   colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className="font-msemibold"
-            >
-              Notifications
-            </Text>
+            ></Text>
           </View>
         </View>
         <ScrollView className="mb-20 space-y-2">

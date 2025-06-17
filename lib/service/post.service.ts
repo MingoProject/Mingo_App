@@ -20,6 +20,50 @@ export async function fetchPosts() {
   }
 }
 
+export async function fetchTrendingPosts(): Promise<PostResponseDTO[]> {
+  try {
+    const response = await fetch(`${BASE_URL}/post/get-trending-posts`);
+    if (!response.ok) {
+      throw new Error("Error fetching trending posts");
+    }
+    const data = await response.json();
+    // console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch trending posts:", error);
+    throw error;
+  }
+}
+
+export async function fetchRelevantPosts(
+  token: string | null,
+  page: number = 1,
+  limit: number = 5
+): Promise<PostResponseDTO[]> {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/post/get-relevant-posts?page=${page}&limit=${limit}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error fetching posts");
+    }
+
+    const data: PostResponseDTO[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch posts:", error);
+    throw error;
+  }
+}
+
 export async function getCommentsByPostId(
   postId: String
 ): Promise<CommentResponseDTO[]> {
