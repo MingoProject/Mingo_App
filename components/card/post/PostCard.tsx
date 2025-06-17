@@ -25,9 +25,10 @@ import PostMenu from "@/components/shared/post/PostMenu";
 interface PostCardProps {
   post: PostResponseDTO;
   setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
+  isTrending: boolean;
 }
 
-const PostCard = ({ post, setPostsData }: PostCardProps) => {
+const PostCard = ({ post, setPostsData, isTrending }: PostCardProps) => {
   const { colorScheme } = useTheme();
   const iconColor =
     colorScheme === "dark" ? colors.dark[100] : colors.light[100];
@@ -93,6 +94,20 @@ const PostCard = ({ post, setPostsData }: PostCardProps) => {
       }}
       className="p-[10px] rounded-[10px] flex flex-col"
     >
+      {isTrending && (
+        <View className="px-2 py-1 pt-2 bg-primary-100 w-20 rounded-xl mb-2">
+          <Text
+            style={{
+              color: "#FFFFFF",
+              flex: 1,
+            }}
+            className="font-mregular text-[14px] mb-2"
+          >
+            Trending
+          </Text>
+        </View>
+      )}
+
       <View className="flex-row items-center mb-2">
         <PostHeader
           post={post}

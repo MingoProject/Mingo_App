@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Link } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
-import { colors } from "../../styles/colors"; // import màu sắc từ file colors.js
+import { colors } from "../../styles/colors";
 import SearchHome from "../../components/forms/other/SearchHome";
 import AddPost from "@/components/forms/post/AddPost";
 import {
@@ -45,10 +45,11 @@ const Home = () => {
   const [isError, setIsError] = useState(false);
   const [isSelect, setIsSelect] = useState("home");
   const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const loadMorePosts = async () => {
-    if (isLoading || !hasMore) return;
-    setIsLoading(true);
+    if (isFetchingMore || !hasMore) return;
+    setIsFetchingMore(true);
     try {
       const token = await AsyncStorage.getItem("token");
       if (!token || !userId) return;
@@ -59,25 +60,30 @@ const Home = () => {
     } catch (err) {
       console.error("Error loading more posts", err);
     } finally {
-      setIsLoading(false);
+      setIsFetchingMore(false);
     }
   };
 
   const mergedPosts = () => {
-    const relevant = postsData || [];
     const result = [];
     let trendingIndex = 0;
-    for (let i = 0; i < relevant.length; i++) {
-      result.push({ ...relevant[i], isTrending: false });
+    const usedTrendingIds = new Set();
+
+    for (let i = 0; i < postsData.length; i++) {
+      result.push({ ...postsData[i], isTrending: false });
       if ((i + 1) % 4 === 0 && trendingIndex < trendingPostsData.length) {
-        result.push({ ...trendingPostsData[trendingIndex], isTrending: true });
-        trendingIndex++;
+        const trendingPost = trendingPostsData[trendingIndex];
+        if (!usedTrendingIds.has(trendingPost._id)) {
+          result.push({ ...trendingPost, isTrending: true });
+          usedTrendingIds.add(trendingPost._id);
+          trendingIndex++;
+        }
       }
     }
-    if (relevant.length === 0) {
-      return trendingPostsData.map((post) => ({ ...post, isTrending: true }));
-    }
-    return result;
+
+    return postsData.length === 0
+      ? trendingPostsData.map((p) => ({ ...p, isTrending: true }))
+      : result;
   };
 
   useEffect(() => {
@@ -93,17 +99,15 @@ const Home = () => {
         setPage(2);
 
         const allTrending = await fetchTrendingPosts();
-        const relevantIds = new Set(firstPosts.map((p) => p._id));
+        const usedIds = new Set(firstPosts.map((p) => p._id));
         const filteredTrending = allTrending.filter(
-          (p) => !relevantIds.has(p._id)
+          (p) => !usedIds.has(p._id) && p.author?._id !== userId
         );
-
-        if (isMounted) setTrendingPostsData(filteredTrending);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error loading initial posts", error);
-        setIsError(true);
-        setIsLoading(false);
+        setTrendingPostsData(filteredTrending);
+      } catch (e) {
+        console.error("Failed to load posts", e);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
     };
     loadInitialPosts();
@@ -146,10 +150,10 @@ const Home = () => {
             keyExtractor={(item) => item._id}
             style={{
               backgroundColor:
-                colorScheme === "dark" ? colors.dark[500] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[500] : colors.light[500],
               flex: 1,
             }}
-            className="p-3"
+            contentContainerStyle={{ padding: 12 }}
             ListHeaderComponent={
               <>
                 <View
@@ -158,8 +162,11 @@ const Home = () => {
                       colorScheme === "dark"
                         ? colors.dark[500]
                         : colors.light[500],
+                    flexDirection: "row",
+                    alignItems: "center",
+                    padding: 12,
+                    paddingTop: Platform.OS === "android" ? 0 : 48,
                   }}
-                  className={`flex flex-row items-center p-3 ${Platform.OS === "android" ? "pt-0" : "pt-12"}`}
                 >
                   <Text
                     style={{
@@ -168,23 +175,22 @@ const Home = () => {
                           ? colors.dark[100]
                           : colors.light[100],
                       flex: 1,
+                      fontSize: 24,
+                      fontWeight: "600",
                     }}
-                    className={`text-[24px] font-jsemibold `}
                   >
                     Min
                     <Text
-                      className="text-[24px] font-semibold"
-                      style={{ color: colors.primary[100] }}
+                      style={{ color: colors.primary[100], fontWeight: "bold" }}
                     >
                       gle
                     </Text>
                   </Text>
-                  <View className="ml-auto flex flex-row">
+                  <View style={{ flexDirection: "row", marginLeft: "auto" }}>
                     <TouchableOpacity onPress={handleSearch}>
                       <SearchIcon size={27} color={iconColor} />
                     </TouchableOpacity>
-
-                    <Text className="mx-2"></Text>
+                    <Text style={{ marginHorizontal: 8 }}></Text>
                     <TouchableOpacity>
                       <Link href="/message">
                         <MessageIcon size={27} color={iconColor} />
@@ -198,9 +204,13 @@ const Home = () => {
                 />
               </>
             }
-            ItemSeparatorComponent={() => <View className="h-2" />}
+            ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
             renderItem={({ item }) => (
-              <PostCard post={item} setPostsData={setPostsData} />
+              <PostCard
+                post={item}
+                setPostsData={setPostsData}
+                isTrending={item.isTrending}
+              />
             )}
             onEndReached={loadMorePosts}
             onEndReachedThreshold={0.5}
