@@ -5,21 +5,18 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  TextInput,
+  Platform,
 } from "react-native";
 import { useTheme } from "../../../context/ThemeContext";
 import { colors } from "../../../styles/colors";
-import { CancelIcon } from "@/components/shared/icons/Icons";
-import { createMedia } from "@/lib/service/media.service";
-import { PostCreateDTO } from "@/dtos/PostDTO";
-import { createPost } from "@/lib/service/post.service";
-import { createNotification } from "@/lib/service/notification.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "@/context/AuthContext";
 import { getMyBffs, getMyFriends } from "@/lib/service/user.service";
 import { createGroups } from "@/lib/service/message.service";
 import { router } from "expo-router";
 import { RequestCreateGroup } from "@/dtos/MessageDTO";
+import Button from "@/components/shared/ui/button";
+import MyInput from "@/components/shared/ui/MyInput";
 
 const CreateGroupChat = ({
   onClose,
@@ -113,68 +110,69 @@ const CreateGroupChat = ({
   };
   return (
     <ScrollView
+      className="w-full p-4 h-full space-y-6"
       style={{
-        flex: 1,
+        paddingTop: Platform.OS === "android" ? 14 : 52,
         backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[700],
-        padding: 4,
+          colorScheme === "dark" ? colors.dark[500] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
       }}
     >
-      {/* Header */}
-      <View className="flex  flex-row pt-10 justify-between items-center pb-4">
+      <View className="flex-row justify-between items-center mb-4">
         <Text
           style={{
             color:
-              colorScheme === "dark" ? colors.dark[100] : colors["title-pink"],
+              colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           }}
-          className="text-[20px] font-msemibold"
+          className="font-msemibold text-[24px]"
         >
           Create Group
         </Text>
-        <TouchableOpacity onPress={onClose}>
-          <CancelIcon size={24} color={iconColor} />
-        </TouchableOpacity>
+        <Button
+          title="Close"
+          size="small"
+          color="transparent"
+          onPress={onClose}
+        />
       </View>
 
-      {/* Location Input */}
-      <View>
-        <Text
+      <View className="relative">
+        <View
+          className="absolute left-3 -top-2 flex flex-row items-center px-1 z-10"
           style={{
-            color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[500] : colors.light[500],
           }}
-          className="text-[16px] font-medium font-msemibold"
         >
-          Group name
-        </Text>
+          <Text
+            className="font-mregular text-[12px]"
+            style={{
+              color:
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
+            }}
+          >
+            Group name <Text style={{ color: "red" }}>*</Text>
+          </Text>
+        </View>
+        <MyInput
+          value={location}
+          onChangeText={setLocation}
+          placeholder="Enter group name"
+          height={56}
+          fontSize={14}
+          fontFamily="Montserrat-Regular"
+        />
       </View>
-      <TextInput
-        value={location}
-        onChangeText={setLocation}
-        placeholder="Group name..."
-        style={{
-          borderWidth: 1,
-          borderColor: colors.primary[100],
-          borderRadius: 8,
-          padding: 10,
-          marginVertical: 12,
-          color: colorScheme === "dark" ? colors.dark[100] : colors.light[500],
-        }}
-        placeholderTextColor={
-          colorScheme === "dark" ? colors.dark[100] : colors.light[500] // Tùy chỉnh màu placeholder
-        }
-        className="font-mregular"
-      />
 
       <View className="mb-4">
         <Text
           style={{
             color:
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+              colorScheme === "dark" ? colors.dark[100] : colors.light[100],
           }}
           className="text-[16px] font-medium font-msemibold"
         >
-          Members
+          Add members
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {friends.map((friend, index) => (
@@ -184,10 +182,12 @@ const CreateGroupChat = ({
               style={{
                 backgroundColor: taggedFriends.includes(friend)
                   ? colors.primary[100]
-                  : colors.light[600],
-                borderRadius: 20,
+                  : colorScheme === "dark"
+                    ? colors.dark[400]
+                    : colors.light[400],
+                borderRadius: 100,
                 marginRight: 8,
-                padding: 5,
+                padding: 7,
               }}
               className="flex-row justify-center items-center mt-3 "
             >
@@ -202,10 +202,12 @@ const CreateGroupChat = ({
               <Text
                 style={{
                   color: taggedFriends.includes(friend)
-                    ? colors.dark[100]
-                    : colors.light[500],
+                    ? "#FFFFFF"
+                    : colorScheme === "dark"
+                      ? colors.dark[100]
+                      : colors.light[100],
                 }}
-                className="font-mregular"
+                className="font-mmedium ml-2"
               >
                 {friend.firstName} {friend.lastName}
               </Text>
@@ -214,20 +216,15 @@ const CreateGroupChat = ({
         </ScrollView>
       </View>
 
-      {/* Add Media */}
-
-      {/* Submit Button */}
-      <TouchableOpacity
-        onPress={handleSubmit}
-        className="w-full py-3 mt-4 rounded-md mb-10"
-        style={{
-          backgroundColor: colors.primary[100],
-        }}
-      >
-        <Text className="text-center text-white font-msemibold font-bold text-[16px]">
-          Create group
-        </Text>
-      </TouchableOpacity>
+      <View className="">
+        <Button
+          title="Create Group"
+          onPress={() => handleSubmit}
+          fontColor={
+            colorScheme === "dark" ? colors.dark[100] : colors.light[200]
+          }
+        />
+      </View>
     </ScrollView>
   );
 };

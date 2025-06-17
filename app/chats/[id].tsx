@@ -670,11 +670,12 @@ const Chat = () => {
 
   return (
     <View
+      className="w-full p-4 h-full space-y-6"
       style={{
-        flex: 1,
-        paddingTop: Platform.OS === "android" ? 8 : 40, // Android: 0, iOS: 10
+        paddingTop: Platform.OS === "android" ? 14 : 52,
         backgroundColor:
-          colorScheme === "dark" ? colors.dark[300] : colors.light[500], // Màu sắc tùy thuộc vào colorScheme
+          colorScheme === "dark" ? colors.dark[500] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+        flex: 1,
       }}
     >
       {localStream && (
@@ -683,23 +684,6 @@ const Chat = () => {
           style={{ height: 150, backgroundColor: "#ccc" }}
         />
       )}
-      {/* {remoteStream && (
-        <RTCView
-          streamURL={remoteStream.toURL()}
-          style={{ height: 150, backgroundColor: "#ccc", marginTop: 10 }}
-        />
-      )}
-
-      {isCameraOpen ? (
-        <ExpoCamera
-          onClose={() => setIsCameraOpen(false)}
-          //   onSend={handleSendMultipleFiles}
-          setSelectedMedia={(uri: string, type: string, name: string) =>
-            setSelectedMedia([{ uri: uri, type: type, name: name }])
-          }
-          isSendNow={true}
-        />
-      ) : null} */}
 
       <View className="flex  flex-row items-center justify-between px-3 pt-3 pb-1 shadow-md">
         <View className="flex flex-row">

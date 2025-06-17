@@ -1,10 +1,8 @@
 import {
   Text,
   View,
-  Image,
   TouchableOpacity,
   ScrollView,
-  TextInput,
   Platform,
 } from "react-native";
 import { ArrowIcon, PlusIcon } from "../components/shared/icons/Icons";
@@ -15,9 +13,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Link, router, useRouter } from "expo-router";
 import { useTheme } from "../context/ThemeContext";
-import { colors } from "../styles/colors"; // import màu sắc từ file colors.js
+import { colors } from "../styles/colors";
 import { getListChat } from "../lib/service/message.service";
 import { getListGroupChat } from "../lib/service/message.service";
 import RenderMessageItem from "@/components/forms/chat/RenderMessageItem";
@@ -26,8 +23,8 @@ import { pusherClient } from "@/lib/pusher";
 import { useAuth } from "@/context/AuthContext";
 import { useSearchParams } from "expo-router/build/hooks";
 import CreateGroupChat from "@/components/forms/chat/CreateGroupChat";
-import { debouncedSearch } from "@/lib/utils/declarations";
 import debounce from "lodash.debounce";
+import Input from "@/components/shared/ui/input";
 
 const Message = () => {
   const { colorScheme } = useTheme();
@@ -68,18 +65,14 @@ const Message = () => {
     fetchChats();
   }, [setAllChat]);
 
-  // Handle search results
   const fetchSearchResults = (text: string) => {
     console.log(`Searching for: ${text}`);
   };
 
-  // Debounce search function
   const debouncedSearch = useMemo(
     () => debounce((text: string) => fetchSearchResults(text), 300),
     []
   );
-
-  // Filter sorted chats
   const sortedChats = useMemo(() => {
     return [...allChat].sort(
       (a, b) =>
@@ -88,11 +81,9 @@ const Message = () => {
     );
   }, [allChat]);
 
-  // Handle search input change and filtering
   const handleSearch = useCallback(
     (text: string) => {
       const lowercasedText = text.toLowerCase();
-      // Lọc allChat theo groupName
       const filtered = allChat.filter((chat) =>
         chat.groupName.toLowerCase().includes(lowercasedText)
       );
@@ -107,12 +98,9 @@ const Message = () => {
       debouncedSearch.cancel();
     };
   }, [searchText, debouncedSearch]);
-
-  // Handle new messages and update chats
   useEffect(() => {
     const handleNewMessage = (data: any) => {
-      if (id !== data.boxId) return; // Kiểm tra đúng kênh
-      // console.log(data.boxId);
+      if (id !== data.boxId) return;
 
       setAllChat((prevChats: any) => {
         const updatedChats = prevChats.map((chat: any) => {
@@ -219,7 +207,6 @@ const Message = () => {
       });
     };
 
-    // Set up new message subscription
     channelRefs.current.forEach((channel) => {
       channel.unbind("new-message", handleNewMessage);
       pusherClient.unsubscribe(channel.name);
@@ -244,49 +231,56 @@ const Message = () => {
   return (
     <View style={{ flex: 1, position: "relative" }}>
       <ScrollView
+        className="w-full p-4 h-full space-y-6"
         style={{
-          paddingTop: Platform.OS === "android" ? 0 : 40, // Android: 0, iOS: 10
+          paddingTop: Platform.OS === "android" ? 14 : 52,
           backgroundColor:
-            colorScheme === "dark" ? colors.dark[300] : colors.light[300],
+            colorScheme === "dark" ? colors.dark[500] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
           flex: 1,
         }}
-        className="px-3"
       >
-        <View className="flex flex-row items-center w-full px-2 mt-6">
-          {/* Nút quay lại */}
-          <TouchableOpacity className="pr-2" onPress={() => router.back()}>
-            <ArrowIcon size={30} color={"#FFAABB"} />
+        <View
+          className="flex flex-row max-h-16"
+          style={{
+            backgroundColor:
+              colorScheme === "dark" ? colors.dark[200] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
+            flex: 1,
+          }}
+        >
+          <TouchableOpacity className="">
+            <ArrowIcon size={28} color={iconColor} />
           </TouchableOpacity>
-
-          {/* TextInput và nút Thêm */}
-          <View className="flex-1 flex flex-row items-center space-x-2">
-            <TextInput
-              placeholder="Find..."
-              placeholderTextColor="#D9D9D9"
-              className={`flex-1 h-[42px] text-[#D9D9D9] font-mregular px-4 rounded-full border-gray-200 text-sm ${
-                colorScheme === "dark" ? "bg-dark-400" : "bg-light-800"
-              }`}
+          <View>
+            <Text
               style={{
-                borderWidth: 1, // Thêm borderWidth nếu cần
-                // borderColor:
-                //   colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng borderColor thay vì borderBlockColor
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
-              editable={true}
-              value={searchText}
-              onChangeText={(text) => {
-                setSearchText(text); // Cập nhật giá trị tìm kiếm
-                handleSearch(text); // Gọi hàm tìm kiếm
-              }}
-            />
-            <TouchableOpacity onPress={() => setCreateGroup(true)}>
-              <PlusIcon color={iconColor} size={40} />
-            </TouchableOpacity>
+              className="font-msemibold text-[18px] ml-1"
+            >
+              Messages
+            </Text>
           </View>
         </View>
+        <View className="flex flex-row items-center w-full px-2 flex-1">
+          <View className="flex-1">
+            <Input
+              placeholder="Search"
+              value={searchText}
+              onChange={(text) => {
+                setSearchText(text);
+                handleSearch(text);
+              }}
+              returnKeyType="search"
+            />
+          </View>
 
-        <View className="mt-4">
+          <TouchableOpacity onPress={() => setCreateGroup(true)}>
+            <PlusIcon color={iconColor} size={40} />
+          </TouchableOpacity>
+        </View>
+
+        <View className="">
           {filteredChat.map((item) => (
             <RenderMessageItem item={item} key={item.id} itemUserId={userId} />
           ))}
@@ -304,7 +298,6 @@ const Message = () => {
             backgroundColor:
               colorScheme === "dark" ? colors.dark[200] : colors.light[300],
             zIndex: 10,
-            padding: 16,
           }}
         >
           <CreateGroupChat
