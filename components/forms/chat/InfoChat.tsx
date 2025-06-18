@@ -90,7 +90,7 @@ const InfoChat = ({
   setGroupData: any;
 }) => {
   const { colorScheme } = useTheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const iconColor = colorScheme === "dark" ? "#ffffff" : "#1E2021";
   const [notification, setNotification] = useState(true);
   const [showAllImages, setShowAllImages] = useState(false);
   const [showAllVideos, setShowAllVideos] = useState(false);
@@ -263,7 +263,7 @@ const InfoChat = ({
       }}
       onPress={async () => await openWebFile(item.url!)}
     >
-      <View className="bg-light-300 dark:bg-dark-20 flex rounded-2xl items-center justify-center gap-2">
+      <View className="flex rounded-2xl items-center justify-center gap-2">
         {renderFileIcon(item.url?.split(".").pop()!, 30)}
       </View>
       <View className="w-full flex justify-center">
@@ -273,7 +273,7 @@ const InfoChat = ({
             numberOfLines={2}
             style={{
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[500] : colors.light[100], // Sử dụng giá trị màu từ file colors.js
             }}
           >
             {`${item.fileName}`}
@@ -288,7 +288,7 @@ const InfoChat = ({
       className={`flex flex-row w-full  items-center `}
       onPress={async () => await openWebFile(item.url!)}
     >
-      <View className="bg-light-300 dark:bg-dark-20 flex flex-row p-6 rounded-2xl items-center  gap-2">
+      <View className=" flex flex-row p-6 rounded-2xl items-center  gap-2">
         {renderFileIcon(item.url?.split(".").pop()!, 50)}
         <View className="flex flex-row ">
           <Text
@@ -296,7 +296,7 @@ const InfoChat = ({
             numberOfLines={2}
             style={{
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100], // Sử dụng giá trị màu từ file colors.js
             }}
           >
             {`${item.fileName}`}
@@ -379,7 +379,7 @@ const InfoChat = ({
           paddingTop: Platform.OS === "android" ? 4 : 32, // Giữ nguyên giá trị pt-4
           paddingBottom: Platform.OS === "android" ? 10 : 10, // Giữ nguyên giá trị pb-10
           backgroundColor:
-            colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+            colorScheme === "dark" ? colors.dark[500] : colors.light[200],
         }}
       >
         <View className="flex flex-row">
@@ -387,11 +387,11 @@ const InfoChat = ({
             className="pt-3"
             onPress={() => setModalVisible(false)}
           >
-            <ArrowIcon size={30} color={"#FFAABB"} />
+            <ArrowIcon size={30} color={"#1E2021"} />
           </TouchableOpacity>
           <View>
             <Text
-              style={{ color: colors.primary[100] }}
+              style={{ color: colors.light[100] }}
               className="font-msemibold text-[17px] mt-4 ml-1"
             >
               Detail
@@ -422,7 +422,7 @@ const InfoChat = ({
           <Text
             style={{
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
             }}
             className={`text-[18px] text-center font-mmedium mt-2`}
           >
@@ -436,7 +436,7 @@ const InfoChat = ({
               className="items-center justify-center w-10 h-10 rounded-full "
               style={{
                 backgroundColor:
-                  colorScheme === "dark" ? colors.dark[200] : colors.light[800],
+                  colorScheme === "dark" ? colors.dark[200] : colors.light[200],
               }}
               onPress={handleProfileClick}
             >
@@ -445,7 +445,7 @@ const InfoChat = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className={`text-[12px] text-center font-mregular`}
             >
@@ -458,7 +458,7 @@ const InfoChat = ({
               className="ml-2 items-center justify-center w-10 h-10 rounded-full "
               style={{
                 backgroundColor:
-                  colorScheme === "dark" ? colors.dark[200] : colors.light[800],
+                  colorScheme === "dark" ? colors.dark[200] : colors.light[200],
               }}
               onPress={toggleNotification}
             >
@@ -471,7 +471,7 @@ const InfoChat = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className={`text-[12px] text-center font-mregular`}
             >
@@ -484,7 +484,7 @@ const InfoChat = ({
               className="ml-2 items-center justify-center w-10 h-10 rounded-full "
               style={{
                 backgroundColor:
-                  colorScheme === "dark" ? colors.dark[200] : colors.light[800],
+                  colorScheme === "dark" ? colors.dark[200] : colors.light[200],
               }}
               onPress={() => setIsSearch(true)}
             >
@@ -493,7 +493,7 @@ const InfoChat = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className={`text-[12px] text-center ml-3 font-mregular`}
             >
@@ -508,7 +508,7 @@ const InfoChat = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
@@ -542,7 +542,7 @@ const InfoChat = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
@@ -592,7 +592,7 @@ const InfoChat = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
@@ -638,7 +638,7 @@ const InfoChat = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
@@ -655,7 +655,7 @@ const InfoChat = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
@@ -672,7 +672,7 @@ const InfoChat = ({
             <Text
               style={{
                 color:
-                  colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                  colorScheme === "dark" ? colors.dark[100] : colors.light[100],
               }}
               className={`text-[16px] ml-3 mt-1 font-mregular`}
             >
@@ -693,7 +693,7 @@ const InfoChat = ({
           className="flex-1 "
           style={{
             backgroundColor:
-              colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+              colorScheme === "dark" ? colors.dark[300] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
             flex: 1,
           }}
         >
@@ -701,7 +701,7 @@ const InfoChat = ({
             className="flex-1 rounded-t-lg p-4"
             style={{
               backgroundColor:
-                colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[300] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
               flex: 1,
             }}
           >
@@ -709,7 +709,7 @@ const InfoChat = ({
               className="flex flex-row pt-5 max-h-20"
               style={{
                 backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
                 flex: 1,
               }}
             >
@@ -717,11 +717,11 @@ const InfoChat = ({
                 onPress={() => setShowAllImages(false)}
                 className=""
               >
-                <ArrowIcon size={30} color={"#FFAABB"} />
+                <ArrowIcon size={30} color={"#1E2021"} />
               </TouchableOpacity>
               <View>
                 <Text
-                  style={{ color: colors.primary[100] }}
+                  style={{ color: colors.light[100] }}
                   className="font-msemibold text-[17px] mt-1 h-7 ml-1"
                 >
                   Back
@@ -768,7 +768,7 @@ const InfoChat = ({
           className="flex-1 "
           style={{
             backgroundColor:
-              colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+              colorScheme === "dark" ? colors.dark[300] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
             flex: 1,
           }}
         >
@@ -776,7 +776,7 @@ const InfoChat = ({
             className="flex-1 rounded-t-lg p-4"
             style={{
               backgroundColor:
-                colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[300] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
               flex: 1,
             }}
           >
@@ -784,7 +784,7 @@ const InfoChat = ({
               className="flex flex-row pt-5 max-h-20"
               style={{
                 backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
                 flex: 1,
               }}
             >
@@ -792,11 +792,11 @@ const InfoChat = ({
                 onPress={() => setShowAllVideos(false)}
                 className="mt-3"
               >
-                <ArrowIcon size={30} color={"#FFAABB"} />
+                <ArrowIcon size={30} color={"#1E2021"} />
               </TouchableOpacity>
               <View>
                 <Text
-                  style={{ color: colors.primary[100] }}
+                  style={{ color: colors.light[100] }}
                   className="font-msemibold text-[17px] mt-4 ml-1"
                 >
                   Back
@@ -856,7 +856,7 @@ const InfoChat = ({
           className="flex-1 p-4"
           style={{
             backgroundColor:
-              colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+              colorScheme === "dark" ? colors.dark[300] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
             flex: 1,
           }}
         >
@@ -864,7 +864,7 @@ const InfoChat = ({
             className="flex flex-row pt-5 max-h-16"
             style={{
               backgroundColor:
-                colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[300] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
               flex: 1,
             }}
           >
@@ -872,17 +872,17 @@ const InfoChat = ({
               onPress={() => setShowAllFiles(false)}
               className="mt-3"
             >
-              <ArrowIcon size={30} color={"#FFAABB"} />
+              <ArrowIcon size={30} color={"#1E2021"} />
             </TouchableOpacity>
             <View
               style={{
                 backgroundColor:
-                  colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                  colorScheme === "dark" ? colors.dark[300] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
                 flex: 1,
               }}
             >
               <Text
-                style={{ color: colors.primary[100] }}
+                style={{ color: colors.light[100] }}
                 className="font-msemibold text-[17px] mt-4 ml-1"
               >
                 Back
@@ -893,7 +893,7 @@ const InfoChat = ({
             className="w-full  rounded-lg py-5 px-1"
             style={{
               backgroundColor:
-                colorScheme === "dark" ? colors.dark[300] : colors.light[700], // Sử dụng giá trị màu từ file colors.js
+                colorScheme === "dark" ? colors.dark[300] : colors.light[200], // Sử dụng giá trị màu từ file colors.js
               flex: 1,
             }}
           >
@@ -934,7 +934,7 @@ const InfoChat = ({
               paddingTop: Platform.OS === "android" ? 4 : 32, // Giữ nguyên giá trị pt-4
               paddingBottom: Platform.OS === "android" ? 10 : 10,
               backgroundColor:
-                colorScheme === "dark" ? colors.dark[300] : colors.light[700],
+                colorScheme === "dark" ? colors.dark[300] : colors.light[200],
               flex: 1,
             }}
             className="px-3 mt-0"
@@ -944,7 +944,7 @@ const InfoChat = ({
                 onPress={() => setIsSearch(false)}
                 className="pt-2 pr-1 flex flex-row"
               >
-                <ArrowIcon size={30} color={"#FFAABB"} />
+                <ArrowIcon size={30} color={"#1E2021"} />
               </TouchableOpacity>
               <TextInput
                 placeholder="Find..."
@@ -957,11 +957,11 @@ const InfoChat = ({
                   borderColor:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500], // Sử dụng borderColor thay vì borderBlockColor
+                      : colors.light[200], // Sử dụng borderColor thay vì borderBlockColor
                   color:
                     colorScheme === "dark"
                       ? colors.dark[100]
-                      : colors.light[500],
+                      : colors.light[200],
                 }}
                 editable={true}
                 value={query}

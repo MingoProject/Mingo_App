@@ -80,7 +80,7 @@ const Chat = () => {
   const { colorScheme } = useTheme();
   const [isModalVisible, setModalVisible] = useState(false);
   const { id } = useLocalSearchParams();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#92898A";
+  const iconColor = colorScheme === "dark" ? "#ffffff" : "#1E2021";
   const [value, setValue] = useState("");
   const { allChat, setAllChat } = useChatItemContext();
   const { width: screenWidth } = Dimensions.get("window");
@@ -105,21 +105,21 @@ const Chat = () => {
   const { socket, localStream, remoteStream, onlineUsers } = useSocket();
 
   // Nếu chưa có onlineUsers thì chưa render gì cả
-  if (!onlineUsers || !user) {
-    console.warn("Thiếu onlineUsers hoặc user");
-    return null;
-  }
+  // if (!onlineUsers || !user) {
+  //   console.warn("Thiếu onlineUsers hoặc user");
+  //   return null;
+  // }
 
   // Người nhận là bất kỳ ai online mà không phải chính mình
-  const receiverUser = onlineUsers.find((u) => u.userId !== user._id);
-  const isUser = onlineUsers.find((u) => u.userId === user._id);
+  const receiverUser = onlineUsers?.find((u) => u.userId !== user._id);
+  const isUser = onlineUsers?.find((u) => u.userId === user._id);
 
-  if (!receiverUser || !isUser) {
-    console.warn("Không tìm thấy user hoặc receiver phù hợp");
-    return null;
-  }
+  // if (!receiverUser || !isUser) {
+  //   console.warn("Không tìm thấy user hoặc receiver phù hợp");
+  //   return null;
+  // }
 
-  const roomId = isUser.socketId; // socketId của chính mình dùng để tạo room
+  const roomId = isUser?.socketId; // socketId của chính mình dùng để tạo room
   console.log(roomId, "isuser roomId11");
 
   const onAudioCall = () => {
@@ -131,7 +131,7 @@ const Chat = () => {
 
     const boxId = id;
 
-    const receiverAvatar = receiverUser.profile.avatar;
+    const receiverAvatar = receiverUser?.profile.avatar;
 
     // Gửi thông báo cuộc gọi qua socket
     console.log("Emitting call event");
@@ -139,7 +139,7 @@ const Chat = () => {
     router.push({
       pathname: "/(modals)/[roomId]",
       params: {
-        roomId: roomId,
+        roomId: roomId || "",
         isVideoCall: "false",
         receiverAva: receiverAvatar,
       },
@@ -158,7 +158,7 @@ const Chat = () => {
 
     router.push({
       pathname: "/(modals)/[roomId]",
-      params: { roomId: roomId, isVideoCall: "true" },
+      params: { roomId: roomId || "", isVideoCall: "true" },
     });
   };
 
@@ -678,12 +678,12 @@ const Chat = () => {
         flex: 1,
       }}
     >
-      {localStream && (
+      {/* {localStream && (
         <RTCView
           streamURL={localStream.toURL()}
           style={{ height: 150, backgroundColor: "#ccc" }}
         />
-      )}
+      )} */}
 
       <View className="flex  flex-row items-center justify-between px-3 pt-3 pb-1 shadow-md">
         <View className="flex flex-row">
@@ -691,7 +691,7 @@ const Chat = () => {
             onPress={() => router.back()}
             className="pt-2 flex flex-row"
           >
-            <ArrowIcon size={30} color={"#FFAABB"} />
+            <ArrowIcon size={30} color={"#1E2021"} />
           </TouchableOpacity>
           <View className="flex-row items-center pb-2 px-2 gap-2">
             <Image
@@ -805,18 +805,18 @@ const Chat = () => {
             onChangeText={handleTextInput}
             value={value}
             placeholderTextColor={
-              colorScheme === "dark" ? colors.dark[100] : colors.light[500] // Tùy chỉnh màu placeholder
+              colorScheme === "dark" ? colors.dark[100] : colors.light[100] // Tùy chỉnh màu placeholder
             }
             style={{
               borderWidth: 1, // Thêm borderWidth nếu cần
               borderColor:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500], // Sử dụng borderColor thay vì borderBlockColor
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100], // Sử dụng borderColor thay vì borderBlockColor
               color:
-                colorScheme === "dark" ? colors.dark[100] : colors.light[500],
+                colorScheme === "dark" ? colors.dark[100] : colors.light[100],
             }}
           />
           <TouchableOpacity onPress={handleSend}>
-            <SendIcon size={28} color={"#FFAABB"} />
+            <SendIcon size={28} color={"#1E2021"} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

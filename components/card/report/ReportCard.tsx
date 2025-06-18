@@ -162,7 +162,7 @@ const ReportCard = ({
                   onPress={() => setSelectedOption(option)}
                 >
                   {selectedOption === option ? (
-                    <CircleFillIcon size={20} color="#FFAABB" />
+                    <CircleFillIcon size={20} color="#1E2021" />
                   ) : (
                     <CircleTickIcon size={20} color="gray" />
                   )}
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   categoryTitle: {
     fontSize: 16,
     fontWeight: "semibold",
-    color: "#FFAABB",
+    color: "#768D85",
   },
   option: {
     flexDirection: "row", // Căn chỉnh icon và text theo chiều ngang
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#FFAABB",
+    color: "#768D85",
   },
 
   actions: {
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   confirmButton: {
-    backgroundColor: "#FFAABB",
+    backgroundColor: "#768D85",
   },
   confirmText: {
     color: "#fff",

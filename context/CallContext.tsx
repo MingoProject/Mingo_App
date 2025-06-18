@@ -695,7 +695,7 @@ export const CallProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   useEffect(() => {
-    const newSocket = io("http://192.168.1.220:3000");
+    const newSocket = io("http://192.168.1.214:3000");
     setSocket(newSocket);
 
     return () => {
